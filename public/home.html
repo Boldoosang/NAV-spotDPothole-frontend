@@ -1,0 +1,29 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+        <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+        <title>SpotDPothole</title>
+    </head>
+    <body>
+        <nav>
+            <div class="nav-wrapper deep-purple darken-3">
+                <a class="btn-large deep-purple darken-3"><i class="material-icons left">menu</i></a>
+                <a href="#" class="brand-logo">Pothole Spotter</a>
+            </div>
+        </nav>
+        <ul id="slide-out" class="sidenav">
+            <li><a href="#!"><i class="material-icons">home</i>Home</a></li>
+            <li><a href="#!"><i class="material-icons">add_box</i>Report</a></li>
+            <li><a href="#!"><i class="material-icons">add_box</i>LeaderBoard</a></li>
+            <a href="#" data-target="slide-out" class="sidenav-trigger"><i class="material-icons">menu</i></a>
+        </ul>
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+            var elem = document.querySelectorAll('.sidenav');
+            var instances = M.Sidenav.init(elem, options);
+            });
+        </script>
+    </body>
+</html>
