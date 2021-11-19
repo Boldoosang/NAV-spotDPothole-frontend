@@ -1,0 +1,28 @@
+/*!
+ * Bootstrap v5.1.3 (https://getbootstrap.com/)
+ * Copyright 2011-2021 The Bootstrap Authors
+ * Copyright 2011-2021 Twitter, Inc.
+ * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
+ */
+
+:root{
+    --darkgrey: #212529
+    --lightgrey: #6C757D
+    --offwhite: #F8F9FA
+    --white: #FFFFFF
+    --black: #000000
+}
+
+body{
+    font-size:1rem;
+}
+
+h{
+    font-size:2rem;
+    margin-top:0;
+    margin-left: 66rem;
+}
+
+#signUpButton{
+    margin-left:180px
+}
