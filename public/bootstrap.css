@@ -23,7 +23,7 @@ h{
     margin-left: 66rem;
 }
 
-
+/* Home page */
 #signUpButton{
     margin-left:180px
 }
@@ -35,6 +35,7 @@ h{
     height: 100%;
     overflow-y: hidden;
     transition:.5s;
+    border-right: 1px solid black;
 }
 
 #main-content{
@@ -70,8 +71,19 @@ h{
     display: block;
     text-decoration: none;
     color: black;
+    font-size: 24;
 }
+
+/* Login page */
 
 #login-button{
     padding-top: 530px;
+}
+
+#welcome{
+    margin-top: 40px;
+}
+
+#login-form{
+    padding-top: 80px;
 }
