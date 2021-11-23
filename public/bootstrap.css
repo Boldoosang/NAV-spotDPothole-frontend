@@ -13,8 +13,17 @@
     --black: #000000
 }
 
+h{
+    font-size:2rem;
+}
+
 body{
     font-size:1rem;
+}
+
+label{
+    font-size: large;
+    font-weight: bold;
 }
 
 
@@ -70,7 +79,7 @@ body{
 }
 
 #login-button{
-    padding-top: 530px;
+    margin-top: 450px;
 }
 
 /* Login page */
@@ -82,10 +91,9 @@ body{
     margin-left:27rem;
 }
 
-#welcome{
-    font-size:2rem;
-}
 
 #login-form{
     padding-top: 80px;
 }
+
+/* Register page */
