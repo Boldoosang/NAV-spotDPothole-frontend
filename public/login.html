@@ -15,7 +15,7 @@
                     <img id="logo" src="SpotDPothole-Logo.png" class="rounded float-start">
                 </div>
                 <div class="col">
-                    <form>
+                    <form id="loginForm">
                         <div id="welcome" class="d-flex justify-content-left">
                             <h>Welcome to the Pothole Spotter</h>
                         </div>
@@ -28,14 +28,18 @@
                             <input type="password" class="form-control" id="InputPassword" placeholder="Enter your password">
                         </div>
                         <div class="pt-5">
-                            <button id="loginButton" type="submit" class="btn btn-dark btn-lg">Login</button>
-                            <button id="signUpButton" class="btn btn-outline-dark btn-lg">Sign Up</button>
+                            <button id="loginButton" class="btn btn-dark btn-lg" onclick="getLoginData()">Login</button>
+                            <a href="register.html" id="signUpButton" class="btn btn-outline-dark btn-lg">Sign Up</a>
                         </div>
                     </form>
                 </div>
             </div>
         </div>
         
-        
+        <script>
+            function getLoginData(){
+                Array.from(document.querySelectorAll('#loginForm input')).reduce((acc,input)=>({...acc,[input.id]:input.value}),{});
+            }
+        </script>
     </body>
 </html>
