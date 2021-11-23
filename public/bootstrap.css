@@ -17,11 +17,6 @@ body{
     font-size:1rem;
 }
 
-h{
-    font-size:2rem;
-    margin-top:0;
-    margin-left: 66rem;
-}
 
 /* Home page */
 #signUpButton{
@@ -74,14 +69,21 @@ h{
     font-size: 24;
 }
 
-/* Login page */
-
 #login-button{
     padding-top: 530px;
 }
 
+/* Login page */
+#logo{
+    height: 450px;
+}
+
+#signUpButton{
+    margin-left:27rem;
+}
+
 #welcome{
-    margin-top: 40px;
+    font-size:2rem;
 }
 
 #login-form{
