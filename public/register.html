@@ -8,10 +8,10 @@
     </head>
     <body>
         <div class="me-5 ms-5 mt-5">
-            <form class="pt-3">
+            <form class="pt-3" onsubmit="register(event)">
                 <div class="form-row">
                     <div class="col ms-5 me-5">
-                        <div id="creatAccountMessage" class="d-flex justify-content-left">
+                        <div id="createAccountMessage" class="d-flex justify-content-left">
                             <h>Create An Account</h>
                         </div>
                     </div>
@@ -32,10 +32,6 @@
                             <label for="InputEmail" class="form-label">Email</label>
                             <input type="email" class="form-control" id="InputEmail" placeholder="Enter your Email">
                         </div>
-                        <div class="col ms-5">
-                            <label for="InputDOB" class="form-label">Date of Birth</label>
-                            <input type="date" class="form-control" id="InputDOB" placeholder="Enter your Date of Birth">
-                        </div>
                     </div>
                     <div class="form-row d-flex justify-content-center mt-5">
                         <div class="col me-5">
@@ -47,17 +43,18 @@
                             <input type="password" class="form-control" id="InputConfirm" placeholder="Confirm your password">
                         </div>
                     </div>
+                    <div class="form-row d-flex justify-content-center mt-5">
+                        <div class="col ms-5">
+                            <label for="agreeToS" class="form-label">I agree to consent information to the platform. </label>
+                            <input type="checkbox" class="" id="agreeToS">
+                        </div>
+                    </div>
                     <div class="d-flex justify-content-end mt-5">
-                        <button id="signUpButton" class="btn btn-dark btn-lg" onclick="register()">Sign Up</button>
+                        <button id="signUpButton" class="btn btn-dark btn-lg">Sign Up</button>
                     </div>
                 </div>
             </form>
         </div> 
-        
-        <script>
-            function register(){
-                
-            }
-        </script>
+        <script src="index.js"></script>
     </body>
 </html>
