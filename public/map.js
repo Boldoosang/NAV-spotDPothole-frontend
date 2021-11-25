@@ -30,8 +30,6 @@ if(container) {
     }
 
     async function submitReport(){
-        signIn();
-
         today = new Date();
             let randLat = Math.random() * getRandom();
             let randLong = Math.random() * getRandom();
@@ -58,6 +56,23 @@ if(container) {
             }
     }
 
+    async function submitReportClickTest(lat, long){
+        const constituency = leafletPip.pointInLayer([long, lat], map);
+
+        const data = {
+            "longitude" : long,
+            "latitude" : lat,
+            "constituencyID" : constituency[0].feature.properties.Constituency,
+        }
+
+        let result =  await sendRequest(SERVER + '/api/reports/driver', 'POST', data);
+        
+        if(markersLayer)
+            markersLayer.clearLayers();
+
+        displayPotholes();
+    }
+
     async function getPotholes(){
         let potholes = await sendRequest(SERVER + '/api/potholes', 'GET');
         return potholes;
@@ -65,41 +80,43 @@ if(container) {
 
     async function displayPotholes(){
         let potholes = await getPotholes();
-
-        for(const pothole of potholes){
-            var constituency = leafletPip.pointInLayer([pothole.longitude, pothole.latitude], map);
-
-            if(constituency.length == 0){
-                constituency = [
-                    {
-                        "feature": {
-                            "properties": {
-                                "ID": "null",
+        console.log(potholes);
+        if(potholes.length > 0){
+            for(const pothole of potholes){
+                var constituency = leafletPip.pointInLayer([pothole.longitude, pothole.latitude], map);
+    
+                if(constituency.length == 0){
+                    constituency = [
+                        {
+                            "feature": {
+                                "properties": {
+                                    "ID": "null",
+                                }
                             }
                         }
-                    }
-                ]
-            }     
-            
-            let marker = L.marker([pothole.latitude, pothole.longitude], {
-                constituency: pothole.constituencyID,
-                potholeID: pothole.potholeID,
-                constituencyID: constituency[0].feature.properties.ID
-            }).on('click', async function(){
-                var constituencyName = document.getElementById('constituencyName')
-                constituencyName.innerText = this.options.constituency;
-
-                loadReports(this.options.potholeID);
-                loadConstituencyData(this.options.constituencyID)
+                    ]
+                }     
                 
-                var offCanvasReport= getOffCanvas();
-                offCanvasReport.toggle();
-            });
-
-            markers.push(marker)
-            markersLayer = L.layerGroup(markers); 
-            markersLayer.addTo(map);
-        }     
+                let marker = L.marker([pothole.latitude, pothole.longitude], {
+                    potholeID: pothole.potholeID,
+                    constituencyID: constituency[0].feature.properties.ID
+                }).on('click', async function(){
+                    var constituency = leafletPip.pointInLayer([pothole.longitude, pothole.latitude], map);
+                    var constituencyName = document.getElementById('constituencyName')
+                    constituencyName.innerText = constituency[0].feature.properties.Constituency;
+    
+                    loadReports(this.options.potholeID);
+                    loadConstituencyData(this.options.constituencyID)
+                    
+                    var offCanvasReport= getOffCanvas();
+                    offCanvasReport.toggle();
+                });
+    
+                markers.push(marker)
+                markersLayer = L.layerGroup(markers); 
+                markersLayer.addTo(map);
+            }   
+        }  
     }
 
     function getOffCanvas(){
