@@ -210,7 +210,6 @@ async function loadReports(potholeID){
 
 
 async function loadConstituencyData(constituencyID){
-    constituencyID = "ari"
     let url = `${PICONG_SERVER}?year=${ELECTION_YEAR}&district=${constituencyID}`
     let constituencyData = await sendRequest(url, "GET") //?year=2020&district=ari
     console.log(constituencyData[0])

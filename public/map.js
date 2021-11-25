@@ -87,10 +87,9 @@ if(container) {
                 constituencyID: constituency[0].feature.properties.ID
             }).on('click', async function(){
                 let report = await sendRequest(SERVER + '/api/reports/pothole/' + this.options.potholeID, 'GET');
-                console.log(report);
                 loadReports(this.options.potholeID);
                 
-                //loadConstituencyData()
+                loadConstituencyData(this.options.constituencyID)
                 
                 console.log(marker)
                 var offCanvasReport= getOffCanvas();
