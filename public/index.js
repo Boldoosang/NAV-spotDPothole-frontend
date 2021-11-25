@@ -213,22 +213,21 @@ async function loadReports(potholeID){
 async function loadConstituencyData(constituencyID){
     constituencyID = "ari"
     let url = `${PICONG_SERVER}?year=${ELECTION_YEAR}&district=${constituencyID}`
-    let constituencyData = await sendRequest(url, "GET") //?year=2020&district=ari
-    console.log(constituencyData[0])
+    let councillorData = await sendRequest(url, "GET") //?year=2020&district=ari
 
-    let constituencyInformationArea = document.querySelector("#constituencyInformation")
+    let councillorInformationArea = document.querySelector("#councillorInformation")
     let councillorInformation = ""
 
     try {
         councillorInformation = 
         `
-        COUNCILLOR: ${constituencyData[0].name}
+        COUNCILLOR: ${councillorData[0].name}
         `
     } catch(e){
         councillorInformation = `<div class="d-flex justify-content-center my-3"><strong>No constituency information available!</strong></div>`
     }
 
-    constituencyInformationArea.innerHTML = councillorInformation
+    councillorInformationArea.innerHTML = councillorInformation
 }
 
 loadReports(1)

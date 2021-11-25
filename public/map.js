@@ -74,8 +74,6 @@ if(container) {
                 let report = await sendRequest(SERVER + '/api/reports/pothole/' + this.options.potholeID, 'GET');
                 console.log(report);
                 
-                
-                
                 var offCanvasReport= getOffCanvas();
                 offCanvasReport.toggle();
             });
