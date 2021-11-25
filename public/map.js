@@ -38,10 +38,10 @@ if(container) {
 
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(async function(position) {
-                const constituency = leafletPip.pointInLayer([position.coords.longitude + randLong, position.coords.latitude + randLat], map);
+                const constituency = leafletPip.pointInLayer([position.coords.longitude, position.coords.latitude], map);
                     const data = {
-                        "longitude" : position.coords.longitude + randLat,
-                        "latitude" : position.coords.latitude + randLong,
+                        "longitude" : position.coords.longitude,
+                        "latitude" : position.coords.latitude,
                         "constituencyID" : constituency[0].feature.properties.Constituency,
                     }
 
@@ -67,21 +67,34 @@ if(container) {
         let potholes = await getPotholes();
 
         for(const pothole of potholes){
+            var constituency = leafletPip.pointInLayer([pothole.longitude, pothole.latitude], map);
+
+            if(constituency.length == 0){
+                constituency = [
+                    {
+                        "feature": {
+                            "properties": {
+                                "ID": "null",
+                            }
+                        }
+                    }
+                ]
+            }     
+            
             let marker = L.marker([pothole.latitude, pothole.longitude], {
                 constituency: pothole.constituencyID,
-                potholeID: pothole.potholeID
+                potholeID: pothole.potholeID,
+                constituencyID: constituency[0].feature.properties.ID
             }).on('click', async function(){
                 let report = await sendRequest(SERVER + '/api/reports/pothole/' + this.options.potholeID, 'GET');
                 console.log(report);
+                loadReports(this.options.potholeID);
                 
+                //loadConstituencyData()
                 
-                
+                console.log(marker)
                 var offCanvasReport= getOffCanvas();
                 offCanvasReport.toggle();
-
-                //get constituency information from DOM by id
-                let constituency = document.getElementById('constituencyInformation');
-                constituency.innerHTML = marker.options.constituency;
             });
 
             markers.push(marker)

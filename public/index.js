@@ -136,7 +136,6 @@ window.addEventListener('DOMContentLoaded', event => {
 
 
 async function loadReports(potholeID){
-    potholeID = 91
     let potholeReports = await sendRequest(SERVER + "/api/reports/pothole/" + potholeID, "GET")
     let allReportsContainer = document.querySelector("#reportAccordion")
 
