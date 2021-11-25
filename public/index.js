@@ -3,27 +3,43 @@ const SERVER = "https://spotdpothole.herokuapp.com"
 
 async function sendRequest(url, method, data){
     try {
-        let token = window.localStorage.getItem('access_token')
+        let access_token = window.localStorage.getItem("access_token");
 
-        let options = {
-                "method" : method,
-                "headers" : {
-                "Content-Type" : "application/json",
-                "Authorization" : `JWT ${token}`
+        let request = {
+            "method" : method,
+            "headers" : {
+                "Authorization" : `Bearer ${access_token}`
             }
         }
 
-        if(data)
-            options.body = JSON.stringify(data)
+        if (data){
+            request = {
+                "method" : method,
+                "headers" : {
+                    "Authorization" : `Bearer ${access_token}`,
+                    "Content-Type" : "application/json"
+                }
+            }
+            request.body = JSON.stringify(data);
+        }
 
-        let response = await fetch(url, options)
 
-        let result = await response.json()
-            
+        let response = await fetch(url, request);
+        let results = await response.json()
 
-        return result
-    } catch (e) {
+        if("msg" in results){
+            if(results["msg"] == "Signature verification failed" || results["msg"] == "Token has expired"){
+                window.localStorage.removeItem('access_token');
+                console.log("Session has expired!")
+                window.location = "/"
+                return;
+            }
+        }
+
+        return results;
+    } catch (e){
         console.log(e)
+        return {"error" : "An unexpected error has occurred!"};
     }
 }
 

@@ -5,19 +5,20 @@
         <link href="styles.css" rel="stylesheet" />
         <title>SpotDPothole</title>
         <body>
-            <div class="d-flex" id="wrapper">
+            <div class="d-flex " id="wrapper">
                 <!-- Sidebar-->
-                <div class="border-end bg-white" id="sidebar-wrapper">
+                <div class="border-end bg-white position-relative" id="sidebar-wrapper">
                     <div class="sidebar-heading border-bottom bg-light fw-bold">MENU</div>
                     <div class="list-group list-group-flush" style="font-size: 1.2rem;">
                         <a class="list-group-item list-group-item-action list-group-item-light p-3" data-bs-toggle="pill" data-bs-target="#mainTab-map"><i class="bi bi-house-fill" style="font-size:1.5rem;color:black"></i>        Home</a>
                         <a class="list-group-item list-group-item-action list-group-item-light p-3" data-bs-toggle="pill" data-bs-target="#mainTab-report"><i class="bi bi-plus-square-fill" style="font-size:1.5rem;color:black"></i>        Report</a>
                         <a class="list-group-item list-group-item-action list-group-item-light p-3" data-bs-toggle="pill" data-bs-target="#mainTab-leaderboard"><i class="bi bi-table" style="font-size:1.5rem;color:black"></i>        Leaderboard</a>
+                        <hr class="my-0" style="color: rgba(0,0,0,0.125)">
                     </div>
-                    <div class="h-auto" style="font-size: 1.2rem;">
-                        <div id="userContextGroup" class="mt-auto">
-                            <a class="list-group-item list-group-item-action list-group-item-light p-3 relative-bottom" data-bs-toggle="modal" data-bs-target="#loginModal"><i class="bi bi-person-circle" style="font-size:1.5rem;color:black"></i>        Login</a>
-                            <a class="list-group-item list-group-item-action list-group-item-light p-3" data-bs-toggle="modal" data-bs-target="#registerModal"><i class="bi bi-person-plus-fill" style="font-size:1.5rem;color:black"></i>        Register</a>
+                    <div class="position-absolute bottom-0 start-0" style="font-size: 1.2rem;">
+                        <hr class="my-0">
+                        <div id="userContextGroup" class="list-group list-group-flush">
+                            <a class="list-group-item list-group-item-action list-group-item-light p-3 relative-bottom" data-bs-toggle="modal" data-bs-target="#loginModal"><i class="bi bi-person-circle" style="font-size:1.5rem;color:black"></i>        Login/Register</a>
                         </div>
                     </div>
                 </div>
@@ -55,93 +56,85 @@
                         <div class="modal-dialog">
                             <div class="modal-content">
                                 <div class="modal-header">
-                                    <h5 class="modal-title" id="loginModalLabel">Log in to SpotDPothole</h5>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    <nav class="col col-11">
+                                        <div class="nav nav-pills nav-fill" id="nav-tab" role="tablist">
+                                            <button class="nav-link active" id="nav-login-tab" data-bs-toggle="tab" data-bs-target="#nav-login" type="button" role="tab">Login</button>
+                                            <button class="nav-link" id="nav-register-tab" data-bs-toggle="tab" data-bs-target="#nav-register" type="button" role="tab">Register</button>
+                                        </div>
+                                    </nav>
+                                    <button type="button" class="btn-close col-1" data-bs-dismiss="modal" aria-label="Close"></button>
                                 </div>
 
                                 <div class="modal-body">
-                                    <div class="container" id="login-form">
-                                        <div class="row align-items-start">
-                                            <div class="col col-12 mb-5 d-flex justify-content-center">
-                                                <img id="logo" src="images/SpotDPothole-Logo.png" style="max-height: 200px" class="rounded float-start img-fluid">
+                                    <div class="tab-content" id="nav-tabContent">
+                                        <div class="tab-pane fade show active" id="nav-login" role="tabpanel">
+                                            <div class="container" id="login-form">
+                                                <div class="row align-items-start">
+                                                    <div class="col col-12 mb-5 d-flex justify-content-center">
+                                                        <img id="logo" src="images/SpotDPothole-Logo.png" style="max-height: 200px" class="rounded float-start img-fluid">
+                                                    </div>
+                                    
+                                                    <div class="col col-12 px-5">
+                                                        <form id="loginForm" onsubmit="login(event)">
+                                                            <div id="welcome" class="d-flex justify-content-center">
+                                                                <h4 class="text-center">Welcome to the Pothole Spotter</h4>
+                                                            </div>
+                                                            <div class="mb-3 pt-3">
+                                                                <label for="InputEmail" class="form-label fw-bold">Email Address</label>
+                                                                <input type="email" class="form-control" id="InputEmail" placeholder="Enter your email" required>
+                                                            </div>
+                                                            <div class="mb-3 pt-2" >
+                                                                <label for="InputPassword" class="form-label fw-bold">Password</label>
+                                                                <input type="password" class="form-control" id="InputPassword" placeholder="Enter your password" required>
+                                                            </div>
+                                                            <div class="d-flex justify-content-center" id="userLoginMessage"></div>
+                                                            <div class="d-flex justify-content-center pt-3">
+                                                                <button id="loginButton" class="btn btn-dark btn-lg px-3">Login</button>
+                                                            </div>
+                                                        </form>
+                                                    </div>
+                                                </div>
                                             </div>
-                            
-                                            <div class="col col-12 px-5">
-                                                <form id="loginForm" onsubmit="login(event)">
-                                                    <div id="welcome" class="d-flex justify-content-center">
-                                                        <h4 class="text-center">Welcome to the Pothole Spotter</h4>
+                                        </div>
+                                        <div class="tab-pane fade" id="nav-register" role="tabpanel">
+                                            <form class="pt-1" onsubmit="register(event)">
+                                                <div class="container">
+                                                    <div class="row">
+                                                        <div class="col col-12 mb-3">
+                                                            <label for="InputFirstName" class="form-label fw-bold">First Name</label>
+                                                            <input type="name" class="form-control" id="regInputFirstName" placeholder="Enter your First Name" required>
+                                                        </div>
+                                                        <div class="col col-12 mb-3">
+                                                            <label for="InputLastName" class="form-label fw-bold">Last Name</label>
+                                                            <input type="name" class="form-control" id="regInputLastName" placeholder="Enter your Last Name" required>
+                                                        </div>
+                                                        <div class="col col-12 mb-3">
+                                                            <label for="InputEmail" class="form-label fw-bold">Email</label>
+                                                            <input type="email" class="form-control" id="regInputEmail" placeholder="Enter your Email" required>
+                                                        </div>
+                                                        <div class="col col-12 mb-3">
+                                                            <label for="InputPassword" class="form-label fw-bold">Password</label>
+                                                            <input type="password" class="form-control" id="regInputPassword" placeholder="Enter a password" required>
+                                                        </div>
+                                                        <div class="col-12 mb-3">
+                                                            <label for="InputConfirm" class="form-label fw-bold">Confirm Password</label>
+                                                            <input type="password" class="form-control" id="regInputConfirm" placeholder="Confirm your password" required>
+                                                        </div>
                                                     </div>
-                                                    <div class="mb-3 pt-3">
-                                                        <label for="InputEmail" class="form-label fw-bold">Email Address</label>
-                                                        <input type="email" class="form-control" id="InputEmail" placeholder="Enter your email" required>
+                                                    <div class="form-row d-flex justify-content-center mt-3">
+                                                        <div class="col col-12">
+                                                            <input type="checkbox" class="form-check-input" id="regAgreeToS" required>
+                                                            <label for="agreeToS" class="form-label ml-5">I agree to consent personal information to the platform.</label>
+                                                        </div>
                                                     </div>
-                                                    <div class="mb-3 pt-2" >
-                                                        <label for="InputPassword" class="form-label fw-bold">Password</label>
-                                                        <input type="password" class="form-control" id="InputPassword" placeholder="Enter your password" required>
-                                                    </div>
-                                                    <div class="d-flex justify-content-center" id="userLoginMessage"></div>
+                                                    <div class="d-flex justify-content-center" id="userRegisterMessage"></div>
                                                     <div class="d-flex justify-content-center pt-3">
-                                                        <button id="loginButton" class="btn btn-dark btn-lg px-3">Login</button>
+                                                        <button id="signUpButton" class="btn btn-dark btn-lg px-3">Sign Up</button>
                                                     </div>
-                                                </form>
-                                            </div>
+                                                </div>
+                                            </form>
                                         </div>
                                     </div>
-                                </div>
-
-                            </div>
-                        </div>
-                    </div>
-
-
-                    <!-- Register Modal -->
-                    <div class="modal fade" id="registerModal" tabindex="-1">
-                        <div class="modal-dialog">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h5 class="modal-title" id="registerModalLabel">Create an Account</h5>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                                </div>
-                                <div class="modal-body">
-                                    <form class="pt-1" onsubmit="register(event)">
-                                        <div class="container">
-                                            <div class="row">
-                                                <div class="col col-12 mb-3">
-                                                    <label for="InputFirstName" class="form-label fw-bold">First Name</label>
-                                                    <input type="name" class="form-control" id="regInputFirstName" placeholder="Enter your First Name" required>
-                                                </div>
-                                                <div class="col col-12 mb-3">
-                                                    <label for="InputLastName" class="form-label fw-bold">Last Name</label>
-                                                    <input type="name" class="form-control" id="regInputLastName" placeholder="Enter your Last Name" required>
-                                                </div>
-                                                <div class="col col-12 mb-3">
-                                                    <label for="InputEmail" class="form-label fw-bold">Email</label>
-                                                    <input type="email" class="form-control" id="regInputEmail" placeholder="Enter your Email" required>
-                                                </div>
-                                                <div class="col col-12 mb-3">
-                                                    <label for="InputPassword" class="form-label fw-bold">Password</label>
-                                                    <input type="password" class="form-control" id="regInputPassword" placeholder="Enter a password" required>
-                                                </div>
-                                                <div class="col-12 mb-3">
-                                                    <label for="InputConfirm" class="form-label fw-bold">Confirm Password</label>
-                                                    <input type="password" class="form-control" id="regInputConfirm" placeholder="Confirm your password" required>
-                                                </div>
-                                            </div>
-                                            <div class="form-row d-flex justify-content-center mt-3">
-                                                <div class="col col-12">
-                                                    <input type="checkbox" class="form-check-input" id="regAgreeToS" required>
-                                                    <label for="agreeToS" class="form-label ml-5">I agree to consent personal information to the platform.</label>
-                                                </div>
-                                            </div>
-                                            <div class="d-flex justify-content-center" id="userRegisterMessage"></div>
-                                            <div class="d-flex justify-content-center pt-3">
-                                                <button id="signUpButton" class="btn btn-dark btn-lg px-3">Sign Up</button>
-                                            </div>
-                                        </div>
-                                    </form>
-                                </div>
-
-
                             </div>
                         </div>
                     </div>
