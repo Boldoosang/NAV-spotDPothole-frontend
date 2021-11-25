@@ -32,55 +32,7 @@ label{
     margin-left:180px
 }
 
-#sidebar-wrapper{
-    z-index: 1;
-    position: absolute;
-    width: 0;
-    height: 100%;
-    overflow-y: hidden;
-    transition:.5s;
-    border-right: 1px solid black;
-}
 
-#main-content{
-    width: 100%;
-    position: absolute;
-    padding: 15px;
-
-}
-
-#wrapper.menuDisplayed #sidebar-wrapper{
-    width: 250px;
-}
-
-#wrapper.menuDisplayed #main-content{
-    padding-left:250px;
-}
-
-.navbar-brand{
-    color: white;
-}
-
-.sidebar-nav{
-    padding: 0;
-    list-style: none;
-}
-
-.sidebar-nav li{
-    text-indent: 20px;
-    line-height: 80px;
-}
-
-.sidebar-nav li a{
-    display: block;
-    text-decoration: none;
-    color: black;
-    font-size: 24;
-}
-
-#login-button{
-    margin-top: 450px;
-}
 
 /* Login page */
 #logo{
