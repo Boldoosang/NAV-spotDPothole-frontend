@@ -86,12 +86,9 @@ if(container) {
                 potholeID: pothole.potholeID,
                 constituencyID: constituency[0].feature.properties.ID
             }).on('click', async function(){
-                let report = await sendRequest(SERVER + '/api/reports/pothole/' + this.options.potholeID, 'GET');
                 loadReports(this.options.potholeID);
-                
                 loadConstituencyData(this.options.constituencyID)
                 
-                console.log(marker)
                 var offCanvasReport= getOffCanvas();
                 offCanvasReport.toggle();
             });
