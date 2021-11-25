@@ -13,8 +13,14 @@
                         <a class="list-group-item list-group-item-action list-group-item-light p-3" href="#!"><i class="bi bi-house-fill" style="font-size:1.5rem;color:black"></i>     Home</a>
                         <a class="list-group-item list-group-item-action list-group-item-light p-3" href="#!"><i class="bi bi-plus-square-fill" style="font-size:1.5rem;color:black"></i>     Report</a>
                         <a class="list-group-item list-group-item-action list-group-item-light p-3" href="#!"><i class="bi bi-table" style="font-size:1.5rem;color:black"></i>     Leaderboard</a>
-                        <a class="list-group-item list-group-item-action list-group-item-light p-3 relative-bottom" href="login.html"><i class="bi bi-person-circle" style="font-size:1.5rem;color:black"></i>     Login</a>
+                        
                     </div>
+                    <div class="d-flex">
+                        <div class="list-group list-group-flush" style="font-size: 1.2rem;">
+                            <a class="list-group-item list-group-item-action list-group-item-light p-3" href="login.html"><i class="bi bi-person-circle" style="font-size:1.5rem;color:black"></i>     Login</a>
+                            <a class="list-group-item list-group-item-action list-group-item-light p-3" href="register.html"><i class="bi bi-person-plus-fill" style="font-size:1.5rem;color:black"></i>     Register</a>
+                        </div>
+                    </div>    
                 </div>
                 <!-- Page content wrapper-->
                 <div id="page-content-wrapper">
@@ -23,7 +29,7 @@
                         <div class="navbar">
                             <div class="container-fluid">
                                 <button class="bi bi-list btn-dark" id="sidebarToggle" style="font-size:2rem;color:white"></button>
-                                <a class="navbar-brand" href="home2.html">Pothole Spotter</a>
+                                <a class="navbar-brand ms-3" href="index.html">Pothole Spotter</a>
                             </div>
                         </div>
                     </nav>
@@ -37,14 +43,11 @@
             <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/js/bootstrap.bundle.min.js"></script>
             <script>
                 window.addEventListener('DOMContentLoaded', event => {
-
-                // Toggle the side navigation
                 const sidebarToggle = document.body.querySelector('#sidebarToggle');
                 if (sidebarToggle) {
-                    // Uncomment Below to persist sidebar toggle between refreshes
-                    // if (localStorage.getItem('sb|sidebar-toggle') === 'true') {
-                    //     document.body.classList.toggle('sb-sidenav-toggled');
-                    // }
+                    if (localStorage.getItem('sb|sidebar-toggle') === 'true') {
+                        document.body.classList.toggle('sb-sidenav-toggled');
+                    }
                     sidebarToggle.addEventListener('click', event => {
                         event.preventDefault();
                         document.body.classList.toggle('sb-sidenav-toggled');
