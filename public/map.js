@@ -78,10 +78,6 @@ if(container) {
                 
                 var offCanvasReport= getOffCanvas();
                 offCanvasReport.toggle();
-
-                //get constituency information from DOM by id
-                let constituency = document.getElementById('constituencyInformation');
-                constituency.innerHTML = marker.options.constituency;
             });
 
             markers.push(marker)

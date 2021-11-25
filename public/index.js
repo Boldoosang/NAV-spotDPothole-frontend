@@ -1,5 +1,7 @@
 let username
 const SERVER = "https://spotdpothole.herokuapp.com"
+const PICONG_SERVER = "https://project-caigual.herokuapp.com/publicAPI/info/electoraldistrict" //?year=2020&district=ari
+const ELECTION_YEAR = "2020"
 
 async function sendRequest(url, method, data){
     try {
@@ -207,5 +209,28 @@ async function loadReports(potholeID){
     allReportsContainer.innerHTML = allReportsAccordions
 }
 
+
+async function loadConstituencyData(constituencyID){
+    constituencyID = "ari"
+    let url = `${PICONG_SERVER}?year=${ELECTION_YEAR}&district=${constituencyID}`
+    let constituencyData = await sendRequest(url, "GET") //?year=2020&district=ari
+    console.log(constituencyData[0])
+
+    let constituencyInformationArea = document.querySelector("#constituencyInformation")
+    let councillorInformation = ""
+
+    try {
+        councillorInformation = 
+        `
+        COUNCILLOR: ${constituencyData[0].name}
+        `
+    } catch(e){
+        councillorInformation = `<div class="d-flex justify-content-center my-3"><strong>No constituency information available!</strong></div>`
+    }
+
+    constituencyInformationArea.innerHTML = councillorInformation
+}
+
 loadReports(1)
+loadConstituencyData(1)
 
