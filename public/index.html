@@ -9,6 +9,7 @@
             #map { height: 90%; }
         </style>
         <title>SpotDPothole</title>
+        <script src="https://unpkg.com/@mapbox/leaflet-pip@latest/leaflet-pip.js"></script>
         <body>
             <div class="d-flex h-100" id="wrapper">
                 <!-- Sidebar-->
@@ -43,9 +44,7 @@
                         <div class="tab-content" id="mainTabContent">
                             <div class="tab-pane active fade show" id="mainTab-map" role="tabpanel">
                                 <!-- Map goes here-->
-                                <button class="btn btn-primary" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasWithBothOptions" aria-controls="offcanvasWithBothOptions">Enable both scrolling & backdrop</button>
-                                
-                                <div class="offcanvas offcanvas-end" data-bs-scroll="true" tabindex="-1" id="offcanvasWithBothOptions" aria-labelledby="offcanvasWithBothOptionsLabel">
+                                <div class="offcanvas offcanvas-end" data-bs-scroll="true" tabindex="-1" id="offcanvasReport" aria-labelledby="offcanvasWithBothOptionsLabel">
                                   <div class="offcanvas-header">
                                     <h5 class="offcanvas-title" id="offcanvasWithBothOptionsLabel">Pothole Reports</h5>
                                     <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
@@ -174,16 +173,6 @@
                     return new bootstrap.Offcanvas(offcanvasEl)
                 })
             </script>
-            <script type="text/javascript">
-                var mymap = L.map('map').setView([10.47, -61.34], 10);
-                L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
-                    attribution: '<a href="https://www.spotDPothole.justinbaldeo.com/">SpotDPothole</a>',
-                    minZoom: 10,
-                    id: 'mapbox/streets-v11',
-                    tileSize: 512,
-                    zoomOffset: -1,
-                    accessToken: 'pk.eyJ1IjoiYm9sZG9vc2FuZyIsImEiOiJja3dlb2FtamkwNm81Mm91dGJoanYyenBuIn0.freYA5ZnStFA84cLMP_JwQ'
-                }).addTo(mymap);
-            </script>
+            <script src="map.js"></script>
         </body>
 </html>
