@@ -13,9 +13,6 @@
     --black: #000000
 }
 
-h{
-    font-size:2rem;
-}
 
 body{
     font-size:1rem;
@@ -24,10 +21,6 @@ body{
 label{
     font-size: large;
     font-weight: bold;
-}
-
-#login-form{
-    padding-top: 80px;
 }
 
 /* Register page */
