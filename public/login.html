@@ -11,13 +11,14 @@
         </nav>
         <div class="container" id="login-form">
             <div class="row align-items-start">
-                <div class="col">
-                    <img id="logo" src="SpotDPothole-Logo.png" class="rounded float-start">
+                <div class="col col-xxl-4 col-md-12 mb-5">
+                    <img id="logo" src="SpotDPothole-Logo.png" class="rounded float-start img-fluid">
                 </div>
-                <div class="col">
+
+                <div class="col col-md-12 col-xxl-8 px-5">
                     <form id="loginForm" onsubmit="login(event)">
                         <div id="welcome" class="d-flex justify-content-left">
-                            <h>Welcome to the Pothole Spotter</h>
+                            <h3>Welcome to the Pothole Spotter</h3>
                         </div>
                         <div class="mb-3 pt-3">
                             <label for="InputEmail" class="form-label">Email address</label>
@@ -27,9 +28,9 @@
                             <label for="InputPassword" class="form-label">Password</label>
                             <input type="password" class="form-control" id="InputPassword" placeholder="Enter your password">
                         </div>
-                        <div class="pt-5">
+                        <div class="pt-5 d-flex justify-content-between">
                             <button id="loginButton" class="btn btn-dark btn-lg">Login</button>
-                            <a href="register.html" id="signUpButton" class="btn btn-outline-dark btn-lg">Sign Up</a>
+                            <button id="signUpButton" href="register.html" class="btn btn-outline-dark btn-lg ml-auto">Sign Up</a>
                         </div>
                     </form>
                 </div>

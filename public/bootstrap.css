@@ -26,24 +26,6 @@ label{
     font-weight: bold;
 }
 
-
-/* Home page */
-#signUpButton{
-    margin-left:180px
-}
-
-
-
-/* Login page */
-#logo{
-    height: 450px;
-}
-
-#signUpButton{
-    margin-left:27rem;
-}
-
-
 #login-form{
     padding-top: 80px;
 }
