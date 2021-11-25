@@ -86,6 +86,9 @@ if(container) {
                 potholeID: pothole.potholeID,
                 constituencyID: constituency[0].feature.properties.ID
             }).on('click', async function(){
+                var constituencyName = document.getElementById('constituencyName')
+                constituencyName.innerText = this.options.constituency;
+
                 loadReports(this.options.potholeID);
                 loadConstituencyData(this.options.constituencyID)
                 
