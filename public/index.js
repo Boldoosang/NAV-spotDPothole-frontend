@@ -138,7 +138,6 @@ window.addEventListener('DOMContentLoaded', event => {
 
 
 async function loadReports(potholeID){
-    potholeID = 91
     let potholeReports = await sendRequest(SERVER + "/api/reports/pothole/" + potholeID, "GET")
     let allReportsContainer = document.querySelector("#reportAccordion")
 
@@ -211,7 +210,6 @@ async function loadReports(potholeID){
 
 
 async function loadConstituencyData(constituencyID){
-    constituencyID = "ari"
     let url = `${PICONG_SERVER}?year=${ELECTION_YEAR}&district=${constituencyID}`
     let councillorData = await sendRequest(url, "GET") //?year=2020&district=ari
 
