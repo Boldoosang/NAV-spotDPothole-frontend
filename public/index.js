@@ -55,15 +55,15 @@ async function login(event){
     form.reset();
 
     let result = await sendRequest(SERVER + "/login", "POST", loginDetails);
-    //let messageArea = document.querySelector("#userActionMessage")
+    let messageArea = document.querySelector("#userLoginMessage")
 
     if("error" in result || "msg" in result){
         console.log("Error")
-       // messageArea.innerHTML = `<b class="text-danger text-center">${result["error"]}</b>`
+        messageArea.innerHTML = `<b class="text-danger text-center">${result["error"]}</b>`
     } else {
         console.log("Success")
         window.localStorage.setItem("access_token", result["access_token"]);
-        //messageArea.innerHTML = `<b class="text-success text-center">Login successful!</b>`
+        messageArea.innerHTML = `<b class="text-success text-center">Login successful!</b>`
         //window.location = "/"
     }
 }
@@ -77,12 +77,12 @@ async function register(event){
     console.log(form.elements["agreeToS"])
 
     let registrationDetails = {
-        "email" : form.elements["InputEmail"].value,
-        "firstName" : form.elements["InputFirstName"].value,
-        "lastName" : form.elements["InputLastName"].value,
-        "password" : form.elements["InputPassword"].value,
-        "confirmPassword" : form.elements["InputConfirm"].value,
-        "agreeToS" : form.elements["agreeToS"].checked
+        "email" : form.elements["regInputEmail"].value,
+        "firstName" : form.elements["regInputFirstName"].value,
+        "lastName" : form.elements["regInputLastName"].value,
+        "password" : form.elements["regInputPassword"].value,
+        "confirmPassword" : form.elements["regInputConfirm"].value,
+        "agreeToS" : form.elements["regAgreeToS"].checked
     }
 
     console.log(registrationDetails)
@@ -90,14 +90,14 @@ async function register(event){
     form.reset();
 
     let result = await sendRequest(SERVER + "/register", "POST", registrationDetails);
-    //let messageArea = document.querySelector("#userActionMessage")
+    let messageArea = document.querySelector("#userRegisterMessage")
 
     if("error" in result || "msg" in result){
         console.log("Error")
-        //messageArea.innerHTML = `<b class="text-danger text-center">${result["error"]}</b>`
+        messageArea.innerHTML = `<b class="text-danger text-center">${result["error"]}</b>`
     } else {
         console.log("Success")
-        //messageArea.innerHTML = `<b class="text-success text-center">Registration successful!</b>`
+        messageArea.innerHTML = `<b class="text-success text-center">Registration successful!</b>`
     }
 
 }
