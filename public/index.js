@@ -136,7 +136,7 @@ window.addEventListener('DOMContentLoaded', event => {
 
 
 async function loadReports(potholeID){
-    potholeID = 87
+    potholeID = 91
     let potholeReports = await sendRequest(SERVER + "/api/reports/pothole/" + potholeID, "GET")
     let allReportsContainer = document.querySelector("#reportAccordion")
 
@@ -150,24 +150,58 @@ async function loadReports(potholeID){
                 return -1;
         })
 
-        for(report of potholeReports){
-            console.log(report)
-            allReportsAccordions += 
-            `<div class="accordion-item">
-                <h2 class="accordion-header" id="headingOne">
-                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-                    ReportID: ${report.reportID} reported by <Insert Name of Reporter>
-                </button>
-                </h2>
-                <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
-                    <div class="accordion-body">
-                        <strong>This is the first item's accordion body.</strong> It is shown by default, until the collapse plugin adds the appropriate classes that we use to style each element. These classes control the overall appearance, as well as the showing and hiding via CSS transitions. You can modify any of this with custom CSS or overriding our default variables. It's also worth noting that just about any HTML can go within the <code>.accordion-body</code>, though the transition does limit overflow.
+        if(potholeReports.length > 0){
+            for(report of potholeReports){
+                allReportImages = ""
+                if(report.reportedImages.length == 0){
+                    allReportImages = `<div class="d-flex justify-content-center mt-3"><strong>No report images uploaded!</strong></div>`
+                } else {
+                    let tag = "active"
+                    let i = 0
+                    for(reportImage of report.reportedImages){
+                        if(i > 0)
+                            tag = ""
+                        allReportImages +=
+                        `<div class="carousel-item ${tag}">
+                            <img src="${reportImage.imageURL}" style="height: 200px; background-position: center center; object-fit: cover; background-repeat: no-repeat;" class="d-block w-100">
+                        </div>`
+                        i++;
+                    }
+                }
+
+                allReportsAccordions += 
+                `<div class="accordion-item">
+                    <h2 class="accordion-header" id="heading-${report.reportID}">
+                    <button class="accordion-button collapsed fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-${report.reportID}">
+                        Report ${report.reportID} - ${report.reportedBy}
+                    </button>
+                    </h2>
+                    <div id="collapse-${report.reportID}" class="accordion-collapse collapse" data-bs-parent="#reportAccordion">
+                        <div class="accordion-body">
+                            <strong>Report Images</strong>
+                            <div id="carouselReport-${report.reportID}" class="carousel slide my-2" data-bs-ride="carousel">
+                                <div id="reportImages-${report.reportID}" class="carousel-inner">
+                                    ${allReportImages}
+                                </div>
+                                <button class="carousel-control-prev" type="button" data-bs-target="#carouselReport-${report.reportID}" data-bs-slide="prev">
+                                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                </button>
+                                <button class="carousel-control-next" type="button" data-bs-target="#carouselReport-${report.reportID}" data-bs-slide="next">
+                                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                </button>
+                            </div>
+                            <br>
+                            <strong>Report Description</br></strong>
+                            ${report.description}
+                        </div>
                     </div>
-                </div>
-            </div>`
+                </div>`
+            }
+        } else {
+            allReportsAccordions = `<div class="d-flex justify-content-center my-3"><strong>No reports for this pothole!</strong></div>`
         }
     } catch(e){
-        allReportsAccordions = `<p>No reports for this pothole!</p>`
+        allReportsAccordions = `<div class="d-flex justify-content-center my-3"><strong>No reports for this pothole!</strong></div>`
     }
 
     allReportsContainer.innerHTML = allReportsAccordions
