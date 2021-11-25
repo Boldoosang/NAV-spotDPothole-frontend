@@ -169,12 +169,12 @@ async function loadReports(potholeID){
                         i++;
                     }
                 }
-
+                console.log(report)
                 allReportsAccordions += 
                 `<div class="accordion-item">
                     <h2 class="accordion-header" id="heading-${report.reportID}">
                     <button class="accordion-button collapsed fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-${report.reportID}">
-                        Report ${report.reportID} - ${report.reportedBy}
+                        Report (${report.dateReported}) - ${report.reportedBy}
                     </button>
                     </h2>
                     <div id="collapse-${report.reportID}" class="accordion-collapse collapse" data-bs-parent="#reportAccordion">
@@ -211,7 +211,7 @@ async function loadReports(potholeID){
 
 async function loadConstituencyData(constituencyID){
     let url = `${PICONG_SERVER}?year=${ELECTION_YEAR}&district=${constituencyID}`
-    let councillorData = await sendRequest(url, "GET") //?year=2020&district=ari
+    let councillorData = await sendRequest(url, "GET")
 
     let councillorInformationArea = document.querySelector("#councillorInformation")
     let councillorInformation = ""
@@ -247,7 +247,3 @@ async function loadConstituencyData(constituencyID){
 
     councillorInformationArea.innerHTML = councillorInformation
 }
-
-loadReports(1)
-loadConstituencyData(1)
-
