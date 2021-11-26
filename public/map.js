@@ -21,7 +21,11 @@ if(container) {
     fetch("./ttmap.geojson").then(function(response) {
         return response.json();
         }).then(function(data) {
-        L.geoJSON(data).addTo(map);
+        L.geoJSON(data, {
+            onEachFeature: function(feature, layer) {
+                layer.bindPopup(feature.properties.Constituency);
+            }
+        }).addTo(map);
     });
 
     displayPotholes()
@@ -147,6 +151,7 @@ if(container) {
                     potholeID: pothole.potholeID,
                     constituencyID: constituency[0].feature.properties.ID
                 }).on('click', async function(){
+                    console.log(getPotholesByConstituency())
                     let result =  await sendRequest(SERVER + '/api/potholes', 'GET');
 
                     var constituency = leafletPip.pointInLayer([pothole.longitude, pothole.latitude], map);
@@ -209,4 +214,6 @@ if(container) {
         constituencies.sort(function(a, b){
             return b.count - a.count;
         })
+
+        return constituencies;
     }
