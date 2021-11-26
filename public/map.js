@@ -21,11 +21,7 @@ if(container) {
     fetch("./ttmap.geojson").then(function(response) {
         return response.json();
         }).then(function(data) {
-        L.geoJSON(data, {
-            onEachFeature: function(feature, layer) {
-                console.log(feature)
-            }
-        }).addTo(map);
+        L.geoJSON(data).addTo(map);
     });
 
     displayPotholes()
@@ -51,7 +47,6 @@ if(container) {
                     }
 
                     let result =  await sendRequest(SERVER + '/api/reports/driver', 'POST', data);
-                    console.log(result);
                     if(markersLayer)
                         markersLayer.clearLayers();
 
@@ -73,7 +68,6 @@ if(container) {
         }
 
         let result =  await sendRequest(SERVER + '/api/reports/driver', 'POST', data);
-        console.log(result);
         
         if(markersLayer)
             markersLayer.clearLayers();
@@ -88,7 +82,6 @@ if(container) {
 
     async function displayPotholes(){
         let potholes = await getPotholes();
-        console.log(potholes);
         if(potholes.length > 0){
             for(const pothole of potholes){
                 var constituency = leafletPip.pointInLayer([pothole.longitude, pothole.latitude], map);
@@ -113,9 +106,7 @@ if(container) {
                     potholeID: pothole.potholeID,
                     constituencyID: constituency[0].feature.properties.ID
                 }).on('click', async function(){
-                    getPotholesByConstituency()
                     let result =  await sendRequest(SERVER + '/api/potholes', 'GET');
-                    console.log(result)
 
                     var constituency = leafletPip.pointInLayer([pothole.longitude, pothole.latitude], map);
                     var constituencyName = document.getElementById('constituencyName')
@@ -157,30 +148,24 @@ if(container) {
             leaderboardData.push(pothole.options.constituency)
         }
 
-        console.log(leaderboardData)
-
-        //count the number of potholes in each constituency and add to an array that contains each constituency name and the number of potholes
-        for(var i = 0; i < leaderboardData.length; i++){
-            var constituency = leaderboardData[i]
-            var count = 0
-            for(var j = 0; j < leaderboardData.length; j++){
-                if(leaderboardData[j] == constituency){
-                    count++
+        for(const pothole of markers){
+            let constituency = pothole.options.constituency;
+            let found = false;
+            for(const c of constituencies){
+                if(c.name === constituency){
+                    c.count++;
+                    found = true;
                 }
             }
-            
-            constituencies.push({
-                name: constituency,
-                count: count
-            }) 
+            if(!found){
+                constituencies.push({
+                    name: constituency,
+                    count: 1
+                })
+            }
         }
-        var unique = constituencies.filter(onlyUnique);
 
-        console.log(unique)
-        
+        constituencies.sort(function(a, b){
+            return b.count - a.count;
+        })
     }
-
-    function onlyUnique(value, index, self) {
-        return self.indexOf(value) === index;
-      }
-
