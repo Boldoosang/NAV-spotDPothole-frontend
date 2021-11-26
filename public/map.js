@@ -1,6 +1,7 @@
 const container = document.getElementById('map')
 var markersLayer;
 let markers = [];
+let leaderboardData = []
 
 if(container) {
     var map = L.map('map', {
@@ -37,6 +38,8 @@ if(container) {
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(async function(position) {
                 const constituency = leafletPip.pointInLayer([position.coords.longitude, position.coords.latitude], map);
+                    if(constituency.length == 0)
+                        return
                     const data = {
                         "longitude" : position.coords.longitude,
                         "latitude" : position.coords.latitude,
@@ -44,7 +47,6 @@ if(container) {
                     }
 
                     let result =  await sendRequest(SERVER + '/api/reports/driver', 'POST', data);
-                    console.log(result);
                     if(markersLayer)
                         markersLayer.clearLayers();
 
@@ -80,10 +82,12 @@ if(container) {
 
     async function displayPotholes(){
         let potholes = await getPotholes();
-        console.log(potholes);
         if(potholes.length > 0){
             for(const pothole of potholes){
                 var constituency = leafletPip.pointInLayer([pothole.longitude, pothole.latitude], map);
+
+                if(constituency.length == 0)
+                    return
     
                 if(constituency.length == 0){
                     constituency = [
@@ -100,7 +104,6 @@ if(container) {
                 var pothole_reps1to3 = L.icon({
                     iconUrl: 'leaf-green.png',      //set orange icon
                     shadowUrl: 'leaf-shadow.png',   //set common shadow
-                
                     iconSize:     [38, 95], // size of the icon
                     shadowSize:   [50, 64], // size of the shadow
                     iconAnchor:   [22, 94], // point of the icon which will correspond to marker's location
@@ -140,9 +143,12 @@ if(container) {
                 */
                 
                 let marker = L.marker([pothole.latitude, pothole.longitude],  {
+                    constituency: constituency[0].feature.properties.Constituency,
                     potholeID: pothole.potholeID,
                     constituencyID: constituency[0].feature.properties.ID
                 }).on('click', async function(){
+                    let result =  await sendRequest(SERVER + '/api/potholes', 'GET');
+
                     var constituency = leafletPip.pointInLayer([pothole.longitude, pothole.latitude], map);
                     var constituencyName = document.getElementById('constituencyName')
                     constituencyName.innerText = constituency[0].feature.properties.Constituency;
@@ -174,3 +180,33 @@ if(container) {
         }
     }
 
+    function getPotholesByConstituency(){
+        let constituencies = []
+        
+        var leaderboardData = []
+        
+        for(var pothole of markers){
+            leaderboardData.push(pothole.options.constituency)
+        }
+
+        for(const pothole of markers){
+            let constituency = pothole.options.constituency;
+            let found = false;
+            for(const c of constituencies){
+                if(c.name === constituency){
+                    c.count++;
+                    found = true;
+                }
+            }
+            if(!found){
+                constituencies.push({
+                    name: constituency,
+                    count: 1
+                })
+            }
+        }
+
+        constituencies.sort(function(a, b){
+            return b.count - a.count;
+        })
+    }
