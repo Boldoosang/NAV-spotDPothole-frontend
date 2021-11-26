@@ -1,6 +1,7 @@
 const container = document.getElementById('map')
 var markersLayer;
 let markers = [];
+let leaderboardData = []
 
 if(container) {
     var map = L.map('map', {
@@ -20,7 +21,11 @@ if(container) {
     fetch("./ttmap.geojson").then(function(response) {
         return response.json();
         }).then(function(data) {
-        L.geoJSON(data).addTo(map);
+        L.geoJSON(data, {
+            onEachFeature: function(feature, layer) {
+                console.log(feature)
+            }
+        }).addTo(map);
     });
 
     displayPotholes()
@@ -37,6 +42,8 @@ if(container) {
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(async function(position) {
                 const constituency = leafletPip.pointInLayer([position.coords.longitude, position.coords.latitude], map);
+                    if(constituency.length == 0)
+                        return
                     const data = {
                         "longitude" : position.coords.longitude,
                         "latitude" : position.coords.latitude,
@@ -66,6 +73,7 @@ if(container) {
         }
 
         let result =  await sendRequest(SERVER + '/api/reports/driver', 'POST', data);
+        console.log(result);
         
         if(markersLayer)
             markersLayer.clearLayers();
@@ -84,6 +92,9 @@ if(container) {
         if(potholes.length > 0){
             for(const pothole of potholes){
                 var constituency = leafletPip.pointInLayer([pothole.longitude, pothole.latitude], map);
+
+                if(constituency.length == 0)
+                    return
     
                 if(constituency.length == 0){
                     constituency = [
@@ -98,9 +109,14 @@ if(container) {
                 }     
                 
                 let marker = L.marker([pothole.latitude, pothole.longitude], {
+                    constituency: constituency[0].feature.properties.Constituency,
                     potholeID: pothole.potholeID,
                     constituencyID: constituency[0].feature.properties.ID
                 }).on('click', async function(){
+                    getPotholesByConstituency()
+                    let result =  await sendRequest(SERVER + '/api/potholes', 'GET');
+                    console.log(result)
+
                     var constituency = leafletPip.pointInLayer([pothole.longitude, pothole.latitude], map);
                     var constituencyName = document.getElementById('constituencyName')
                     constituencyName.innerText = constituency[0].feature.properties.Constituency;
@@ -131,4 +147,40 @@ if(container) {
             }
         }
     }
+
+    function getPotholesByConstituency(){
+        let constituencies = []
+        
+        var leaderboardData = []
+        
+        for(var pothole of markers){
+            leaderboardData.push(pothole.options.constituency)
+        }
+
+        console.log(leaderboardData)
+
+        //count the number of potholes in each constituency and add to an array that contains each constituency name and the number of potholes
+        for(var i = 0; i < leaderboardData.length; i++){
+            var constituency = leaderboardData[i]
+            var count = 0
+            for(var j = 0; j < leaderboardData.length; j++){
+                if(leaderboardData[j] == constituency){
+                    count++
+                }
+            }
+            
+            constituencies.push({
+                name: constituency,
+                count: count
+            }) 
+        }
+        var unique = constituencies.filter(onlyUnique);
+
+        console.log(unique)
+        
+    }
+
+    function onlyUnique(value, index, self) {
+        return self.indexOf(value) === index;
+      }
 

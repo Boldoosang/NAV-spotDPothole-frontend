@@ -139,6 +139,7 @@ window.addEventListener('DOMContentLoaded', event => {
 
 async function loadReports(potholeID){
     let potholeReports = await sendRequest(SERVER + "/api/reports/pothole/" + potholeID, "GET")
+    console.log(potholeReports)
     let allReportsContainer = document.querySelector("#reportAccordion")
 
     let allReportsAccordions = ""
