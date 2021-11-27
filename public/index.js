@@ -25,14 +25,13 @@ async function sendRequest(url, method, data){
             request.body = JSON.stringify(data);
         }
 
-
         let response = await fetch(url, request);
         let results = await response.json()
 
         if("msg" in results){
             if(results["msg"] == "Signature verification failed" || results["msg"] == "Token has expired"){
                 window.localStorage.removeItem('access_token');
-                console.log("Session has expired!")
+                alert("Session has expired!")
                 window.location = "/"
                 return;
             }
@@ -82,7 +81,36 @@ async function login(event){
         console.log("Success")
         window.localStorage.setItem("access_token", result["access_token"]);
         messageArea.innerHTML = `<b class="text-success text-center">Login successful!</b>`
-        //window.location = "/"
+        window.location = "/"
+    }
+}
+
+async function identifyUser(){
+    let user = await sendRequest(SERVER + "/identify", "GET")
+
+    try {
+        if("email" in user){
+            return user;
+        } else {
+            return {"error" : "User is not logged in or session has expired!"}
+        }
+    } catch(e){
+        return {"error" : "User is not logged in or session has expired!"}
+    }
+}
+
+async function identifyUserContext(){
+    let user = await identifyUser();
+
+    let userStateArea = document.querySelector("#userContextGroup");
+
+    if("email" in user){
+        userStateArea.innerHTML = `<h6 class="text-center">Logged in as <span class="text-primary">${user.firstName} ${user.lastName}</span></h3>
+                                    <hr class="my-0">
+                                    <a class="list-group-item list-group-item-action list-group-item-light p-3 pr-5 relative-bottom" onclick="logout()"><i class="bi bi-box-arrow-left" style="font-size:1.5rem;color:black"></i>        Logout</a>`
+    } else {
+        userStateArea.innerHTML = `<hr class="my-0">
+        <a class="list-group-item list-group-item-action list-group-item-light p-3 pr-5 relative-bottom" data-bs-toggle="modal" data-bs-target="#loginModal"><i class="bi bi-person-circle" style="font-size:1.5rem;color:black"></i>        Login/Register</a>`
     }
 }
 
@@ -136,6 +164,58 @@ window.addEventListener('DOMContentLoaded', event => {
 
 });
 
+async function onClickLeaderboard(){
+    alert("Test");
+}
+
+function calculateNetVotes(report){
+    tally = 0
+    for(vote of report.votes){
+        if(vote.upvote)
+            tally++
+        else
+            tally--
+    }
+    return tally;
+}
+
+function determineTextColor(netVotes){
+    if(netVotes < 0){
+        return "text-danger"
+    } else if(netVotes > 0){
+        return "text-success"
+    } else {
+        return "text-dark";
+    }
+}
+
+async function determineUpVoteButtonColor(report){
+    let user = await identifyUser();
+
+    for(vote of report.votes){
+        if(vote.upvote){
+            if(vote.userID == user.userID){
+                return "btn-success"
+            }
+        }
+    }
+
+    return "btn-secondary"
+}
+
+async function determineDownVoteButtonColor(report){
+    let user = await identifyUser();
+
+    for(vote of report.votes){
+        if(!vote.upvote){
+            if(vote.userID == user.userID){
+                return "btn-danger"
+            }
+        }
+    }
+
+    return "btn-secondary"
+}
 
 async function loadReports(potholeID){
     let potholeReports = await sendRequest(SERVER + "/api/reports/pothole/" + potholeID, "GET")
@@ -169,12 +249,17 @@ async function loadReports(potholeID){
                         i++;
                     }
                 }
-                console.log(report)
+                netVotes = calculateNetVotes(report);
+                upvoteButtonColor = await determineUpVoteButtonColor(report, "upvote")
+                downvoteButtonColor = await determineDownVoteButtonColor(report, "downvote")
+                let color = determineTextColor(netVotes);
+                
+
                 allReportsAccordions += 
                 `<div class="accordion-item">
                     <h2 class="accordion-header" id="heading-${report.reportID}">
                     <button class="accordion-button collapsed fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-${report.reportID}">
-                        Report (${report.dateReported}) - ${report.reportedBy}
+                         <div><span class="font-monospace ${color}" id="accordionNetVotes-${report.reportID}">${(netVotes <= 0 ? "" : "+")}<span>${netVotes}</span></span> | Report (${report.dateReported}) - ${report.reportedBy}</div>
                     </button>
                     </h2>
                     <div id="collapse-${report.reportID}" class="accordion-collapse collapse" data-bs-parent="#reportAccordion">
@@ -191,7 +276,26 @@ async function loadReports(potholeID){
                                 <span class="carousel-control-next-icon" aria-hidden="true"></span>
                                 </button>
                             </div>
-                            <br>
+                            <hr class="mb-2 mt-3">
+                            <div id="votingArea" class="text-center">
+                                <strong>Votes</strong><br>
+
+                                <div class="my-3">
+                                    <span id="castedDownvote-${report.reportID}">
+                                        <button  type="button" class="btn ${downvoteButtonColor}" onclick="voteOnReport(event, ${potholeID}, ${report.reportID}, false)">
+                                            <i class="bi bi-arrow-down"></i>
+                                        </button>
+                                    </span>
+                                    <strong class="px-3" id="netVotes-${report.reportID}">${netVotes}</strong>
+                                    <span id="castedUpvote-${report.reportID}">
+                                        <button type="button" class="btn ${upvoteButtonColor}" onclick="voteOnReport(event, ${potholeID}, ${report.reportID}, true)">
+                                            <i class="bi bi-arrow-up"></i>
+                                        </button>
+                                    </span>
+                                </div>
+                                <span id="voteOutcomeMessage-${report.reportID}"></span>
+                            </div>
+                            <hr class="my-3">
                             <strong>Report Description</br></strong>
                             ${report.description}
                         </div>
@@ -208,6 +312,52 @@ async function loadReports(potholeID){
     allReportsContainer.innerHTML = allReportsAccordions
 }
 
+async function loadLeaderboardData(){
+
+}
+
+async function voteOnReport(event, potholeID, reportID, isUpvote){
+    let voteData = {
+        "upvote" : isUpvote,
+    }
+
+    let netVotesCounter = document.querySelector(`#netVotes-${reportID}`)
+    let accordionVotesCounter = document.querySelector(`#accordionNetVotes-${reportID}`)
+
+    let upvoteButton = document.querySelector(`#castedUpvote-${reportID}`)
+    let downvoteButton = document.querySelector(`#castedDownvote-${reportID}`)
+    
+    let result = await sendRequest(SERVER + `/api/vote/pothole/${potholeID}/report/${reportID}/vote`, "POST", voteData);
+    let messageArea = document.querySelector(`#voteOutcomeMessage-${reportID}`)
+
+    if("error" in result || "msg" in result){
+        messageArea.innerHTML = `<b class="text-danger text-center">Please login to vote!</b>`
+    } else {
+        messageArea.innerHTML = `<b class="text-success text-center">${result["message"]}</b>`
+
+        try {
+            let updatedReport = await sendRequest(SERVER + `/api/reports/pothole/${potholeID}/report/${reportID}`, "GET");
+            
+            newNetVotes = calculateNetVotes(updatedReport)
+            let color = determineTextColor(newNetVotes)
+
+            let updatedDownvoteButtonColor = await determineDownVoteButtonColor(updatedReport)
+            let updatedUpvoteButtonColor = await determineUpVoteButtonColor(updatedReport)
+
+
+            netVotesCounter.innerHTML = newNetVotes
+            accordionVotesCounter.innerHTML = `<span class="font-monospace ${color}">${(newNetVotes <= 0 ? "" : "+")}<span id="accordionNetVotes-${updatedReport.reportID}">${newNetVotes}</span></span>`
+            upvoteButton.innerHTML = `<button id="castedUpvote-${updatedReport.reportID}" type="button" class="btn ${updatedUpvoteButtonColor}" onclick="voteOnReport(event, ${potholeID}, ${updatedReport.reportID}, true)">
+                                        <i class="bi bi-arrow-up"></i>
+                                    </button>`
+            downvoteButton.innerHTML = `<button id="castedDownvote-${updatedReport.reportID}" type="button" class="btn ${updatedDownvoteButtonColor}" onclick="voteOnReport(event, ${potholeID}, ${updatedReport.reportID}, false)">
+                                            <i class="bi bi-arrow-down"></i>
+                                        </button>`
+        } catch(e){
+            console.log(e)
+        }
+    }
+}
 
 async function loadConstituencyData(constituencyID){
     let url = `${PICONG_SERVER}?year=${ELECTION_YEAR}&district=${constituencyID}`
@@ -248,3 +398,9 @@ async function loadConstituencyData(constituencyID){
     councillorInformationArea.innerHTML = councillorInformation
 }
 
+function main(){
+    identifyUserContext()
+}
+
+
+window.addEventListener('DOMContentLoaded', main);

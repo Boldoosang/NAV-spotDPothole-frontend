@@ -104,56 +104,12 @@ if(container) {
                         }
                     ]
                 }
-                /*
-                var pothole_reps1to3 = L.icon({
-                    iconUrl: 'leaf-green.png',      //set orange icon
-                    shadowUrl: 'leaf-shadow.png',   //set common shadow
-                    iconSize:     [38, 95], // size of the icon
-                    shadowSize:   [50, 64], // size of the shadow
-                    iconAnchor:   [22, 94], // point of the icon which will correspond to marker's location
-                    shadowAnchor: [4, 62],  // the same for the shadow
-                    popupAnchor:  [-3, -76] // point from which the popup should open relative to the iconAnchor
-                });
                 
-                var pothole_reps4to7 = L.icon({
-                    iconUrl: 'leaf-green.png',      //set red icon
-                    shadowUrl: 'leaf-shadow.png',   //set common shadow
-                
-                    iconSize:     [38, 95], // size of the icon
-                    shadowSize:   [50, 64], // size of the shadow
-                    iconAnchor:   [22, 94], // point of the icon which will correspond to marker's location
-                    shadowAnchor: [4, 62],  // the same for the shadow
-                    popupAnchor:  [-3, -76] // point from which the popup should open relative to the iconAnchor
-                });
-
-                var pothole_reps8orMore = L.icon({
-                    iconUrl: 'leaf-green.png',      //set flaming icon
-                    shadowUrl: 'leaf-shadow.png',   //set common shadow
-                
-                    iconSize:     [38, 95], // size of the icon
-                    shadowSize:   [50, 64], // size of the shadow
-                    iconAnchor:   [22, 94], // point of the icon which will correspond to marker's location
-                    shadowAnchor: [4, 62],  // the same for the shadow
-                    popupAnchor:  [-3, -76] // point from which the popup should open relative to the iconAnchor
-                });*/
-
-                /*
-                if(pothole.numReports <= 3)
-                    iconType = pothole_reps1to3
-                else if(pothole.numReports <=7)
-                    iconType = pothole_reps4to7
-                else
-                    iconType = pothole_reps8orMore
-                */
-                
-                let marker = L.marker([pothole.latitude, pothole.longitude],  {
+                let marker = L.marker([pothole.latitude, pothole.longitude], {
                     constituency: constituency[0].feature.properties.Constituency,
                     potholeID: pothole.potholeID,
                     constituencyID: constituency[0].feature.properties.ID
                 }).on('click', async function(){
-                    console.log(getPotholesByConstituency())
-                    let result =  await sendRequest(SERVER + '/api/potholes', 'GET');
-
                     var constituency = leafletPip.pointInLayer([pothole.longitude, pothole.latitude], map);
                     var constituencyName = document.getElementById('constituencyName')
                     constituencyName.innerText = constituency[0].feature.properties.Constituency;

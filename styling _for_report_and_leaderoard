@@ -1,0 +1,47 @@
+/* Standard Report Page*/
+#report-form{
+    border: 1px solid black;
+    margin: auto;
+    margin-top: 5%;
+    width:70%;
+    height: auto;
+    text-align: center;
+    
+}
+.upload{
+    margin-top: 10%;
+    margin-bottom: 10%;
+    
+}
+.p-description{
+    width: auto;
+}
+#Description{
+    width:70%;
+    height: fit-content;
+}
+#cancel-submit{
+    text-align: center;
+    padding-left: 5%;
+    padding-right: 5%
+}
+/* Leaderboard*/
+#filter{
+
+margin-top: 5%;
+text-align: right;
+}
+
+#leaderboard{
+text-align: center;
+ margin-left: auto;
+ margin-right: auto;
+ border-collapse: separate;
+ border-spacing: 0 50px ;
+}
+
+.entry{
+    border: solid black;
+    
+
+}
