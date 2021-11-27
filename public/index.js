@@ -164,10 +164,6 @@ window.addEventListener('DOMContentLoaded', event => {
 
 });
 
-async function onClickLeaderboard(){
-    alert("Test");
-}
-
 function calculateNetVotes(report){
     tally = 0
     for(vote of report.votes){
@@ -312,8 +308,35 @@ async function loadReports(potholeID){
     allReportsContainer.innerHTML = allReportsAccordions
 }
 
-async function loadLeaderboardData(){
+async function onClickLeaderboard(){
+    await loadLeaderboardData();
+}
 
+async function loadLeaderboardData(){
+    let leaderboard = document.querySelector("#leaderboard")
+    leaderboard.innerHTML = `
+    <tr>
+        <th scope="col">#</th>
+        <th scope="col">Location</th>
+        <th scope="col">Number of Potholes</th>
+        <th scope="col">Constituency Leader</th>
+    </tr>
+    `
+
+    let leaderboardData = await getPotholesByConstituency();
+    
+    let i = 1;
+    for(constituency of leaderboardData){
+        leaderboard.innerHTML += `
+        <tr>
+            <td>${i}</td>
+            <td>${constituency.name}</td>
+            <td>${constituency.count}</td>
+            <td>${constituency.constituencyLeader}</td>
+        </tr>
+        `
+        i++;
+    }
 }
 
 async function voteOnReport(event, potholeID, reportID, isUpvote){

@@ -141,7 +141,7 @@ if(container) {
         }
     }
 
-    function getPotholesByConstituency(){
+    async function getPotholesByConstituency(){
         let constituencies = []
         
         var leaderboardData = []
@@ -152,6 +152,8 @@ if(container) {
 
         for(const pothole of markers){
             let constituency = pothole.options.constituency;
+            let constituencyCode = pothole.options.constituencyID;
+
             let found = false;
             for(const c of constituencies){
                 if(c.name === constituency){
@@ -160,9 +162,14 @@ if(container) {
                 }
             }
             if(!found){
+                //  let url = `${PICONG_SERVER}?year=${ELECTION_YEAR}&district=${pothole.options.constituencyID}`
+                //  leader = await sendRequest(url, "GET")
+
                 constituencies.push({
                     name: constituency,
-                    count: 1
+                    count: 1,
+                    //constituencyLeader: leader[0].name
+                    constituencyLeader: "Filler data till we get more info from Picong Party"
                 })
             }
         }
@@ -171,5 +178,25 @@ if(container) {
             return b.count - a.count;
         })
 
+        getReportLeaderboardData()
         return constituencies;
+    }
+
+    async function getReportLeaderboardData(){
+        leaderboardData = []
+        let result = await sendRequest(SERVER + '/api/potholes', 'GET');
+
+        //sort result by numReports
+        result.sort(function(a, b){
+            return b.numReports - a.numReports;
+        })
+
+        for(const pothole of result){
+            var constituency = leafletPip.pointInLayer([pothole.longitude, pothole.latitude], map);
+            
+            leaderboardData.push({
+                constituency: constituency[0].feature.properties.Constituency,
+
+            })
+        }
     }
