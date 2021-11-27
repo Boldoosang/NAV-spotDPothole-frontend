@@ -100,49 +100,43 @@ if(container) {
                         }
                     ]
                 }
-                /*
+                
                 var pothole_reps1to3 = L.icon({
-                    iconUrl: 'leaf-green.png',      //set orange icon
-                    shadowUrl: 'leaf-shadow.png',   //set common shadow
-                    iconSize:     [38, 95], // size of the icon
-                    shadowSize:   [50, 64], // size of the shadow
-                    iconAnchor:   [22, 94], // point of the icon which will correspond to marker's location
-                    shadowAnchor: [4, 62],  // the same for the shadow
-                    popupAnchor:  [-3, -76] // point from which the popup should open relative to the iconAnchor
+                    iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-yellow.png',
+                    shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+                    iconSize: [25, 41],
+                    iconAnchor: [12, 41],
+                    popupAnchor: [1, -34],
+                    shadowSize: [41, 41]
                 });
                 
                 var pothole_reps4to7 = L.icon({
-                    iconUrl: 'leaf-green.png',      //set red icon
-                    shadowUrl: 'leaf-shadow.png',   //set common shadow
-                
-                    iconSize:     [38, 95], // size of the icon
-                    shadowSize:   [50, 64], // size of the shadow
-                    iconAnchor:   [22, 94], // point of the icon which will correspond to marker's location
-                    shadowAnchor: [4, 62],  // the same for the shadow
-                    popupAnchor:  [-3, -76] // point from which the popup should open relative to the iconAnchor
-                });
+                    iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-orange.png',
+                    shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+                    iconSize: [25, 41],
+                    iconAnchor: [12, 41],
+                    popupAnchor: [1, -34],
+                    shadowSize: [41, 41]
+                  });
 
                 var pothole_reps8orMore = L.icon({
-                    iconUrl: 'leaf-green.png',      //set flaming icon
-                    shadowUrl: 'leaf-shadow.png',   //set common shadow
-                
-                    iconSize:     [38, 95], // size of the icon
-                    shadowSize:   [50, 64], // size of the shadow
-                    iconAnchor:   [22, 94], // point of the icon which will correspond to marker's location
-                    shadowAnchor: [4, 62],  // the same for the shadow
-                    popupAnchor:  [-3, -76] // point from which the popup should open relative to the iconAnchor
-                });*/
+                    iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png',
+                    shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+                    iconSize: [25, 41],
+                    iconAnchor: [12, 41],
+                    popupAnchor: [1, -34],
+                    shadowSize: [41, 41]
+                  });
 
-                /*
+                
                 if(pothole.numReports <= 3)
                     iconType = pothole_reps1to3
                 else if(pothole.numReports <=7)
                     iconType = pothole_reps4to7
                 else
                     iconType = pothole_reps8orMore
-                */
                 
-                let marker = L.marker([pothole.latitude, pothole.longitude],  {
+                let marker = L.marker([pothole.latitude, pothole.longitude], {icon: iconType}, {
                     constituency: constituency[0].feature.properties.Constituency,
                     potholeID: pothole.potholeID,
                     constituencyID: constituency[0].feature.properties.ID

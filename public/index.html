@@ -18,11 +18,10 @@
                     <div class="list-group list-group-flush" style="font-size: 1.2rem;">
                         <a class="list-group-item list-group-item-action list-group-item-light p-3" data-bs-toggle="pill" data-bs-target="#mainTab-map"><i class="bi bi-house-fill" style="font-size:1.5rem;color:black"></i>        Home</a>
                         <a class="list-group-item list-group-item-action list-group-item-light p-3" data-bs-toggle="pill" data-bs-target="#mainTab-report"><i class="bi bi-plus-square-fill" style="font-size:1.5rem;color:black"></i>        Report</a>
-                        <a class="list-group-item list-group-item-action list-group-item-light p-3" data-bs-toggle="pill" data-bs-target="#mainTab-leaderboard"><i class="bi bi-table" style="font-size:1.5rem;color:black"></i>        Leaderboard</a>
+                        <a class="list-group-item list-group-item-action list-group-item-light p-3" onclick="onClickLeaderboard(event)" data-bs-toggle="pill" data-bs-target="#mainTab-leaderboard"><i class="bi bi-table" style="font-size:1.5rem;color:black"></i>        Leaderboard</a>
                         <hr class="my-0" style="color: rgba(0,0,0,0.125)">
                     </div>
                     <div class="position-absolute bottom-0 start-0" style="font-size: 1.2rem;">
-                        <hr class="my-0">
                         <div id="userContextGroup" class="list-group list-group-flush">
                             <a class="list-group-item list-group-item-action list-group-item-light p-3 relative-bottom" data-bs-toggle="modal" data-bs-target="#loginModal"><i class="bi bi-person-circle" style="font-size:1.5rem;color:black"></i>        Login/Register</a>
                         </div>
@@ -68,7 +67,45 @@
                             </div>
                             <div class="tab-pane fade" id="mainTab-leaderboard" role="tabpanel">
                                 <!-- Leaderboard goes here-->
-                                <div id="leaderboardContent" class="p-3">leaderboard</div>
+                                <div id="leaderboardContent" class="p-3">
+
+
+
+                                    <div class="leaderboard"  style="overflow-y: auto; height: 80%;">
+                                        <table id="leaderboard" class="table" style="width: 90% ; ">
+                                            
+                                            <tr>
+                                                <th scope="col">#</th>
+                                                <th scope="col">Location</th>
+                                                <th scope="col">Constituency</th>
+                                                <th scope="col">Constituency Leader</th>
+                                            </tr>
+                                    
+                                            <tbody >
+                                                
+                                                <tr class="entry">
+                                                    <td scope="row">1</td>
+                                                    <td>random</td>
+                                                    <td>random</td>
+                                                    <td>random</td>
+                                                </tr>
+                                            
+                                            
+                                                <tr class="entry" >
+                                                    <td scope="row">1</td>
+                                                    <td>random</td>
+                                                    <td>random</td>
+                                                    <td>random</td>
+                                                </tr>
+                                                
+                                            </tbody>
+                                        </table>
+                                    </div>
+
+
+
+
+                                </div>
                             </div>
                         </div>
                     </main>
