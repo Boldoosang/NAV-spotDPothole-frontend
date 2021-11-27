@@ -101,48 +101,11 @@ if(container) {
                     ]
                 }
                 
-                var pothole_reps1to3 = L.icon({
-                    iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-yellow.png',
-                    shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
-                    iconSize: [25, 41],
-                    iconAnchor: [12, 41],
-                    popupAnchor: [1, -34],
-                    shadowSize: [41, 41]
-                });
-                
-                var pothole_reps4to7 = L.icon({
-                    iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-orange.png',
-                    shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
-                    iconSize: [25, 41],
-                    iconAnchor: [12, 41],
-                    popupAnchor: [1, -34],
-                    shadowSize: [41, 41]
-                  });
-
-                var pothole_reps8orMore = L.icon({
-                    iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png',
-                    shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
-                    iconSize: [25, 41],
-                    iconAnchor: [12, 41],
-                    popupAnchor: [1, -34],
-                    shadowSize: [41, 41]
-                  });
-
-                
-                if(pothole.numReports <= 3)
-                    iconType = pothole_reps1to3
-                else if(pothole.numReports <=7)
-                    iconType = pothole_reps4to7
-                else
-                    iconType = pothole_reps8orMore
-                
-                let marker = L.marker([pothole.latitude, pothole.longitude], {icon: iconType}, {
+                let marker = L.marker([pothole.latitude, pothole.longitude], {
                     constituency: constituency[0].feature.properties.Constituency,
                     potholeID: pothole.potholeID,
                     constituencyID: constituency[0].feature.properties.ID
                 }).on('click', async function(){
-                    let result =  await sendRequest(SERVER + '/api/potholes', 'GET');
-
                     var constituency = leafletPip.pointInLayer([pothole.longitude, pothole.latitude], map);
                     var constituencyName = document.getElementById('constituencyName')
                     constituencyName.innerText = constituency[0].feature.properties.Constituency;
