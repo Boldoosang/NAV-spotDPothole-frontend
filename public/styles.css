@@ -11316,3 +11316,37 @@ body.sb-sidenav-toggled #wrapper #sidebar-wrapper {
     margin-left: -15rem;
   }
 }
+
+
+footer > button{
+  height:fit-content;
+
+}
+
+/* For Passenger Report Page*/
+#PassengerReport main > #heading,
+#DriverReport main > #driverHeading{
+  font-weight: 900;
+  display: flex;
+  justify-content: center;
+  
+}
+
+#PassengerReport main > #description,
+#DriverReport main > #description2{
+  margin-top: 20px;
+}
+
+#pothole-img{
+  
+  margin-top: 60px;
+ 
+  max-height: 40vh; 
+}
+
+#upload-button{
+  max-width: 200px;
+  
+
+  align-self: center;
+}
