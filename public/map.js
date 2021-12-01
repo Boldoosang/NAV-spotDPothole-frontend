@@ -169,6 +169,7 @@ async function getPotholesByConstituency(){
                 name: constituency,
                 count: 1,
                 //constituencyLeader: leader[0].name
+                constitID: constituencyCode,
                 constituencyLeader: "Filler data till we get more info from Picong Party"
             })
         }

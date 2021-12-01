@@ -122,17 +122,17 @@
                             </div>
                             <div class="tab-pane fade" id="mainTab-leaderboard" role="tabpanel">
                                 <!-- Leaderboard goes here-->
-                                <div id="leaderboardContent" class="p-3">
+                                <div id="leaderboardContent" class="justify-content-center p-3 m-3 row">
 
 
 
-                                    <div class="leaderboard"  style="overflow-y: auto; height: 80%;">
-                                        <table id="leaderboard" class="table" style="width: 90% ; ">                                           
+                                    <div class="card p-3 leaderboard col-sm-12 col-xxl-9">
+                                        <table id="leaderboard" class="table table-hover table-responsive">                                           
                                             <tr>
-                                                <th scope="col">#</th>
-                                                <th scope="col">Location</th>
-                                                <th scope="col">Constituency</th>
-                                                <th scope="col">Constituency Leader</th>
+                                                <th scope="col">RANK</th>
+                                                <th scope="col">CONSTITUENCY</th>
+                                                <th scope="col">NUMBER OF POTHOLES</th>
+                                                <th scope="col">CONSTITUENCY LEADER</th>
                                             </tr>
                                     
                                             <tbody >
@@ -153,23 +153,25 @@
                                                 </tr>
                                             </tbody>
                                         </table>
+
+                                        <h5 class="fw-bold text-center mt-3">END OF LEADERBOARD</h5>
                                     </div>
                                 </div>
                             </div>
 
                             <div class="tab-pane fade" id="mainTab-Reportleaderboard" role="tabpanel">
                                 <!-- Leaderboard goes here-->
-                                <div id="leaderboardContent" class="p-3">
+                                <div id="leaderboardReport" class="justify-content-center p-3 m-3 row">
 
 
 
-                                    <div class="leaderboard"  style="overflow-y: auto; height: 80%;">
-                                        <table id="leaderboard" class="table" style="width: 90% ; ">                                           
+                                    <div class="card p-3 leaderboard col-sm-12 col-xxl-9">
+                                        <table id="leaderboard" class="table table-hover table-responsive">                                            
                                             <tr>
-                                                <th scope="col">#</th>
-                                                <th scope="col">Location</th>
-                                                <th scope="col">Constituency</th>
-                                                <th scope="col">Constituency Leader</th>
+                                                <th scope="col">RANK</th>
+                                                <th scope="col">CONSTITUENCY</th>
+                                                <th scope="col">NUMBER OF POTHOLES</th>
+                                                <th scope="col">CONSTITUENCY LEADER</th>
                                             </tr>
                                     
                                             <tbody >
@@ -190,6 +192,7 @@
                                                 </tr>
                                             </tbody>
                                         </table>
+                                        <h5 class="fw-bold text-center mt-3">END OF LEADERBOARD</h5>
                                     </div>
                                 </div>
                             </div>
@@ -285,6 +288,25 @@
                     </div>
                 </div>
             </div>
+
+            <!-- Modal -->
+            <div class="modal fade" id="councillorInfoModal" tabindex="-1" aria-labelledby="councillorInfoModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="councillorInfoModalLabel">Councillor Information</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body" id="councillorModalInfo">
+                        
+                    </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <!-- Bootstrap core JS-->
             <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/js/bootstrap.bundle.min.js"></script>
             <script src="index.js"></script>

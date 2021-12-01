@@ -336,10 +336,10 @@ async function loadLeaderboardData(){
     let leaderboard = document.querySelector("#leaderboard")
     leaderboard.innerHTML = `
     <tr>
-        <th scope="col">#</th>
-        <th scope="col">Location</th>
-        <th scope="col">Number of Potholes</th>
-        <th scope="col">Constituency Leader</th>
+        <th scope="col">RANK</th>
+        <th scope="col">CONSTITUENCY</th>
+        <th scope="col">NUMBER OF POTHOLES</th>
+        <th scope="col">CONSTITUENCY LEADER</th>
     </tr>
     `
 
@@ -352,11 +352,53 @@ async function loadLeaderboardData(){
             <td>${i}</td>
             <td>${constituency.name}</td>
             <td>${constituency.count}</td>
-            <td>${constituency.constituencyLeader}</td>
+            <td><button type="button" class="w-100 btn btn-primary" data-bs-toggle="modal" data-bs-target="#councillorInfoModal" onclick="displayCouncillorInfo(event, '${constituency.constitID}')">View Councillor Information</button></td>
         </tr>
         `
         i++;
     }
+}
+
+async function displayCouncillorInfo(event, constituencyID){
+    console.log(constituencyID)
+
+    let url = `${PICONG_SERVER}?year=${ELECTION_YEAR}&district=${constituencyID}`
+    let councillorData = await sendRequest(url, "GET")
+
+    constituencyModalInfoBox = document.querySelector("#councillorInfoModal");
+
+    let councillorInformation = ""
+
+    try {
+        councillorInformation = 
+        `
+        <div class="text-center"><strong>COUNCILLOR INFORMATION<strong></div>
+        <table class="table my-2 table-borderless">
+            <tbody>
+                <tr>
+                    <th scope="row">Name</th>
+                    <td>${councillorData[0].name}</td>
+                </tr>
+                <tr>
+                    <th scope="row">Address</th>
+                    <td>${councillorData[0].address}</td>
+                </tr>
+                <tr>
+                    <th scope="row">Email</th>
+                    <td scope="row">${councillorData[0].email}</td>
+                </tr>
+                <tr>
+                    <th scope="row">Phone</th>
+                    <td scope="row">${councillorData[0].phone}</td>
+                </tr>
+            </tbody>
+        </table>
+        `
+    } catch(e){
+        councillorInformation = `<div class="d-flex justify-content-center my-3"><strong>No constituency information available!</strong></div>`
+    }
+
+    councillorModalInfo.innerHTML = councillorInformation
 }
 
 async function voteOnReport(event, potholeID, reportID, isUpvote){
