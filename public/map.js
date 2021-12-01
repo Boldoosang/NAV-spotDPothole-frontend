@@ -25,7 +25,7 @@ if(container) {
             onEachFeature: function(feature, layer) {
                 layer.bindPopup(feature.properties.Constituency);
             }
-        }).addTo(map);
+        }).addTo(map)
     });
 
     displayPotholes()
@@ -110,6 +110,7 @@ async function displayPotholes(){
                 potholeID: pothole.potholeID,
                 constituencyID: constituency[0].feature.properties.ID
             }).on('click', async function(){
+                //to use later
                 var constituency = leafletPip.pointInLayer([pothole.longitude, pothole.latitude], map);
                 var constituencyName = document.getElementById('constituencyName')
                 constituencyName.innerText = constituency[0].feature.properties.Constituency;
@@ -178,7 +179,6 @@ async function getPotholesByConstituency(){
         return b.count - a.count;
     })
 
-    getReportLeaderboardData()
     return constituencies;
 }
 
@@ -196,7 +196,26 @@ async function getReportLeaderboardData(){
         
         leaderboardData.push({
             constituency: constituency[0].feature.properties.Constituency,
+            potholeID: pothole.potholeID,
+            numReports: pothole.numReports,
+            lat: pothole.latitude,
+            long: pothole.longitude,
 
         })
     }
+    return leaderboardData;
+}
+
+function reportLeaderboardModal(lat, long, potholeID){
+    var constituency = leafletPip.pointInLayer([long, lat], map);
+    var constituencyName = document.getElementById('constituencyName')
+
+    constituencyName.innerText = constituency[0].feature.properties.Constituency;
+
+    loadReports(potholeID);
+    loadConstituencyData(constituency[0].feature.properties.ID)
+        
+    var offCanvasReport = getOffCanvas();
+    offCanvasReport.toggle();
+    console.log(offCanvasReport)
 }
