@@ -331,6 +331,36 @@ async function onClickLeaderboard(){
     await loadLeaderboardData();
 }
 
+async function onClickReportLeaderboard(){
+    await loadReportLeaderboardData();
+}
+
+async function loadReportLeaderboardData(){
+    let leaderboard = document.querySelector("#reportLeaderboard")
+    leaderboard.innerHTML = `
+    <tr>
+        <th scope="col">#</th>
+        <th scope="col">Pothole ID</th>
+        <th scope="col">Number of Reports</th>
+        <th scope="col">Constituency</th>
+    </tr>
+    `
+
+    let leaderboardData = await getReportLeaderboardData();
+    
+    let i = 1;
+    for(pothole of leaderboardData){
+        leaderboard.innerHTML += `
+        <tr>
+            <td>${i}</td>
+            <td><a onclick="reportLeaderboardModal(${pothole.lat}, ${pothole.long}, ${pothole.potholeID})">${pothole.potholeID}</a></td>
+            <td>${pothole.numReports}</td>
+            <td>${pothole.constituency}</td>
+        </tr>
+        `
+        i++;
+    }
+}
 
 async function loadLeaderboardData(){
     let leaderboard = document.querySelector("#leaderboard")
