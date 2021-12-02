@@ -39,7 +39,6 @@ async function sendRequest(url, method, data){
 
         return results;
     } catch (e){
-        console.log(e)
         return {"error" : "An unexpected error has occurred!"};
     }
 }
@@ -50,10 +49,7 @@ function logout(){
 
     if(accessToken){
         window.localStorage.removeItem('access_token');
-        console.log("Succesfully logged out!")
     } else 
-        console.log("You were not logged in!")
-    
     identifyUserContext()
 
     window.location = `/`
@@ -75,10 +71,8 @@ async function login(event){
     let messageArea = document.querySelector("#userLoginMessage")
 
     if("error" in result || "msg" in result){
-        console.log("Error")
         messageArea.innerHTML = `<b class="text-danger text-center">${result["error"]}</b>`
     } else {
-        console.log("Success")
         window.localStorage.setItem("access_token", result["access_token"]);
         messageArea.innerHTML = `<b class="text-success text-center">Login successful!</b>`
         window.location = "/"
@@ -120,8 +114,6 @@ async function register(event){
 
     let form = event.target;
 
-    console.log(form.elements["agreeToS"])
-
     let registrationDetails = {
         "email" : form.elements["regInputEmail"].value,
         "firstName" : form.elements["regInputFirstName"].value,
@@ -131,18 +123,14 @@ async function register(event){
         "agreeToS" : form.elements["regAgreeToS"].checked
     }
 
-    console.log(registrationDetails)
-
     form.reset();
 
     let result = await sendRequest(SERVER + "/register", "POST", registrationDetails);
     let messageArea = document.querySelector("#userRegisterMessage")
 
     if("error" in result || "msg" in result){
-        console.log("Error")
         messageArea.innerHTML = `<b class="text-danger text-center">${result["error"]}</b>`
     } else {
-        console.log("Success")
         messageArea.innerHTML = `<b class="text-success text-center">Registration successful!</b>`
     }
 
@@ -215,7 +203,6 @@ async function determineDownVoteButtonColor(report){
 
 async function loadReports(potholeID){
     let potholeReports = await sendRequest(SERVER + "/api/reports/pothole/" + potholeID, "GET")
-    console.log(potholeReports)
     let allReportsContainer = document.querySelector("#reportAccordion")
     let allReportsAccordions = ""
 
@@ -374,7 +361,6 @@ async function loadLeaderboardData(){
     `
 
     let leaderboardData = await getPotholesByConstituency();
-    console.log(leaderboardData)
     let i = 1;
     for(constituency of leaderboardData){
         leaderboard.innerHTML += `
@@ -390,7 +376,6 @@ async function loadLeaderboardData(){
 }
 
 async function displayCouncillorInfo(event, constituencyID){
-    console.log(constituencyID)
 
     let url = `${PICONG_SERVER}?year=${ELECTION_YEAR}&district=${constituencyID}`
     let councillorData = await sendRequest(url, "GET")
@@ -469,7 +454,6 @@ async function voteOnReport(event, potholeID, reportID, isUpvote){
                                             <i class="bi bi-arrow-down"></i>
                                         </button>`
         } catch(e){
-            console.log(e)
         }
     }
 }
