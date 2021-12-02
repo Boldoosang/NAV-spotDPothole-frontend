@@ -43,6 +43,8 @@ async function displayPotholes(){
     if(markersLayer)
         markersLayer.clearLayers();
 
+    markersLayer = L.layerGroup().addTo(map); 
+
     let potholes = await getPotholes();
     if(potholes.length > 0){
         for(let pothole of potholes){
@@ -63,11 +65,7 @@ async function displayPotholes(){
                 
                 var offCanvasReport= getOffCanvas();
                 offCanvasReport.toggle();
-            }).bindPopup(pothole.numReports + " Report(s)");
-
-            markers.push(marker)
-            markersLayer = L.layerGroup(markers); 
-            markersLayer.addTo(map);
+            }).bindPopup(pothole.numReports + " Report(s)").addTo(markersLayer);
         }   
     }  
 }

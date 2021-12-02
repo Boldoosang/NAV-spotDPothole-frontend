@@ -96,7 +96,7 @@ async function makeRequest(photoURL = null, description, url) {
 				displayToast("failed", results["error"])
 			}
 
-		}, alert("To obtain your location, permission must be granted first."))
+		})
  	} else {
 		displayToast("failed", "unfortunately we couldn't find your coordinates!")
 	}
