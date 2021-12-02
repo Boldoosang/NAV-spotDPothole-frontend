@@ -32,7 +32,7 @@
                     <div class="list-group list-group-flush" style="font-size: 1.2rem;">
                         <a class="list-group-item list-group-item-action list-group-item-light p-3"onclick="displayPotholes()" data-bs-toggle="pill" data-bs-target="#mainTab-map"><i class="bi bi-house-fill" style="font-size:1.5rem;color:black"></i>        Home</a>
                         <a class="list-group-item list-group-item-action list-group-item-light p-3" onclick="loadReportPage(event)" data-bs-toggle="pill" data-bs-target="#mainTab-report"><i class="bi bi-plus-square-fill" style="font-size:1.5rem;color:black"></i>        Report</a>
-                        <a class="list-group-item list-group-item-action list-group-item-light p-3" data-bs-toggle="pill" data-bs-target="#mainTab-leaderboard"><i class="bi bi-table" style="font-size:1.5rem;color:black"></i>        Leaderboard</a>
+                        <a class="list-group-item list-group-item-action list-group-item-light p-3" onclick="onClickLeaderboard(event)" data-bs-toggle="pill" data-bs-target="#mainTab-leaderboard"><i class="bi bi-table" style="font-size:1.5rem;color:black"></i>        Leaderboard</a>
                         <hr class="my-0" style="color: rgba(0,0,0,0.125)">
                     </div>
                     <div class="position-absolute bottom-0 start-0" style="font-size: 1.2rem;">
@@ -119,91 +119,49 @@
                                       </div>
                                 </div>
                             </div>
-                            
-                            
-                            
+                             
+
                             <div class="tab-pane fade" id="mainTab-leaderboard" role="tabpanel">
-                                <div id="reportContent" class="list-group p-3 d-flex flex-column justify-content-evenly align-items-middle" style="min-height: 75vh">
-                                   
-                                    <button data-bs-target="#mainTab-constLeaderboard" onclick="onClickLeaderboard(event)" data-bs-toggle="pill" id="constLeaderboardButton"  type="button" class="btn btn-dark">Constituency Leaderboard</button>
-                                    
-                                    <button data-bs-target="#mainTab-reportLeaderboard" onclick="onClickReportLeaderboard(event)" data-bs-toggle="pill" id="reportLeaderboardButton" type="button" class="btn btn-outline-dark">Report Leaderboard</button>
-                                </div>
-                            </div>    
-
-                            <div class="tab-pane fade" id="mainTab-constLeaderboard" role="tabpanel">
                                 <!-- Leaderboard goes here-->
-                                <div id="leaderboardContent" class="justify-content-center p-3 m-3 row">
+                                <div class="p-5" id="mainTab-leaderboard" role="tabpanel">
 
-                                    <div class="card p-3 leaderboard col-sm-12 col-xxl-9">
-                                        <table id="leaderboard" class="table table-hover table-responsive">                                           
-                                            <tr>
-                                                <th scope="col">RANK</th>
-                                                <th scope="col">CONSTITUENCY</th>
-                                                <th scope="col">NUMBER OF POTHOLES</th>
-                                                <th scope="col">CONSTITUENCY LEADER</th>
-                                            </tr>
-                                    
-                                            <tbody >
-                                                
-                                                <tr class="entry">
-                                                    <td scope="row">1</td>
-                                                    <td>random</td>
-                                                    <td>random</td>
-                                                    <td>random</td>
-                                                </tr>
-                                            
-                                            
-                                                <tr class="entry" >
-                                                    <td scope="row">1</td>
-                                                    <td>random</td>
-                                                    <td>random</td>
-                                                    <td>random</td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
-
-                                        <h5 class="fw-bold text-center mt-3">END OF LEADERBOARD</h5>
+                                    <ul class="nav nav-pills mb-3" id="pills-tab-leaderboards" role="tablist">
+                                        <li class="nav-item" role="presentation">
+                                          <button class="btn btn-dark nav-link active" id="pills-constLeaderboard-tab" onclick="onClickLeaderboard(event)" data-bs-toggle="pill" data-bs-target="#pills-constLeaderboard" type="button" role="tab" aria-controls="pills-home" aria-selected="true">Constituency Leaderboard</button>
+                                        </li>
+                                        <li class="nav-item" role="presentation">
+                                          <button class="btn btn-dark nav-link" id="pills-reportLeaderboard-tab" onclick="onClickReportLeaderboard(event)" data-bs-toggle="pill" data-bs-target="#pills-reportLeaderboard" type="button" role="tab" aria-controls="pills-profile" aria-selected="false">Report Leaderboard</button>
+                                        </li>
+                                    </ul>
+    
+                                    <div class="tab-content" id="pills-tabContent">
+                                        <div class="tab-pane fade show active" id="pills-constLeaderboard" role="tabpanel" aria-labelledby="pills-home-tab">
+                                            <div id="leaderboardContent" class="justify-content-center p-3 m-3 row">
+    
+                                                <div class="card p-3 leaderboard col-sm-12 col-xxl-9">
+                                                    <table id="leaderboard" class="table table-hover table-responsive">                                           
+                                                        
+                                                    </table>
+            
+                                                    <h5 class="fw-bold text-center mt-3">END OF LEADERBOARD</h5>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="tab-pane fade" id="pills-reportLeaderboard" role="tabpanel" aria-labelledby="pills-profile-tab">
+                                            <div id="leaderboardContent" class="w-100 p-3 m-3 row">
+    
+    
+    
+                                                <div class="card p-3 leaderboard col-sm-12 col-xxl-9">
+                                                    <table id="leaderboard" class="table table-hover table-responsive">                                            
+                                                        
+                                                    </table>
+                                                    <h5 class="fw-bold text-center mt-3">END OF LEADERBOARD</h5>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
-                                </div>
-                            </div>
-
-                            <div class="tab-pane fade" id="mainTab-reportLeaderboard" role="tabpanel">
-                                <!-- Leaderboard goes here-->
-                                <div id="leaderboardContent" class="justify-content-center p-3 m-3 row">
-
-
-
-                                    <div class="card p-3 leaderboard col-sm-12 col-xxl-9">
-                                        <table id="leaderboard" class="table table-hover table-responsive">                                            
-                                            <tr>
-                                                <th scope="col">RANK</th>
-                                                <th scope="col">CONSTITUENCY</th>
-                                                <th scope="col">NUMBER OF POTHOLES</th>
-                                                <th scope="col">CONSTITUENCY LEADER</th>
-                                            </tr>
-                                    
-                                            <tbody >
-                                                
-                                                <tr class="entry">
-                                                    <td scope="row">1</td>
-                                                    <td>random</td>
-                                                    <td>random</td>
-                                                    <td>random</td>
-                                                </tr>
-                                            
-                                            
-                                                <tr class="entry" >
-                                                    <td scope="row">1</td>
-                                                    <td>random</td>
-                                                    <td>random</td>
-                                                    <td>random</td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
-                                        <h5 class="fw-bold text-center mt-3">END OF LEADERBOARD</h5>
-                                    </div>
-                                </div>
+                                </div>  
                             </div>
                         </div>
                     </main>

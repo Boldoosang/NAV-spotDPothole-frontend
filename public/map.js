@@ -1,5 +1,5 @@
 const container = document.getElementById('map')
-var markersLayer;
+let markersLayer;
 let markers = [];
 let leaderboardData = []
 

@@ -72,7 +72,7 @@ async function makeRequest(photoURL = null, description, url) {
 			latitude = position.coords.latitude;
 			longitude = position.coords.longitude;
 
-
+			console.log(latitude, longitude)
 			//Insert latitude/longitude error check here.
 			if(longitude == null || latitude == null){
 				//add display message here
@@ -97,7 +97,9 @@ async function makeRequest(photoURL = null, description, url) {
 			}
 
 		}, alert("To obtain your location, permission must be granted first."))
- 	}
+ 	} else {
+		displayToast("failed", "unfortunately we couldn't find your coordinates!")
+	}
 }
 
 
