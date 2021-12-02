@@ -66,6 +66,7 @@ async function displayPotholes(){
                 var offCanvasReport= getOffCanvas();
                 offCanvasReport.toggle();
             }).bindPopup(pothole.numReports + " Report(s)").addTo(markersLayer);
+            markers.push(marker)
         }   
     }  
 }
