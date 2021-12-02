@@ -61,63 +61,7 @@
                             </div>
                             <div class="mt-3 tab-pane fade" id="mainTab-report" role="tabpanel" style="min-height: 75vh">
                                 <!-- Report Stuff goes here-->
-                                <div id="reportContent" class="list-group p-3 d-flex flex-column justify-content-evenly align-items-middle" style="min-height: 75vh">
-                                
-                                </div>
-                            </div>
-
-
-                            <div class="tab-pane fade" id="mainTab-Report1" role="tabpanel">
-                                <!-- Passenger Report goes here-->
-                                <div id="PassengerReport" class="p-3">
-                                    <div class=" d-flex flex-column flex-no-wrap " id="main">
-                                        <div id="heading" class="fw-bold text-center">Passenger Report Form</div>
-                                        <div class="d-flex flex-column " id="description">
-                                            <label>Pothole description</label>
-                                            <textarea id="descriptionText" placeholder="Enter Description ..." ></textarea>
-                                        </div>
-                                        <div id ="img-containter" class="d-flex justify-content-around">
-                                            <img id="pothole-img" src="" hidden  />
-                                        </div>
-                                     
-                                      <div class="input-group justify-content-center mt-5 mb-5">
-                                        <button class="btn btn-outline-transparent" > 
-                                          <label class="input-group-text " for="photo"><i class="bi bi-images"></i> <div class="ms-2">Select Image </div></label>
-                                        </button>
-                                        <input id="photo" class="form-control" type="file" accept="image/*" onchange="showImage()" hidden > 
-                                        
-                                      </div>
-                                    </div>
-                                    <div id="standardReportOutcome" class="my-3"></div>
-                                    <div class="d-flex flex-row justify-content-evenly">
-                                        <button class="btn btn-dark"  id="submit-passenger-report">Submit</button>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <div class="tab-pane fade" id="mainTab-Report2" role="tabpanel">
-                                <!-- Driver Report goes here-->
-                                <div id="DriverReport" class="p-3">
-                                    <div id="driverHeading" class="text-center fw-bold display-3">DRIVER REPORT</div>
-                                    <div class="accordion accordion-flush" id="driverSubmitReport">
-                                        <div class="accordion-item">
-                                          <h2 class="accordion-header mt-3" id="flush-headingOne">
-                                            <button class="btn btn-dark p-5 w-100"  id="submit-driver-prereport" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseOne" aria-expanded="false" aria-controls="flush-collapseOne">
-                                              Submit Pothole Report
-                                            </button>
-                                            <div class="text-center mt-2 lead" id="driverReportOutcome"></div>
-                                          </h2>
-                                          <div id="flush-collapseOne" class="mx-1 accordion-collapse collapse row justify-content-around" aria-labelledby="flush-headingOne" data-bs-parent="#driverSubmitReport">
-                                            <button class="btn btn-success py-5 mt-3"  id="submit-driver-report" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseOne" aria-expanded="false" aria-controls="flush-collapseOne">
-                                                Confirm Submission
-                                            </button>
-                                            <button class="btn btn-danger py-5 mt-3"  type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseOne" aria-expanded="false" aria-controls="flush-collapseOne">
-                                                Cancel
-                                            </button>
-                                          </div>
-                                        </div>                        
-                                      </div>
-                                </div>
+                                <div id="reportContent" class="list-group p-3 d-flex flex-column justify-content-evenly align-items-middle" style="min-height: 75vh"></div>
                             </div>
                              
 
@@ -157,6 +101,80 @@
                             </div>
                         </div>
                     </main>
+
+
+                    <div class="modal fade" id="standardReportModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                          <div class="modal-content">
+                            <div class="modal-header">
+                              <h5 class="modal-title fw-bold" id="exampleModalLabel">Standard Report</h5>
+                              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <div id="PassengerReport" class="px-3">
+                                    <div class=" d-flex flex-column flex-no-wrap" id="main">
+                                        <div class="d-flex flex-column " id="description">
+                                            <label class="fw-bold mb-3">Pothole description</label>
+                                            <textarea class="form-control" rows="3" id="descriptionText" placeholder="Enter description of pothole" ></textarea>
+                                        </div>
+                                        <div id ="img-containter" class="d-flex justify-content-around">
+                                            <img id="pothole-img" src="" hidden  />
+                                        </div>
+                                     
+                                      <div class="input-group justify-content-center mt-5 mb-5">
+                                        <button class="btn btn-outline-transparent" > 
+                                          <label class="input-group-text " for="photo"><i class="bi bi-images"></i> <div class="ms-2">Select Image </div></label>
+                                        </button>
+                                        <input id="photo" class="form-control-file" type="file" accept="image/*" onchange="showImage()" hidden > 
+                                        
+                                      </div>
+                                    </div>
+                                    <div id="standardReportOutcome" class="my-3"></div>
+                                    <div class="d-flex flex-row justify-content-evenly">
+                                        
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button class="btn btn-dark w-100"  id="submit-passenger-report">Submit</button>
+                            </div>
+                          </div>
+                        </div>
+                    </div>
+
+                    <div class="modal fade" id="driverReportModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                          <div class="modal-content">
+                            <div class="modal-header">
+                              <h5 class="modal-title fw-bold" id="exampleModalLabel">Driver Report</h5>
+                              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <div id="DriverReport" class="p-3">
+                                    <div id="driverHeading" class="text-center fw-bold display-3">DRIVER REPORT</div>
+                                    <div class="accordion accordion-flush" id="driverSubmitReport">
+                                        <div class="accordion-item">
+                                          <h2 class="accordion-header mt-3" id="flush-headingOne">
+                                            <button class="btn btn-dark p-5 w-100"  id="submit-driver-prereport" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseOne" aria-expanded="false" aria-controls="flush-collapseOne">
+                                              Submit Pothole Report
+                                            </button>
+                                            <div class="text-center mt-2 lead" id="driverReportOutcome"></div>
+                                          </h2>
+                                          <div id="flush-collapseOne" class="mx-1 accordion-collapse collapse row justify-content-around" aria-labelledby="flush-headingOne" data-bs-parent="#driverSubmitReport">
+                                            <button class="btn btn-success py-5 mt-3"  id="submit-driver-report" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseOne" aria-expanded="false" aria-controls="flush-collapseOne">
+                                                Confirm Submission
+                                            </button>
+                                            <button class="btn btn-danger py-5 mt-3"  type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseOne" aria-expanded="false" aria-controls="flush-collapseOne">
+                                                Cancel
+                                            </button>
+                                          </div>
+                                        </div>                        
+                                      </div>
+                                </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
 
                     <!-- Login Modal -->
                     <div class="modal fade" id="loginModal" tabindex="-1">
