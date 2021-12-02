@@ -30,7 +30,7 @@
                 <div class="border-end bg-white position-relative" id="sidebar-wrapper">
                     <div class="sidebar-heading border-bottom bg-light fw-bold">MENU</div>
                     <div class="list-group list-group-flush" style="font-size: 1.2rem;">
-                        <a class="list-group-item list-group-item-action list-group-item-light p-3" data-bs-toggle="pill" data-bs-target="#mainTab-map"><i class="bi bi-house-fill" style="font-size:1.5rem;color:black"></i>        Home</a>
+                        <a class="list-group-item list-group-item-action list-group-item-light p-3"onclick="displayPotholes()" data-bs-toggle="pill" data-bs-target="#mainTab-map"><i class="bi bi-house-fill" style="font-size:1.5rem;color:black"></i>        Home</a>
                         <a class="list-group-item list-group-item-action list-group-item-light p-3" onclick="loadReportPage(event)" data-bs-toggle="pill" data-bs-target="#mainTab-report"><i class="bi bi-plus-square-fill" style="font-size:1.5rem;color:black"></i>        Report</a>
                         <a class="list-group-item list-group-item-action list-group-item-light p-3" data-bs-toggle="pill" data-bs-target="#mainTab-leaderboard"><i class="bi bi-table" style="font-size:1.5rem;color:black"></i>        Leaderboard</a>
                         <hr class="my-0" style="color: rgba(0,0,0,0.125)">
@@ -71,8 +71,8 @@
                             <div class="tab-pane fade" id="mainTab-Report1" role="tabpanel">
                                 <!-- Passenger Report goes here-->
                                 <div id="PassengerReport" class="p-3">
-                                    <main class=" d-flex flex-column flex-no-wrap " id="main">
-                                        <div id="heading"  >Passenger Report Form</div>
+                                    <div class=" d-flex flex-column flex-no-wrap " id="main">
+                                        <div id="heading" class="fw-bold text-center">Passenger Report Form</div>
                                         <div class="d-flex flex-column " id="description">
                                             <label>Pothole description</label>
                                             <textarea id="descriptionText" placeholder="Enter Description ..." ></textarea>
@@ -83,27 +83,22 @@
                                      
                                       <div class="input-group justify-content-center mt-5 mb-5">
                                         <button class="btn btn-outline-transparent" > 
-                                          <label class="input-group-text " for="photo"><i class="bi bi-images "></i> <div class="ms-2">Select Image </div></label>
+                                          <label class="input-group-text " for="photo"><i class="bi bi-images"></i> <div class="ms-2">Select Image </div></label>
                                         </button>
                                         <input id="photo" class="form-control" type="file" accept="image/*" onchange="showImage()" hidden > 
                                         
                                       </div>
-                                    </main>
-                                
-                                    <footer class="d-flex flex-row justify-content-evenly">
+                                    </div>
+                                    <div id="standardReportOutcome" class="my-3"></div>
+                                    <div class="d-flex flex-row justify-content-evenly">
                                         <button class="btn btn-dark"  id="submit-passenger-report">Submit</button>
-                                        
-                                        
-                                    </footer>
+                                    </div>
                                 </div>
                             </div>
                             <div class="tab-pane fade" id="mainTab-Report2" role="tabpanel">
                                 <!-- Driver Report goes here-->
                                 <div id="DriverReport" class="p-3">
                                     <div id="driverHeading" class="text-center fw-bold display-3">DRIVER REPORT</div>
-                                     
-
-
                                     <div class="accordion accordion-flush" id="driverSubmitReport">
                                         <div class="accordion-item">
                                           <h2 class="accordion-header mt-3" id="flush-headingOne">
