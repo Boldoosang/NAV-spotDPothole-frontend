@@ -351,9 +351,9 @@ async function loadReportLeaderboardData(){
     let i = 1;
     for(pothole of leaderboardData){
         leaderboard.innerHTML += `
-        <tr>
+        <tr onclick="reportLeaderboardModal(${pothole.lat}, ${pothole.long}, ${pothole.potholeID})">
             <td>${i}</td>
-            <td><a onclick="reportLeaderboardModal(${pothole.lat}, ${pothole.long}, ${pothole.potholeID})">${pothole.potholeID}</a></td>
+            <td class="text-primary text-decoration-underline">Pothole #${pothole.potholeID}</td>
             <td>${pothole.numReports}</td>
             <td>${pothole.constituency}</td>
         </tr>
@@ -382,7 +382,7 @@ async function loadLeaderboardData(){
             <td>${i}</td>
             <td>${constituency.name}</td>
             <td>${constituency.count}</td>
-            <td><a data-bs-toggle="modal" data-bs-target="#councillorInfoModal" onclick="displayCouncillorInfo(event, '${constituency.constitID}')">${constituency.constituencyLeader}</a><td>
+            <td><button class="btn btn-primary w-100" data-bs-toggle="modal" data-bs-target="#councillorInfoModal" onclick="displayCouncillorInfo(event, '${constituency.constitID}')">Councillor Info</a><td>
         </tr>
         `
         i++;
