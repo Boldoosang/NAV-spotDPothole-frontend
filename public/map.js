@@ -162,6 +162,7 @@ function reportLeaderboardModal(lat, long, potholeID){
         
     var offCanvasReport = getOffCanvas();
     offCanvasReport.toggle();
+    console.log(offCanvasReport)
 }
 
 

@@ -323,6 +323,7 @@
                 //For displaying the selected image
                 function showImage(){
                     const image = event.target.files[0];
+                    console.log(image)
                     const displayImage = document.getElementById("pothole-img");
                     try {
                         displayImage.src = URL.createObjectURL(image);

@@ -39,6 +39,7 @@ function displayToast(type, message) {
 
 	// After 4 seconds, remove the show class from DIV
 	setTimeout(() => { 
+		console.log(id)
 		let element = document.getElementById(id);
 		element.className = element.className.replace("show", "hide"); 
 	}, 4000);
@@ -88,6 +89,7 @@ async function makeRequest(photoURL = null, description, url) {
 			}
 
 		}, function(){
+			console.log(latitude, longitude)
 			//Insert latitude/longitude error check here.
 			if(longitude == null || latitude == null){
 				//add display message here
@@ -102,7 +104,9 @@ async function makeRequest(photoURL = null, description, url) {
 
 
 
-async function buildReportRequest(latitude, longitude, photoURL, description = null, url){ 
+async function buildReportRequest(latitude, longitude, photoURL, description = null, url){
+	console.log(latitude, longitude)
+  
 	var data = {
 		"longitude": longitude,
 		"latitude": latitude,
@@ -117,6 +121,8 @@ async function buildReportRequest(latitude, longitude, photoURL, description = n
 	} else {
 		data["images"] = []
 	}
+		
+	console.log(JSON.stringify(data));
   
 	try {
 		let access_token = window.localStorage.getItem("access_token");
@@ -130,11 +136,16 @@ async function buildReportRequest(latitude, longitude, photoURL, description = n
         }
 
         request.body = JSON.stringify(data);
+
+		console.log(request)
 		
 		let response = await fetch(url, request);
 		let results = await response.json()
+  
+		console.log("Post Request Results: " + JSON.stringify(results) ); //3. Do something with the message
 		return results;
 	} catch (error) {
+		console.log(`Error: ` + error)
 		return error;
 	}
 }
@@ -142,12 +153,15 @@ async function buildReportRequest(latitude, longitude, photoURL, description = n
 
 // Firebase 
 async function uploadImage() {
+	console.log('Entered')
 	//const ref = myStorage.ref();
 
 	//Get the single file input
 	const file = document.querySelector('#photo').files[0];
 
 	if (file != null) {
+		console.log(file)
+
 		const fileName = "REPORT - " + new Date().toLocaleString();
 
 		//const imgRef = ref(myStorage, fileName);
@@ -156,6 +170,7 @@ async function uploadImage() {
 
 		const uploadTask = uploadBytesResumable(storageRef, file);
 
+		console.log(uploadTask)
 		// Register three observers:
 		// 1. 'state_changed' observer, called any time the state changes
 		// 2. Error observer, called on failure
@@ -164,19 +179,24 @@ async function uploadImage() {
 			// Observe state change events such as progress, pause, and resume
 			// Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
 			const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+			console.log('Upload is ' + progress + '% done');
 			switch (snapshot.state) {
 			case 'paused':
+				console.log('Upload is paused');
 				break;
 			case 'running':
+				console.log('Upload is running');
 				break;
 			}
 		}, (error) => {
 			// Handle unsuccessful uploads
+			console.log(error)
 			return false;
 		}, () => {
 				// Handle successful uploads on complete
 				// For instance, get the download URL: https://firebasestorage.googleapis.com/...
 				getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+					console.log('File available at', downloadURL);
 					let description = document.getElementById("descriptionText").value; // get text
 					let results = makeRequest(downloadURL, description, standardReportURL)
 					return results
