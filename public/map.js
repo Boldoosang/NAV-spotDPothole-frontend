@@ -85,6 +85,8 @@ async function getPotholes(){
 }
 
 async function displayPotholes(){
+        if(markersLayer)
+            markersLayer.clearLayers();
     let potholes = await getPotholes();
     if(potholes.length > 0){
         for(const pothole of potholes){
