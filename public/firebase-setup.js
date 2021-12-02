@@ -110,7 +110,16 @@ async function postDriverReport() {
   
     }//end of if
  
-  
+    let driverReportOutcome = document.querySelector("#driverReportOutcome")
+
+    if("msg" in results){
+      driverReportOutcome.innerHTML = "<div class='text-danger'>You must be logged in to report a pothole!</div>"
+    } else if("error" in results){
+      driverReportOutcome.innerHTML = `<div class='text-danger'>${results["error"]}</div>`
+    } else if("message" in results){
+      driverReportOutcome.innerHTML = `<div class="text-success">${results["message"]}</div>`
+    }
+    
 
 }
 
@@ -123,7 +132,7 @@ async function postStandardReport() {
   if (imageCheck == false) {
     //call method to upload only descripiton
     const url = "http://spotdpothole.herokuapp.com" + "/api/reports/standard"
-    makeRequest(null, url)
+    let results = makeRequest(null, url)
   }
   
 
@@ -191,10 +200,10 @@ async function makeRequest(photoURL = null, url) {
         displayToast("failed", results["message"])
       }
     }
-    catch (error) {
-     // console.log(`Error: ` + error)
-      
-    }
+    catch (e){
+      console.log(e)
+      return {"error" : "An unexpected error has occurred!"};
+  }
 
   }//end of if
 

@@ -63,9 +63,9 @@
                                 <!-- Report Stuff goes here-->
                                 <div id="reportContent" class="list-group p-3 d-flex flex-column justify-content-evenly align-items-middle" style="min-height: 75vh">
                                    
-                                    <button data-bs-target="#mainTab-Report1" data-bs-toggle="pill" id="passenger-button"  type="button" class="btn btn-dark">Passenger Report</button>
+                                    <button data-bs-target="#mainTab-Report1" data-bs-toggle="pill" id="passenger-button"  type="button" class="btn btn-dark py-5">Passenger Report</button>
                                     
-                                    <button data-bs-target="#mainTab-Report2" data-bs-toggle="pill" id="driver-button" type="button" class="btn btn-outline-dark">Driver Report</button>
+                                    <button data-bs-target="#mainTab-Report2" data-bs-toggle="pill" id="driver-button" type="button" class="btn btn-outline-dark py-5">Driver Report</button>
                                 </div>
                             </div>
                             <div class="tab-pane fade" id="mainTab-Report1" role="tabpanel">
@@ -100,9 +100,28 @@
                             <div class="tab-pane fade" id="mainTab-Report2" role="tabpanel">
                                 <!-- Driver Report goes here-->
                                 <div id="DriverReport" class="p-3">
-                                    <div id="driverHeading"  >Driver Report Form</div>
-                                        
-                                    <button class="btn btn-dark"  id="submit-driver-report">Submit</button>
+                                    <div id="driverHeading" class="text-center fw-bold display-3">DRIVER REPORT</div>
+                                     
+
+
+                                    <div class="accordion accordion-flush" id="driverSubmitReport">
+                                        <div class="accordion-item">
+                                          <h2 class="accordion-header mt-3" id="flush-headingOne">
+                                            <button class="btn btn-dark p-5 w-100"  id="submit-driver-prereport" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseOne" aria-expanded="false" aria-controls="flush-collapseOne">
+                                              Submit Pothole Report
+                                            </button>
+                                            <div class="text-center mt-2 lead" id="driverReportOutcome"></div>
+                                          </h2>
+                                          <div id="flush-collapseOne" class="mx-1 accordion-collapse collapse row justify-content-around" aria-labelledby="flush-headingOne" data-bs-parent="#driverSubmitReport">
+                                            <button class="btn btn-success py-5 mt-3"  id="submit-driver-report" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseOne" aria-expanded="false" aria-controls="flush-collapseOne">
+                                                Confirm Submission
+                                            </button>
+                                            <button class="btn btn-danger py-5 mt-3"  type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseOne" aria-expanded="false" aria-controls="flush-collapseOne">
+                                                Cancel
+                                            </button>
+                                          </div>
+                                        </div>                        
+                                      </div>
                                 </div>
                             </div>
                             
