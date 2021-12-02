@@ -11325,17 +11325,32 @@ footer > button{
 
 /* For Passenger Report Page*/
 #PassengerReport main > #heading,
-#DriverReport main > #driverHeading{
+#driverHeading{
   font-weight: 900;
   display: flex;
   justify-content: center;
   
 }
 
-#PassengerReport main > #description,
-#DriverReport main > #description2{
+#PassengerReport main > #description{
   margin-top: 20px;
 }
+
+
+#DriverReport{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  
+}
+
+#DriverReport> button{
+  position: absolute;
+  top: 50vh;
+  width: 50vw;
+}
+
+
 
 #pothole-img{
   
@@ -11349,4 +11364,61 @@ footer > button{
   
 
   align-self: center;
+}
+
+
+
+/* Show the snackbar when clicking on a button (class added with JavaScript) */
+.message {
+  visibility: hidden; /* Hidden by default. Visible on click */
+  max-width: 30vw; /* Set a default minimum width */
+  margin-left: -125px; /* Divide value of min-width by 2 */
+  /*background-color: #333;  Black background color */
+  color: #fff; /* White text color */
+  text-align: center; /* Centered text */
+  border-radius: 2px; /* Rounded borders */
+  padding: 16px; /* Padding */
+  position: fixed; /* Sit on top of the screen */
+  z-index: 1; /* Add a z-index if needed */
+  left: 50%; /* Center the snackbar */
+  bottom: 30px; /* 30px from the bottom */
+}
+
+.message.show {
+ 
+  visibility: visible; /* Show the snackbar */
+  /* Add animation: Take 0.5 seconds to fade in and out the snackbar.
+  However, delay the fade out process for 2.5 seconds */
+  -webkit-animation: fadein 0.5s, fadeout 0.5s 2.5s;
+  animation: fadein 0.5s, fadeout 0.5s 2.5s;
+}
+
+.message.success{
+  
+  background-color: #4d831e;
+}
+
+.message.failed{
+  background-color: #d74113;
+}
+
+/* Animations to fade the snackbar in and out */
+@-webkit-keyframes fadein {
+  from {bottom: 0; opacity: 0;}
+  to {bottom: 30px; opacity: 1;}
+}
+
+@keyframes fadein {
+  from {bottom: 0; opacity: 0;}
+  to {bottom: 30px; opacity: 1;}
+}
+
+@-webkit-keyframes fadeout {
+  from {bottom: 30px; opacity: 1;}
+  to {bottom: 0; opacity: 0;}
+}
+
+@keyframes fadeout {
+  from {bottom: 30px; opacity: 1;}
+  to {bottom: 0; opacity: 0;}
 }
