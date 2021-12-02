@@ -116,18 +116,23 @@
                                 <div id="PassengerReport" class="px-3">
                                     <div class=" d-flex flex-column flex-no-wrap" id="main">
                                         <div class="d-flex flex-column " id="description">
-                                            <label class="fw-bold mb-3">Pothole description</label>
+                                            <label class="fw-bold mb-3">Pothole Description</label>
                                             <textarea class="form-control" rows="3" id="descriptionText" placeholder="Enter description of pothole" required></textarea>
                                         </div>
-                                        <div id ="img-containter" class="d-flex justify-content-around">
-                                            <img id="pothole-img" src="" hidden  />
+                                        <div id ="img-container" class="d-flex justify-content-around">
+                                            <img id="pothole-img" class="w-100" src="" hidden/> <!--Fix here-->
                                         </div>
                                      
                                       <div class="input-group justify-content-center mt-5 mb-5">
-                                        <button class="btn btn-outline-transparent" > 
+                                        <button onclick="" class="btn btn-outline-transparent" > 
                                           <label class="input-group-text " for="photo"><i class="bi bi-images"></i> <div class="ms-2">Select Image </div></label>
                                         </button>
-                                        <input id="photo" class="form-control-file" type="file" accept="image/*" onchange="showImage()" hidden > 
+
+                                        <button onclick="removeImage()" class="btn btn-danger rounded"> 
+                                            x
+                                        </button>
+
+                                        <input id="photo" class="form-control-file" type="file" accept="image/*" onchange="showImage()" hidden> 
                                       </div>
                                     </div>
                                 </div>
@@ -327,6 +332,25 @@
                         displayImage.hidden = false;
                     } catch(e){
                         displayImage.hidden = true;
+                        displayImage.src = "";
+                    }
+                  }
+
+
+                
+                //For displaying the selected image
+                function removeImage(){
+                    const displayImage = document.getElementById("pothole-img");
+                    
+                    try {
+                        var image = document.querySelector('#photo').files[0];
+                        displayImage.src = "";
+                        displayImage.value = "";
+                        displayImage.hidden = true;
+                        image.value = ""
+                        console.log(image)
+                    } catch(e){
+                        console.log(e)
                     }
                   }
             </script>
