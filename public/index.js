@@ -312,8 +312,6 @@ async function loadReports(potholeID){
 function loadReportPage(){
     let reportArea = document.querySelector("#reportContent");
     if(isMobileDevice()){
-        let reportTab = document.querySelector("#mainTab-report");
-        //reportTab.classList.add("active")
         reportArea.innerHTML = 
         `<button data-bs-target="#standardReportModal" data-bs-toggle="modal" id="standard-button"  type="button" class="btn btn-dark py-5">Standard Report</button>                       
          <button data-bs-target="#driverReportModal" data-bs-toggle="modal" id="driver-button" type="button" class="btn btn-dark py-5">Driver Report</button>`
