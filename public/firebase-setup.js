@@ -30,38 +30,25 @@ function displayToast(type, message) {
 	div.setAttribute('class', '');
   
 	if( type=='success'){
-		div.setAttribute('class', "messsage success show");    
+		div.setAttribute('class', "message success show");    
 	} else {
 		div.setAttribute('class', "message failed show");
 	}
   
   	document.getElementById('mainTabContent').appendChild(div);
-	// After 3 seconds, remove the show class from DIV
+
+	// After 4 seconds, remove the show class from DIV
 	setTimeout(() => { 
 		console.log(id)
 		let element = document.getElementById(id);
 		element.className = element.className.replace("show", "hide"); 
-	}, 3000);
+	}, 4000);
 }
 
 
 //To send to the backend
 async function postDriverReport() {
-  	let results = await makeRequest(null, null, driverReportURL)
-	console.log(results)
-    let driverReportOutcome = document.querySelector("#driverReportOutcome")
-
-	try {
-		if("msg" in results){
-			driverReportOutcome.innerHTML = "<div class='text-danger fw-bold'>You must be logged in to report a pothole!</div>"
-		} else if("error" in results){
-			driverReportOutcome.innerHTML = `<div class='text-danger fw-bold'>${results["error"]}</div>`
-		} else if("message" in results){
-			driverReportOutcome.innerHTML = `<div class="text-success fw-bold">${results["message"]}</div>`
-		}
-	} catch (e) {
-		driverReportOutcome.innerHTML = `<div class="text-danger fw-bold text-center">An unknown error has occurred.</div>`
-	}
+  	await makeRequest(null, null, driverReportURL);
 }
 
 
@@ -73,20 +60,6 @@ async function postStandardReport() {
 		//call method to upload only descripiton
 		imageUploadedResult = await makeRequest(null, description, standardReportURL)
 	}
-
-	let standardReportOutcome = document.querySelector("#standardReportOutcome")
-
-	try {
-		if("msg" in results){
-			standardReportOutcome.innerHTML = "<div class='text-danger fw-bold text-center'>You must be logged in to report a pothole!</div>"
-		} else if("error" in results){
-			standardReportOutcome.innerHTML = `<div class='text-danger fw-bold text-center'>${results["error"]}</div>`
-		} else if("message" in results){
-			standardReportOutcome.innerHTML = `<div class="text-success fw-bold text-center">${results["message"]}</div>`
-		}
-	} catch (e) {
-		standardReportOutcome.innerHTML = `<div class="text-danger fw-bold text-center">An unknown error has occurred.</div>`
-	}
 }
 
 
@@ -94,7 +67,7 @@ async function makeRequest(photoURL = null, description, url) {
 	var latitude, longitude;
 	//STEP2: get location
 	if (navigator.geolocation) {
-		navigator.geolocation.getCurrentPosition((position) => {
+		navigator.geolocation.getCurrentPosition(async (position) => {
 			//Successful action
 			latitude = position.coords.latitude;
 			longitude = position.coords.longitude;
@@ -107,7 +80,22 @@ async function makeRequest(photoURL = null, description, url) {
 				return;
 			}
 
-			return buildReportRequest(latitude, longitude, photoURL, description, url)
+			
+			let results = await buildReportRequest(latitude, longitude, photoURL, description, url)
+
+
+			try {
+				if("msg" in results){
+					displayToast("failed", "You must be logged in to report a pothole!")
+				} else if("error" in results){
+					displayToast("failed", results["error"])
+				} else if("message" in results){
+					displayToast("success", results["message"])
+				}
+			} catch (e) {
+				displayToast("failed", results["error"])
+			}
+
 		}, alert("To obtain your location, permission must be granted first."))
  	}
 }

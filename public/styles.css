@@ -11394,12 +11394,11 @@ footer > button{
 }
 
 .message.success{
-  
-  background-color: #4d831e;
+  background-color: #55a70e;
 }
 
 .message.failed{
-  background-color: #d74113;
+  background-color: #d72013;
 }
 
 /* Animations to fade the snackbar in and out */
