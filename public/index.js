@@ -312,9 +312,11 @@ async function loadReports(potholeID){
 function loadReportPage(){
     let reportArea = document.querySelector("#reportContent");
     if(isMobileDevice()){
-         reportArea.innerHTML = 
-        `<button data-bs-target="#mainTab-Report1" data-bs-toggle="pill" id="passenger-button"  type="button" class="btn btn-dark py-5">Passenger Report</button>                       
-         <button data-bs-target="#mainTab-Report2" data-bs-toggle="pill" id="driver-button" type="button" class="btn btn-outline-dark py-5">Driver Report</button>`
+        let reportTab = document.querySelector("#mainTab-report");
+        //reportTab.classList.add("active")
+        reportArea.innerHTML = 
+        `<button data-bs-target="#standardReportModal" data-bs-toggle="modal" id="standard-button"  type="button" class="btn btn-dark py-5">Standard Report</button>                       
+         <button data-bs-target="#driverReportModal" data-bs-toggle="modal" id="driver-button" type="button" class="btn btn-dark py-5">Driver Report</button>`
     } else {
         reportArea.innerHTML = `
         <div class="col col-sm-12 mt-3 text-center">
