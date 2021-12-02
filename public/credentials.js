@@ -1,11 +1,10 @@
 const firebaseConfig = {
-	apiKey: "AIzaSyCKX_b0xCrw1V2cBdGklcqrZubpjZmQG4s",
-	authDomain: "nullify-pothole-spotter.firebaseapp.com",
-	projectId: "nullify-pothole-spotter",
-	storageBucket: "nullify-pothole-spotter.appspot.com",
-	messagingSenderId: "109703980334",
-	appId: "1:109703980334:web:3b136c94e274e3b19386bf",
-	measurementId: "G-2NRXW14SGR"
-};
+	apiKey: "AIzaSyD8jpQ-AMBIHpFwpUfNyITEndS0A-5WwOE",
+	authDomain: "spotdpothole.firebaseapp.com",
+	projectId: "spotdpothole",
+	storageBucket: "spotdpothole.appspot.com",
+	messagingSenderId: "500033402497",
+	appId: "1:500033402497:web:e01a744396c50b8c033f80"
+  };
 
 export {firebaseConfig};

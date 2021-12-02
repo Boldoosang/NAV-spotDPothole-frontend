@@ -1,7 +1,7 @@
 // Import the functions you need from the SDKs you need
-import { initializeApp } from "https://www.gstatic.com/firebasejs/9.1.3/firebase-app.js";
-import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.1.3/firebase-storage.js";
-import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.1.3/firebase-analytics.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.5.0/firebase-app.js";
+import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.5.0/firebase-storage.js";
+import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.5.0/firebase-analytics.js";
 
 
 import { firebaseConfig } from "./credentials.js";
@@ -15,9 +15,9 @@ const myStorage = getStorage(app);
 
 
 //Backend Constants
-const SERVER = "https://spotdpothole.herokuapp.com"
-const driverReportURL = SERVER + "/api/report/driver"
-const standardReportURL = SERVER + "/api/report/standard"
+const SERVER = "https://spotdpothole.herokuapp.com/"
+const driverReportURL = SERVER + "/api/reports/driver"
+const standardReportURL = SERVER + "/api/reports/standard"
 
 
 /* To display Toast */
@@ -48,7 +48,7 @@ function displayToast(type, message) {
 //To send to the backend
 async function postDriverReport() {
   	let results = await makeRequest(null, null, driverReportURL)
-
+	console.log(results)
     let driverReportOutcome = document.querySelector("#driverReportOutcome")
 
 	try {
@@ -60,7 +60,7 @@ async function postDriverReport() {
 			driverReportOutcome.innerHTML = `<div class="text-success fw-bold">${results["message"]}</div>`
 		}
 	} catch (e) {
-		driverReportOutcome.innerHTML = `<div class="text-danger fw-bold">An unknown error has occurred.</div>`
+		driverReportOutcome.innerHTML = `<div class="text-danger fw-bold text-center">An unknown error has occurred.</div>`
 	}
 }
 
@@ -107,7 +107,7 @@ async function makeRequest(photoURL = null, description, url) {
 				return;
 			}
 
-			buildReportRequest(latitude, longitude, photoURL, description, url)
+			return buildReportRequest(latitude, longitude, photoURL, description, url)
 		}, alert("To obtain your location, permission must be granted first."))
  	}
 }
@@ -138,21 +138,25 @@ async function buildReportRequest(latitude, longitude, photoURL, description = n
 		let access_token = window.localStorage.getItem("access_token");
 	   
 		let request = {
-			"method": "POST",
-			"headers": {
-				"Content-Type": "application/json",
-				"Authorization": `Bearer ${access_token}`,
-			},
-			"body":JSON.stringify(data)
-		}
+                "method" : "POST",
+                "headers" : {
+                    "Authorization" : `Bearer ${access_token}`,
+                    "Content-Type" : "application/json"
+                }
+        }
+
+        request.body = JSON.stringify(data);
+
+		console.log(request)
 		
 		let response = await fetch(url, request);
 		let results = await response.json()
   
 		console.log("Post Request Results: " + JSON.stringify(results) ); //3. Do something with the message
-
+		return results;
 	} catch (error) {
 		console.log(`Error: ` + error)
+		return error;
 	}
 }
 

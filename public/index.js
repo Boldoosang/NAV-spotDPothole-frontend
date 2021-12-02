@@ -1,5 +1,5 @@
 let username
-const SERVER = "https://spotdpothole.herokuapp.com"
+const SERVER = "https://spotdpothole.herokuapp.com/"
 const PICONG_SERVER = "https://project-caigual.herokuapp.com/publicAPI/info/electoraldistrict" //?year=2020&district=ari
 const ELECTION_YEAR = "2020"
 
