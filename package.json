@@ -15,5 +15,9 @@
   "bugs": {
     "url": "https://github.com/Boldoosang/NULLIFY-spotDPothole-frontend/issues"
   },
-  "homepage": "https://github.com/Boldoosang/NULLIFY-spotDPothole-frontend#readme"
+  "homepage": "https://github.com/Boldoosang/NULLIFY-spotDPothole-frontend#readme",
+  "dependencies": {
+    "chai": "^4.3.4",
+    "puppeteer": "^12.0.1"
+  }
 }
