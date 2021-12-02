@@ -2,10 +2,9 @@ const container = document.getElementById('map')
 let markersLayer;
 let markers = [];
 let leaderboardData = []
-let map
 
-async function initMap(){
-    map = L.map('map', {
+if(container) {
+    var map = L.map('map', {
         center: [10.69, -61.23],
         zoom: 9,
     });
@@ -28,10 +27,9 @@ async function initMap(){
             }
         }).addTo(map)
     });
-    console.log("Map Initialized")
-    await displayPotholes();
-}
 
+    displayPotholes()
+}
 function getRandom(){
     return today.getSeconds()/today.getMinutes() * 0.05
 }
@@ -42,19 +40,18 @@ async function getPotholes(){
 }
 
 async function displayPotholes(){
-    if(markersLayer){
+    console.log(markersLayer)
+    if(markersLayer)
         markersLayer.clearLayers();
-    }
-
-    markersLayer = L.layerGroup().addTo(map); 
 
     let potholes = await getPotholes();
-    
     if(potholes.length > 0){
-        
         for(const pothole of potholes){
             var constituency = leafletPip.pointInLayer([pothole.longitude, pothole.latitude], map);
-            
+
+            if(constituency.length == 0)
+                return
+
             if(constituency.length == 0){
                 constituency = [
                     {
@@ -72,22 +69,23 @@ async function displayPotholes(){
                 potholeID: pothole.potholeID,
                 constituencyID: constituency[0].feature.properties.ID
             }).on('click', async function(){
-                
-
+                //to use later
                 var constituency = leafletPip.pointInLayer([pothole.longitude, pothole.latitude], map);
                 var constituencyName = document.getElementById('constituencyName')
                 constituencyName.innerText = constituency[0].feature.properties.Constituency;
 
-                await loadReports(this.options.potholeID);
-                await loadConstituencyData(this.options.constituencyID)
-
+                loadReports(this.options.potholeID);
+                loadConstituencyData(this.options.constituencyID)
+                
                 var offCanvasReport= getOffCanvas();
                 offCanvasReport.toggle();
-            }).bindPopup(pothole.numReports + " Report(s)").addTo(markersLayer);     
-                  
-        }
+            }).bindPopup(pothole.numReports + " Report(s)");
+
+            markers.push(marker)
+            markersLayer = L.layerGroup(markers); 
+            markersLayer.addTo(map);
+        }   
     }  
-    console.log("Potholes displayed")
 }
 
 function getOffCanvas(){
@@ -181,10 +179,3 @@ function reportLeaderboardModal(lat, long, potholeID){
     offCanvasReport.toggle();
     console.log(offCanvasReport)
 }
-
-async function main(){
-    await initMap();
-    await displayPotholes();
-}
-
-window.addEventListener('DOMContentLoaded', main);
