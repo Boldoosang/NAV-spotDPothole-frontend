@@ -54,10 +54,11 @@ async function postDriverReport() {
 
 async function postStandardReport() {
 	//STEP1: UPLOAD IMAGE
-	let imageUploadedResult = uploadImage()
+	let imageUploadedResult = await uploadImage()
 
 	if (!imageUploadedResult) {
 		//call method to upload only descripiton
+		let description = document.getElementById("descriptionText").value; // get text
 		imageUploadedResult = await makeRequest(null, description, standardReportURL)
 	}
 }
@@ -203,8 +204,9 @@ async function uploadImage() {
 				});
 		});
 		return true
+	} else {
+		return false
 	}
-	return false
 }
 
 document.getElementById('submit-passenger-report').addEventListener('click', postStandardReport);
