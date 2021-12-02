@@ -16,15 +16,99 @@ const analytics = getAnalytics(app);
 const myStorage = getStorage(app);
 
 
+/* To display Toast */
+function displayToast(type, message) {
+  var id= new Date() + '-' + "notification"
+  var div = document.createElement('div');
+  div.textContent = message;
+
+  div.setAttribute('id', id)
+  div.setAttribute('class', '');
+  
+  if( type=='success'){
+      div.setAttribute('class', "messsage success show");    
+  }
+  else{
+      div.setAttribute('class', "message failed show");
+  }
+  
+  
+  document.getElementById('mainTabContent').appendChild(div);
+  // After 3 seconds, remove the show class from DIV
+  setTimeout(() => { 
+    console.log(id)
+    let element = document.getElementById(id);
+    element.className = element.className.replace("show", "hide"); }, 3000);
+}
+
+
+
+
+
 //To send to the backend
-
-
 async function postDriverReport() {
 
   const backendurl = "http://spotdpothole.herokuapp.com" + "/api/reports/driver"
   
     //call method to upload only descripiton: makeRequest( photoURL, BackendURL)
-    makeRequest(null, backendurl)
+    var latitude;
+    var longitude;
+    //STEP2: get location
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(function (position) {
+        //Successful action
+        latitude = position.coords.latitude;
+        longitude = position.coords.longitude;
+  
+  
+      }, alert("To obtain your location, permission must be granted first."))
+      
+
+      if( longitude==null || latitude==null ){
+        //add display message here
+        displayToast("failed", "unfortunately we couldn't find your coordinates!")
+        return;
+      }
+      
+      const data = {
+        "longitude": longitude,
+        "latitude": latitude
+      };
+  
+      console.log('data:' + JSON.stringify(data) );
+      try {
+        let access_token = window.localStorage.getItem("access_token");
+       
+        let request = {
+          "method": "POST",
+          "headers": {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${access_token}`,
+            
+          },
+          "body":JSON.stringify(data)
+        }
+        
+  
+  
+        
+        let response = await fetch(backendurl, request);
+        let results = await response.json()
+        //console.log(results)
+        if( "message" in results && ("Successfully" in results["message"] || "updated" in results["message"] )){
+          //add display message here
+          displayToast("success", results["message"])
+        }
+        else if(results){
+          displayToast("failed", results["message"])
+        }
+      }
+      catch (error) {
+        console.log(`Error: ` + error)
+        
+      }
+  
+    }//end of if
  
   
 
@@ -99,6 +183,13 @@ async function makeRequest(photoURL = null, url) {
       let results = await response.json()
 
       //console.log("Post Request Results: " + JSON.stringify(results) ); //3. Do something with the message
+      if( "message" in results && ("Successfully" in results["message"] || "updated" in results["message"] )){
+        //add display message here
+        displayToast("success", results["message"])
+      }
+      else if(results) {
+        displayToast("failed", results["message"])
+      }
     }
     catch (error) {
      // console.log(`Error: ` + error)
