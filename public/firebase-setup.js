@@ -66,20 +66,12 @@ async function postStandardReport() {
 async function makeRequest(photoURL = null, description, url) {
 	var latitude, longitude;
 	//STEP2: get location
+	
 	if (navigator.geolocation) {
 		navigator.geolocation.getCurrentPosition(async (position) => {
 			//Successful action
 			latitude = position.coords.latitude;
 			longitude = position.coords.longitude;
-
-			console.log(latitude, longitude)
-			//Insert latitude/longitude error check here.
-			if(longitude == null || latitude == null){
-				//add display message here
-				displayToast("failed", "unfortunately we couldn't find your coordinates!")
-				return;
-			}
-
 			
 			let results = await buildReportRequest(latitude, longitude, photoURL, description, url)
 
@@ -96,6 +88,14 @@ async function makeRequest(photoURL = null, description, url) {
 				displayToast("failed", results["error"])
 			}
 
+		}, function(){
+			console.log(latitude, longitude)
+			//Insert latitude/longitude error check here.
+			if(longitude == null || latitude == null){
+				//add display message here
+				displayToast("failed", "Unfortunately we couldn't find your coordinates!")
+				return;
+			}
 		})
  	} else {
 		displayToast("failed", "unfortunately we couldn't find your coordinates!")
