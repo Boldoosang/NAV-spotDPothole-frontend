@@ -54,10 +54,11 @@ async function postDriverReport() {
 
 async function postStandardReport() {
 	//STEP1: UPLOAD IMAGE
-	let imageUploadedResult = uploadImage()
+	let imageUploadedResult = await uploadImage()
 
 	if (!imageUploadedResult) {
 		//call method to upload only descripiton
+		let description = document.getElementById("descriptionText").value; // get text
 		imageUploadedResult = await makeRequest(null, description, standardReportURL)
 	}
 }
@@ -66,20 +67,12 @@ async function postStandardReport() {
 async function makeRequest(photoURL = null, description, url) {
 	var latitude, longitude;
 	//STEP2: get location
+	
 	if (navigator.geolocation) {
 		navigator.geolocation.getCurrentPosition(async (position) => {
 			//Successful action
 			latitude = position.coords.latitude;
 			longitude = position.coords.longitude;
-
-			console.log(latitude, longitude)
-			//Insert latitude/longitude error check here.
-			if(longitude == null || latitude == null){
-				//add display message here
-				displayToast("failed", "unfortunately we couldn't find your coordinates!")
-				return;
-			}
-
 			
 			let results = await buildReportRequest(latitude, longitude, photoURL, description, url)
 
@@ -96,7 +89,15 @@ async function makeRequest(photoURL = null, description, url) {
 				displayToast("failed", results["error"])
 			}
 
-		}, alert("To obtain your location, permission must be granted first."))
+		}, function(){
+			console.log(latitude, longitude)
+			//Insert latitude/longitude error check here.
+			if(longitude == null || latitude == null){
+				//add display message here
+				displayToast("failed", "Unfortunately we couldn't find your coordinates!")
+				return;
+			}
+		})
  	} else {
 		displayToast("failed", "unfortunately we couldn't find your coordinates!")
 	}
@@ -203,8 +204,9 @@ async function uploadImage() {
 				});
 		});
 		return true
+	} else {
+		return false
 	}
-	return false
 }
 
 document.getElementById('submit-passenger-report').addEventListener('click', postStandardReport);

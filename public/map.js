@@ -2,9 +2,10 @@ const container = document.getElementById('map')
 let markersLayer;
 let markers = [];
 let leaderboardData = []
+let map
 
-if(container) {
-    var map = L.map('map', {
+async function initMap(){
+    map = L.map('map', {
         center: [10.69, -61.23],
         zoom: 9,
     });
@@ -18,18 +19,17 @@ if(container) {
         accessToken: 'pk.eyJ1IjoidGhlaHVtYW4iLCJhIjoiY2t3YXJoeTdhMm1ocDJxbW4wMXpuc2NhbCJ9.j0jEiwJsxa-Gm2DMb6Fdzw'
     }).addTo(map);
 
-    fetch("./ttmap.geojson").then(function(response) {
+    await fetch("./ttmap.geojson").then(function(response) {
         return response.json();
-        }).then(function(data) {
+    }).then(function(data) {
         L.geoJSON(data, {
             onEachFeature: function(feature, layer) {
                 layer.bindPopup(feature.properties.Constituency);
             }
         }).addTo(map)
     });
-
-    displayPotholes()
 }
+
 function getRandom(){
     return today.getSeconds()/today.getMinutes() * 0.05
 }
@@ -40,30 +40,18 @@ async function getPotholes(){
 }
 
 async function displayPotholes(){
-    console.log(markersLayer)
+    if(markers)
+    markers = []
     if(markersLayer)
         markersLayer.clearLayers();
 
+    markersLayer = L.layerGroup().addTo(map); 
+
     let potholes = await getPotholes();
     if(potholes.length > 0){
-        for(const pothole of potholes){
-            var constituency = leafletPip.pointInLayer([pothole.longitude, pothole.latitude], map);
+        for(let pothole of potholes){
+            var constituency = await leafletPip.pointInLayer([pothole.longitude, pothole.latitude], map);
 
-            if(constituency.length == 0)
-                return
-
-            if(constituency.length == 0){
-                constituency = [
-                    {
-                        "feature": {
-                            "properties": {
-                                "ID": "null",
-                            }
-                        }
-                    }
-                ]
-            }
-            
             let marker = L.marker([pothole.latitude, pothole.longitude], {
                 constituency: constituency[0].feature.properties.Constituency,
                 potholeID: pothole.potholeID,
@@ -79,11 +67,8 @@ async function displayPotholes(){
                 
                 var offCanvasReport= getOffCanvas();
                 offCanvasReport.toggle();
-            }).bindPopup(pothole.numReports + " Report(s)");
-
+            }).bindPopup(pothole.numReports + " Report(s)").addTo(markersLayer);
             markers.push(marker)
-            markersLayer = L.layerGroup(markers); 
-            markersLayer.addTo(map);
         }   
     }  
 }
@@ -179,3 +164,11 @@ function reportLeaderboardModal(lat, long, potholeID){
     offCanvasReport.toggle();
     console.log(offCanvasReport)
 }
+
+
+async function main(){
+    await initMap();
+    displayPotholes();
+}
+
+window.addEventListener('DOMContentLoaded', main);
