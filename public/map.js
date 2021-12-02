@@ -34,59 +34,16 @@ function getRandom(){
     return today.getSeconds()/today.getMinutes() * 0.05
 }
 
-async function submitReport(){
-    today = new Date();
-        let randLat = Math.random() * getRandom();
-        let randLong = Math.random() * getRandom();
-
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(async function(position) {
-            const constituency = leafletPip.pointInLayer([position.coords.longitude, position.coords.latitude], map);
-                if(constituency.length == 0)
-                    return
-                const data = {
-                    "longitude" : position.coords.longitude,
-                    "latitude" : position.coords.latitude,
-                    "constituencyID" : constituency[0].feature.properties.Constituency,
-                }
-
-                let result =  await sendRequest(SERVER + '/api/reports/driver', 'POST', data);
-                if(markersLayer)
-                    markersLayer.clearLayers();
-
-                displayPotholes();
-            });     
-        }else {
-            alert("Geolocation is not supported by this browser.");
-            return null;
-        }
-}
-
-async function submitReportClickTest(lat, long){
-    const constituency = leafletPip.pointInLayer([long, lat], map);
-
-    const data = {
-        "longitude" : long,
-        "latitude" : lat,
-        "constituencyID" : constituency[0].feature.properties.Constituency,
-    }
-
-    let result =  await sendRequest(SERVER + '/api/reports/driver', 'POST', data);
-    
-    if(markersLayer)
-        markersLayer.clearLayers();
-
-    displayPotholes();
-}
-
 async function getPotholes(){
     let potholes = await sendRequest(SERVER + '/api/potholes', 'GET');
     return potholes;
 }
 
 async function displayPotholes(){
-        if(markersLayer)
-            markersLayer.clearLayers();
+    console.log(markersLayer)
+    if(markersLayer)
+        markersLayer.clearLayers();
+
     let potholes = await getPotholes();
     if(potholes.length > 0){
         for(const pothole of potholes){

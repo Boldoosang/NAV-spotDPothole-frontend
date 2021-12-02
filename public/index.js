@@ -363,7 +363,7 @@ async function loadReportLeaderboardData(){
 }
 
 async function loadLeaderboardData(){
-    let leaderboard = document.querySelector("#leaderboard")
+    let leaderboard = document.querySelector("#constLeaderboard")
     leaderboard.innerHTML = `
     <tr>
         <th scope="col">RANK</th>
@@ -374,7 +374,7 @@ async function loadLeaderboardData(){
     `
 
     let leaderboardData = await getPotholesByConstituency();
-    
+    console.log(leaderboardData)
     let i = 1;
     for(constituency of leaderboardData){
         leaderboard.innerHTML += `
@@ -382,7 +382,7 @@ async function loadLeaderboardData(){
             <td>${i}</td>
             <td>${constituency.name}</td>
             <td>${constituency.count}</td>
-            <td><button type="button" class="w-100 btn btn-primary" data-bs-toggle="modal" data-bs-target="#councillorInfoModal" onclick="displayCouncillorInfo(event, '${constituency.constitID}')">View Councillor Information</button></td>
+            <td><a data-bs-toggle="modal" data-bs-target="#councillorInfoModal" onclick="displayCouncillorInfo(event, '${constituency.constitID}')">${constituency.constituencyLeader}</a><td>
         </tr>
         `
         i++;
