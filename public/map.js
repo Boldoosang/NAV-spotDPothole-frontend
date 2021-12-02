@@ -40,6 +40,8 @@ async function getPotholes(){
 }
 
 async function displayPotholes(){
+    if(markers)
+    markers = []
     if(markersLayer)
         markersLayer.clearLayers();
 
