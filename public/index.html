@@ -53,7 +53,7 @@
                         </div>
                     </nav>
 
-                    <main class="container-fluid m-0 p-0" style="min-height: 75vh">
+                    <main id="main" class="container-fluid m-0 p-0" style="min-height: 75vh">
                         <div class="tab-content" id="mainTabContent">
                             <div class="tab-pane active fade show" id="mainTab-map" role="tabpanel">
                                 <!-- Map goes here-->
@@ -136,7 +136,7 @@
                                 </div>
                             </div>
                             <div class="modal-footer">
-                                <button class="btn btn-dark w-100"  id="submit-passenger-report">Submit</button>
+                                <button class="btn btn-dark w-100" data-bs-target="#standardReportModal" data-bs-dismiss="modal" id="submit-passenger-report">Submit</button>
                             </div>
                           </div>
                         </div>
@@ -161,7 +161,7 @@
                                             <div class="text-center mt-2 lead" id="driverReportOutcome"></div>
                                           </h2>
                                           <div id="flush-collapseOne" class="mx-1 accordion-collapse collapse row justify-content-around" aria-labelledby="flush-headingOne" data-bs-parent="#driverSubmitReport">
-                                            <button class="btn btn-success py-5 mt-3"  id="submit-driver-report" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseOne" aria-expanded="false" aria-controls="flush-collapseOne">
+                                            <button class="btn btn-success py-5 mt-3"  id="submit-driver-report" type="button" data-bs-dismiss="modal" data-bs-target="#driverReportModal" aria-expanded="false" aria-controls="flush-collapseOne">
                                                 Confirm Submission
                                             </button>
                                             <button class="btn btn-danger py-5 mt-3"  type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseOne" aria-expanded="false" aria-controls="flush-collapseOne">
@@ -324,9 +324,12 @@
                 function showImage(){
                     const image = event.target.files[0];
                     const displayImage = document.getElementById("pothole-img");
-            
-                    displayImage.src = URL.createObjectURL(image);
-                    displayImage.hidden = false;
+                    try {
+                        displayImage.src = URL.createObjectURL(image);
+                        displayImage.hidden = false;
+                    } catch(e){
+                        displayImage.hidden = true;
+                    }
                   }
             </script>
             <script src="map.js"></script>
