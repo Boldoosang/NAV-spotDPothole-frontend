@@ -397,7 +397,6 @@ async function displayCouncillorInfo(event, constituencyID){
     let councillorInformation = ""
 
     try {
-        councillorInformation = `<div class="d-flex justify-content-center my-3"><strong>No constituency information available!</strong></div>`
         councillorInformation = 
         `
         <div class="text-center"><strong>COUNCILLOR INFORMATION<strong></div>
