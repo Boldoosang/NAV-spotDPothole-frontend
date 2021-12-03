@@ -398,30 +398,30 @@ async function displayCouncillorInfo(event, constituencyID){
 
     try {
         councillorInformation = `<div class="d-flex justify-content-center my-3"><strong>No constituency information available!</strong></div>`
-        // councillorInformation = 
-        // `
-        // <div class="text-center"><strong>COUNCILLOR INFORMATION<strong></div>
-        // <table class="table my-2 table-borderless">
-        //     <tbody>
-        //         <tr>
-        //             <th scope="row">Name</th>
-        //             <td>${councillorData[0].name}</td>
-        //         </tr>
-        //         <tr>
-        //             <th scope="row">Address</th>
-        //             <td>${councillorData[0].address}</td>
-        //         </tr>
-        //         <tr>
-        //             <th scope="row">Email</th>
-        //             <td scope="row">${councillorData[0].email}</td>
-        //         </tr>
-        //         <tr>
-        //             <th scope="row">Phone</th>
-        //             <td scope="row">${councillorData[0].phone}</td>
-        //         </tr>
-        //     </tbody>
-        // </table>
-        // `
+        councillorInformation = 
+        `
+        <div class="text-center"><strong>COUNCILLOR INFORMATION<strong></div>
+        <table class="table my-2 table-borderless">
+            <tbody>
+                <tr>
+                    <th scope="row">Name</th>
+                    <td>${councillorData[0].name}</td>
+                </tr>
+                <tr>
+                    <th scope="row">Address</th>
+                    <td>${councillorData[0].address}</td>
+                </tr>
+                <tr>
+                    <th scope="row">Email</th>
+                    <td scope="row">${councillorData[0].email}</td>
+                </tr>
+                <tr>
+                    <th scope="row">Phone</th>
+                    <td scope="row">${councillorData[0].phone}</td>
+                </tr>
+            </tbody>
+        </table>
+        `
     } catch(e){
         councillorInformation = `<div class="d-flex justify-content-center my-3"><strong>No constituency information available!</strong></div>`
     }
