@@ -21,10 +21,8 @@ jobs:
       with:
         node-version: 17.x
         cache: 'npm'
-    - name: Install NPM Libraries
     - run: npm ci
-    - name: TJActions
-    - uses: actions/checkout@v2
+
     - name: Install dependencies
       uses: tj-actions/puppeteer@v3.2
       with:
