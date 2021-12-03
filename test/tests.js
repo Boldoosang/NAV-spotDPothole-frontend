@@ -42,15 +42,24 @@ before(async function(){
     })
   }
 
-context('Home Screen Tests', ( ) => {
-    it('Test 1: Check That offcanvas opens when map icon is clicked', async () => {
+context('Home Screen Tests', () => {
+    it('Test 1: Check That offcanvas opens and closes', async () => {
         
         await page.waitForSelector('#mapContent > #map > .leaflet-pane > .leaflet-pane > .leaflet-marker-icon:nth-child(1)')
         await page.click('#mapContent > #map > .leaflet-pane > .leaflet-pane > .leaflet-marker-icon:nth-child(1)')
 
         let offcanvas = await getHTML('#offcanvasReport')
 
-        assert(offcanvas.includes('offcanvas offcanvas-end show'))
+        assert(offcanvas.includes('offcanvas offcanvas-end show'), "Offcanvas should be open")
+
+        await page.waitForTimeout(500)
+
+        await page.waitForSelector('#offcanvasReport > .offcanvas-header > .btn-close')
+        await page.click('#offcanvasReport > .offcanvas-header > .btn-close')
+
+        offcanvas = await getHTML('#offcanvasReport')
+
+        assert(!offcanvas.includes('offcanvas offcanvas-end show'), "Offcanvas should be closed")
     })
 
     it('Test 2: Check that The offcanvas contains constituency data', async () => {
