@@ -316,11 +316,11 @@ function loadReportPage(){
         //`<button data-bs-target="#standardReportModal" data-bs-toggle="modal" id="standard-button"  type="button" class="btn btn-dark py-5">Standard Report</button>                       
         // <button data-bs-target="#driverReportModal" data-bs-toggle="modal" id="driver-button" type="button" class="btn btn-dark py-5">Driver Report</button>`
     } else {
-        reportArea.innerHTML = `
-        <div class="col col-sm-12 mt-3 text-center">
-            <h5 class="fw-bold">Unsupported Device!</h5>
-            <p>Sorry, but you need to use a mobile device in order to make a report.</p>
-        </div>`
+        //reportArea.innerHTML = `
+        //<div class="col col-sm-12 mt-3 text-center">
+         //   <h5 class="fw-bold">Unsupported Device!</h5>
+        //    <p>Sorry, but you need to use a mobile device in order to make a report.</p>
+       // </div>`
     }
 }
 
