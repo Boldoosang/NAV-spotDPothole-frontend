@@ -1,12 +1,14 @@
 const puppeteer = require('puppeteer');
 const {expect, asserty, assert} = require('chai');
 const config = require('./config.json');
+// import fetch from 'node-fetch';
+fetch = require('node-fetch');
 
 let browser;
 let page;
 let requests = [];
 
-before(async function(){
+beforeEach(async function(){
     this.timeout(config.timeout);
     browser = await puppeteer.launch(config);
     [page] = await browser.pages();
@@ -19,7 +21,7 @@ before(async function(){
       request.continue();
     });
   
-    await page.goto('http://127.0.0.1:5500/public/')
+    await page.goto('https://spotdpothole.web.app/')
   });
 
   function getHTML(selector){
@@ -42,28 +44,45 @@ before(async function(){
     })
   }
 
-context('Home Screen Tests', ( ) => {
-    it('Test 1: Check That offcanvas opens when map icon is clicked', async () => {
-        
+context('Home Screen Tests', () => {
+    it('Test 1: Check That offcanvas opens and closes', async function(){
+        this.timeout(config.timeout);
         await page.waitForSelector('#mapContent > #map > .leaflet-pane > .leaflet-pane > .leaflet-marker-icon:nth-child(1)')
         await page.click('#mapContent > #map > .leaflet-pane > .leaflet-pane > .leaflet-marker-icon:nth-child(1)')
 
         let offcanvas = await getHTML('#offcanvasReport')
+        assert(offcanvas.includes('offcanvas offcanvas-end show'), "Offcanvas should be open")
 
-        assert(offcanvas.includes('offcanvas offcanvas-end show'))
+        await page.waitForSelector('#offcanvasReport > .offcanvas-header > .btn-close')
+        await page.click('#offcanvasReport > .offcanvas-header > .btn-close')
+
+        offcanvas = await getHTML('#offcanvasReport')
+
+        assert(!offcanvas.includes('offcanvas offcanvas-end show'), "Offcanvas should be closed")
     })
 
-    it('Test 2: Check that The offcanvas contains constituency data', async () => {
+    it('Test 2: Check that The offcanvas contains constituency data', async function(){
+        this.timeout(config.timeout);
         await page.waitForSelector('#mapContent > #map > .leaflet-pane > .leaflet-pane > .leaflet-marker-icon:nth-child(1)')
         await page.click('#mapContent > #map > .leaflet-pane > .leaflet-pane > .leaflet-marker-icon:nth-child(1)')
 
+        let url = requests.find(a => a.includes('https://project-caigual.herokuapp.com/'))
+
+        const response = await fetch(url);
+        const body = await response.json();
+
+
+        await page.waitForTimeout(500)
         let offcanvas = await getHTML('#councillorInformation')
 
-        assert(!offcanvas.includes('<div class="d-flex justify-content-center my-3"><strong>No constituency information available!</strong></div>'))
+        assert(offcanvas.includes(body[0].name), "Offcanvas should contain the name of the councillor")
+        assert(offcanvas.includes(body[0].address), "Offcanvas should contain the address of the councillor")
+        assert(offcanvas.includes(body[0].email), "Offcanvas should contain the email address of the councillor")
+        assert(offcanvas.includes(body[0].phone), "Offcanvas should contain the phone number of the councillor")
     })
 
-    it('Test 3: Check that the constituency leaderboard displays', async () => {
-        await page.waitForTimeout(500)
+    it('Test 3: Check that the constituency leaderboard displays', async function(){
+        this.timeout(config.timeout);
         await page.waitForSelector('#wrapper > #sidebar-wrapper > .list-group > .list-group-item:nth-child(3)')
         await page.click('#wrapper > #sidebar-wrapper > .list-group > .list-group-item:nth-child(3)')
 
@@ -72,8 +91,8 @@ context('Home Screen Tests', ( ) => {
         assert(result)
     })
 
-    it('Test 4: Check that the report leaderboard displays', async () => {
-        await page.waitForTimeout(500)
+    it('Test 4: Check that the report leaderboard displays', async function() {
+        this.timeout(config.timeout);
         await page.waitForSelector('#wrapper > #sidebar-wrapper > .list-group > .list-group-item:nth-child(3)')
         await page.click('#wrapper > #sidebar-wrapper > .list-group > .list-group-item:nth-child(3)')
 
@@ -84,8 +103,56 @@ context('Home Screen Tests', ( ) => {
         let result = leaderboard.includes("#") && leaderboard.includes("Pothole ID") && leaderboard.includes("Number of Reports") && leaderboard.includes("Constituency")
         assert(result)
     })
+
+    it('Test 5: Check that the councillor information loads when button pressed', async function() {
+        this.timeout(config.timeout);
+        await page.waitForSelector('#wrapper > #sidebar-wrapper > .list-group > .list-group-item:nth-child(3)')
+        await page.click('#wrapper > #sidebar-wrapper > .list-group > .list-group-item:nth-child(3)')
+
+        await page.waitForSelector('#constLeaderboard > tbody:nth-child(2) > tr > td > .btn')
+        await page.click('#constLeaderboard > tbody:nth-child(2) > tr > td > .btn')
+
+        let url = requests.find(a => a.includes('https://project-caigual.herokuapp.com/'))
+
+        const response = await fetch(url);
+        const body = await response.json();
+
+        await page.waitForTimeout(500)
+        let infoModal = await getHTML('#councillorInfoModal > .modal-dialog > .modal-content > .modal-body') 
+
+        assert(infoModal.includes(body[0].name), "Modal should contain the name of the councillor")
+        assert(infoModal.includes(body[0].address), "Modal should contain the address of the councillor")
+        assert(infoModal.includes(body[0].email), "Modal should contain the email address of the councillor")
+        assert(infoModal.includes(body[0].phone), "Modal should contain the phone number of the councillor")
+    })
+
+    it('Test 6: Check that clicking on the pothole ID opens the correct councillor info', async function(){
+      this.timeout(config.timeout);
+      await page.waitForTimeout(500)
+      await page.waitForSelector('#wrapper > #sidebar-wrapper > .list-group > .list-group-item:nth-child(3)')
+      await page.click('#wrapper > #sidebar-wrapper > .list-group > .list-group-item:nth-child(3)')
+
+      await page.waitForSelector('#pills-reportLeaderboard-tab')
+      await page.click('#pills-reportLeaderboard-tab')
+
+      await page.waitForSelector('.card > #reportLeaderboard > tbody:nth-child(2) > tr > .text-primary')
+      await page.click('.card > #reportLeaderboard > tbody:nth-child(2) > tr > .text-primary')
+
+      let url = requests.find(a => a.includes('https://project-caigual.herokuapp.com/'))
+
+      const response = await fetch(url);
+      const body = await response.json();
+
+      await page.waitForTimeout(500)
+      let offcanvas = await getHTML('#offcanvasReport')
+
+      assert(offcanvas.includes(body[0].name), "Offcanvas should contain the name of the councillor")
+      assert(offcanvas.includes(body[0].address), "Offcanvas should contain the address of the councillor")
+      assert(offcanvas.includes(body[0].email), "Offcanvas should contain the email address of the councillor")
+      assert(offcanvas.includes(body[0].phone), "Offcanvas should contain the phone number of the councillor")
+    })
 })
 
-after(async () => {
+afterEach(async () => {
     await browser.close();
   });
