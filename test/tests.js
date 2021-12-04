@@ -8,7 +8,7 @@ let browser;
 let page;
 let requests = [];
 
-before(async function(){
+beforeEach(async function(){
     this.timeout(config.timeout);
     browser = await puppeteer.launch(config);
 
@@ -19,6 +19,8 @@ before(async function(){
     [page] = await browser.pages();
   
     await page.setRequestInterception(true);
+
+    const context = browser.defaultBrowserContext();
   
     page.on('request', request => {
       requests.push(request.url());
