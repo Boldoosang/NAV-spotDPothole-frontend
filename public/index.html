@@ -46,7 +46,7 @@
                 <div class="list-group list-group-flush" style="font-size: 1.2rem;">
                     <a class="list-group-item list-group-item-action list-group-item-light p-3"onclick="displayPotholes()" data-bs-toggle="pill" data-bs-target="#mainTab-map"><i class="bi bi-house-fill" style="font-size:1.5rem;color:black"></i>        Home</a>
                     <a class="list-group-item list-group-item-action list-group-item-light p-3" onclick="loadReportPage(event)" data-bs-toggle="pill" data-bs-target="#mainTab-report"><i class="bi bi-plus-square-fill" style="font-size:1.5rem;color:black"></i>        Report</a>
-                    <a class="list-group-item list-group-item-action list-group-item-light p-3" onclick="onClickLeaderboard(event)" data-bs-toggle="pill" data-bs-target="#mainTab-leaderboard"><i class="bi bi-table" style="font-size:1.5rem;color:black"></i>        Leaderboard</a>
+                    <a class="list-group-item list-group-item-action list-group-item-light p-3" onclick="loadLeaderboardData()" data-bs-toggle="pill" data-bs-target="#mainTab-leaderboard"><i class="bi bi-table" style="font-size:1.5rem;color:black"></i>        Leaderboard</a>
                     <hr class="my-0" style="color: rgba(0,0,0,0.125)">
                 </div>
                 <!-- Places user context actions (Login/Logout/Register) at the bottom of the menu -->
@@ -99,11 +99,11 @@
                                 <ul class="nav nav-pills nav-justified mb-3 w-100" id="pills-tab-leaderboards" role="tablist">
                                     <!-- Displays the constituency pothole leaderboard button -->
                                     <li class="nav-item" role="presentation">
-                                        <button class="btn btn-dark nav-link active" id="pills-constLeaderboard-tab" onclick="onClickLeaderboard(event)" data-bs-toggle="pill" data-bs-target="#pills-constLeaderboard" type="button" role="tab" aria-controls="pills-home" aria-selected="true">Constituency Leaderboard</button>
+                                        <button class="btn btn-dark nav-link active" id="pills-constLeaderboard-tab" onclick="loadLeaderboardData()" data-bs-toggle="pill" data-bs-target="#pills-constLeaderboard" type="button" role="tab" aria-controls="pills-home" aria-selected="true">Constituency Leaderboard</button>
                                     </li>
                                     <!-- Displays the most reported pothole leaderboard button -->
                                     <li class="nav-item" role="presentation">
-                                        <button class="btn btn-dark nav-link" id="pills-reportLeaderboard-tab" onclick="onClickReportLeaderboard(event)" data-bs-toggle="pill" data-bs-target="#pills-reportLeaderboard" type="button" role="tab" aria-controls="pills-profile" aria-selected="false">Report Leaderboard</button>
+                                        <button class="btn btn-dark nav-link" id="pills-reportLeaderboard-tab" onclick="loadReportLeaderboardData()" data-bs-toggle="pill" data-bs-target="#pills-reportLeaderboard" type="button" role="tab" aria-controls="pills-profile" aria-selected="false">Report Leaderboard</button>
                                     </li>
                                 </ul>
 
@@ -165,11 +165,10 @@
                                         <button onclick="" class="btn btn-outline-transparent" > 
                                             <label class="input-group-text " for="photo"><i class="bi bi-images"></i> <div class="ms-2">Select Image </div></label>
                                         </button>
-
                                         <button onclick="removeImage()" class="btn btn-danger rounded">x</button>
-
                                         <input id="photo" class="form-control-file" type="file" accept="image/*" onchange="showImage()" hidden> 
                                     </div>
+                                    <div class="text-center" id="uploadProgress"></div>
                                 </div>
                             </div>
 
@@ -356,14 +355,17 @@
         <!-- Bootstrap Core JS-->
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/js/bootstrap.bundle.min.js"></script>
 
+        <!-- Main constants file -->
+        <script src="constants.js"></script>
+
+        <!-- Firebase Storage Modules -->
+        <script type="module" src="credentials.js"></script>
+        <script type="module" src="firebase-setup.js"></script>
+
         <!-- Main web javascript file -->
         <script src="index.js"></script>
 
         <!-- Map javascript -->
         <script src="map.js"></script>
-
-        <!-- Firebase Storage Modules -->
-        <script type="module" src="credentials.js"></script>
-        <script type="module" src="firebase-setup.js"></script>
     </body>
 </html>

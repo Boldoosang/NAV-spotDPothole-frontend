@@ -3,7 +3,7 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/9.5.0/firebase
 import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.5.0/firebase-storage.js";
 import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.5.0/firebase-analytics.js";
 
-
+// Imports firebase credentials for connecting to firebase storage app
 import { firebaseConfig } from "./credentials.js";
 
 // Initialize Firebase
@@ -13,162 +13,24 @@ const analytics = getAnalytics(app);
 // Get a reference to the storage service, which is used to create references in your storage bucket
 const myStorage = getStorage(app);
 
-
-//Backend Constants
-const SERVER = "https://spotdpothole.herokuapp.com/"
-const driverReportURL = SERVER + "/api/reports/driver"
-const standardReportURL = SERVER + "/api/reports/standard"
-
-
-/* To display Toast */
-function displayToast(type, message) {
-	var id= new Date() + '-' + "notification"
-	var div = document.createElement('div');
-	div.textContent = message;
-
-	div.setAttribute('id', id)
-	div.setAttribute('class', '');
-  
-	if( type=='success'){
-		div.setAttribute('class', "message success show");    
-	} else {
-		div.setAttribute('class', "message failed show");
-	}
-  
-  	document.getElementById('mainTabContent').appendChild(div);
-
-	// After 4 seconds, remove the show class from DIV
-	setTimeout(() => { 
-		console.log(id)
-		let element = document.getElementById(id);
-		element.className = element.className.replace("show", "hide"); 
-	}, 4000);
-}
-
-
-//To send to the backend
-async function postDriverReport() {
-  	await makeRequest(null, null, driverReportURL);
-}
-
-
+//Facilitates the submission of a standard report for processing at the backend.
 async function postStandardReport() {
-	//STEP1: UPLOAD IMAGE
-	let imageUploadedResult = await uploadImage()
-
-	if (!imageUploadedResult) {
-		//call method to upload only descripiton
-		let description = document.getElementById("descriptionText").value; // get text
-		imageUploadedResult = await makeRequest(null, description, standardReportURL)
-	}
+	//Handles both cases of standard reports with images, and without.
+	await handleStandardReport()
 }
 
-
-async function makeRequest(photoURL = null, description, url) {
-	var latitude, longitude;
-	//STEP2: get location
-	
-	if (navigator.geolocation) {
-		navigator.geolocation.getCurrentPosition(async (position) => {
-			//Successful action
-			latitude = position.coords.latitude;
-			longitude = position.coords.longitude;
-			
-			let results = await buildReportRequest(latitude, longitude, photoURL, description, url)
-
-
-			try {
-				if("msg" in results){
-					displayToast("failed", "You must be logged in to report a pothole!")
-				} else if("error" in results){
-					displayToast("failed", results["error"])
-				} else if("message" in results){
-					displayToast("success", results["message"])
-				}
-			} catch (e) {
-				displayToast("failed", results["error"])
-			}
-
-		}, function(){
-			console.log(latitude, longitude)
-			//Insert latitude/longitude error check here.
-			if(longitude == null || latitude == null){
-				//add display message here
-				displayToast("failed", "Unfortunately we couldn't find your coordinates!")
-				return;
-			}
-		})
- 	} else {
-		displayToast("failed", "unfortunately we couldn't find your coordinates!")
-	}
-}
-
-
-
-async function buildReportRequest(latitude, longitude, photoURL, description = null, url){
-	console.log(latitude, longitude)
-  
-	var data = {
-		"longitude": longitude,
-		"latitude": latitude,
-	};
-
-	if(description != null){
-		data["description"] = description
-	}
-
-	if(photoURL != null){
-		data["images"] = [photoURL];
-	} else {
-		data["images"] = []
-	}
-		
-	console.log(JSON.stringify(data));
-  
-	try {
-		let access_token = window.localStorage.getItem("access_token");
-	   
-		let request = {
-                "method" : "POST",
-                "headers" : {
-                    "Authorization" : `Bearer ${access_token}`,
-                    "Content-Type" : "application/json"
-                }
-        }
-
-        request.body = JSON.stringify(data);
-
-		console.log(request)
-		
-		let response = await fetch(url, request);
-		let results = await response.json()
-  
-		console.log("Post Request Results: " + JSON.stringify(results) ); //3. Do something with the message
-		return results;
-	} catch (error) {
-		console.log(`Error: ` + error)
-		return error;
-	}
-}
-
-
-// Firebase 
-async function uploadImage() {
-	console.log('Entered')
-	//const ref = myStorage.ref();
-
+// Handles the submission of a standard pothole report for both image and non-image cases.
+async function handleStandardReport() {
 	//Get the single file input
 	const file = document.querySelector('#photo').files[0];
 
+	//If a valid file was uploaded, upload it to firebase.
 	if (file != null) {
-		console.log(file)
+		//Sets the name of the file
+		const fileName = "REPORT IMG - " + new Date().toLocaleString();
 
-		const fileName = "REPORT - " + new Date().toLocaleString();
-
-		//const imgRef = ref(myStorage, fileName);
 		// Create a storage reference from our storage service
 		const storageRef = ref(myStorage, fileName);
-
 		const uploadTask = uploadBytesResumable(storageRef, file);
 
 		console.log(uploadTask)
@@ -176,38 +38,54 @@ async function uploadImage() {
 		// 1. 'state_changed' observer, called any time the state changes
 		// 2. Error observer, called on failure
 		// 3. Completion observer, called on successful completion
-		uploadTask.on('state_changed', (snapshot) => {
+
+		//Get the upload progress text area.
+		let uploadProgress = document.querySelector("#uploadProgress")
+
+		await uploadTask.on('state_changed', await async function(snapshot) {
 			// Observe state change events such as progress, pause, and resume
+
 			// Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
 			const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-			console.log('Upload is ' + progress + '% done');
+			
+			//Based on the state of uploading, update the upload progress text area.
 			switch (snapshot.state) {
-			case 'paused':
-				console.log('Upload is paused');
-				break;
-			case 'running':
-				console.log('Upload is running');
-				break;
+				case 'paused':
+					uploadProgress.innerHTML = `<strong>UPLOAD PAUSED:</strong> Upload is ${progress}% done!`
+					break;
+				case 'running':
+					uploadProgress.innerHTML = `<strong>UPLOAD RUNNING:</strong> Upload is ${progress}% done!`
+					break;
 			}
-		}, (error) => {
-			// Handle unsuccessful uploads
-			console.log(error)
-			return false;
-		}, () => {
-				// Handle successful uploads on complete
-				// For instance, get the download URL: https://firebasestorage.googleapis.com/...
-				getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
-					console.log('File available at', downloadURL);
-					let description = document.getElementById("descriptionText").value; // get text
-					let results = makeRequest(downloadURL, description, standardReportURL)
-					return results
-				});
+		}, await async function(error) {
+		// Handle unsuccessful uploads
+			//If there was an error in uploading the files, display the error in the upload progress text area.
+			uploadProgress.innerHTML = `<strong>ERROR UPLOADING FILE: ${error}</strong>`
+		}, await async function() {
+		// Handle successful uploads on complete
+			//If the file was successfully uploaded, display the success message in the upload progress text area.
+			uploadProgress.innerHTML = `<strong>FILE SUCCESSFULLY UPLOADED</strong>`
+
+			//Gets the download URL and description from the report, builds the report, and submits the report.
+			let finalFileURL = await getDownloadURL(uploadTask.snapshot.ref)
+			let description = document.getElementById("descriptionText").value; // get text
+			await buildReport(finalFileURL, description, STANDARD_REPORT_URL)
 		});
-		return true
 	} else {
-		return false
+	//If no image was provided in the standard report, file the report without an image. 
+		//Gets the report description from the report.
+		let description = document.getElementById("descriptionText").value;
+		//Sends a request with the description to the standardReport endpoint.
+		await buildReport(null, description, STANDARD_REPORT_URL)
 	}
 }
 
-document.getElementById('submit-passenger-report').addEventListener('click', postStandardReport);
-document.getElementById('submit-driver-report').addEventListener('click', postDriverReport);
+
+//Carries out bootstrapping tasks 
+function main(){
+	//Attaches on event listener to the passenger/standard report button.
+    document.getElementById('submit-passenger-report').addEventListener('click', postStandardReport);
+}
+
+//Once the DOM has loaded, carry out bootstrapping tasks.
+window.addEventListener('DOMContentLoaded', main);
