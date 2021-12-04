@@ -28,15 +28,15 @@ For the first prototype of the application, the following features have been imp
 ## CONFIGURATION
 After successful installation of Node.js from the [website](https://nodejs.org/en/), the execution of the following command can be used to install the frontend dependencies for development:
 ```
-npm install
+$ npm install
 ```
 After installing the dependencies, login to the firebase CLI using the following command:
 ```
-firebase login
+$ firebase login
 ```
 Upon successful login, the firebase project can be initialized using:
 ```
-firebase init
+$ firebase init
 ```
 Create a new project or choose an existing one. Be sure to select firebase hosting when prompted to select a service. Configure the rest of prompts as needed or press enter for the rest. This should complete the firebase setup.
 
@@ -50,6 +50,13 @@ In the production environment, the frontend webpage can be deployed using:
 ```
 $ firebase deploy
 ```
+
+## TESTING
+In the development environment, testing can be carried out using the following command.
+```
+$ npm run test
+```
+Tests can also be modified by editing the tests.js file located in the /test folder.
 
 ## PROJECT DELIVERABLES
 * [SpotDPothole Web Application](https://spotdpothole.justinbaldeo.com/)
