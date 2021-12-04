@@ -1,6 +1,6 @@
 # This is a basic workflow to help you get started with Actions
 
-name: Run tests on push or PR
+name: Unit, Integration, and End-to-End Testing
 
 # Controls when the workflow will run
 on:
