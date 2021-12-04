@@ -1,6 +1,5 @@
-let username
 const SERVER = "https://spotdpothole.herokuapp.com/"
-const PICONG_SERVER = "https://project-caigual.herokuapp.com/publicAPI/info/electoraldistrict" //?year=2020&district=ari
+const PICONG_SERVER = "https://project-caigual.herokuapp.com/publicAPI/info/electoraldistrict"
 const ELECTION_YEAR = "2020"
 
 async function sendRequest(url, method, data){
@@ -518,9 +517,46 @@ function isMobileDevice(){
     
 }
 
+//For displaying the selected image
+function showImage(){
+    const image = event.target.files[0];
+    console.log(image)
+    const displayImage = document.getElementById("pothole-img");
+    try {
+        displayImage.src = URL.createObjectURL(image);
+        displayImage.hidden = false;
+    } catch(e){
+        displayImage.hidden = true;
+        displayImage.src = "";
+    }
+}
+
+//For displaying the selected image
+function removeImage(){
+    const displayImage = document.getElementById("pothole-img");
+    
+    try {
+        var image = document.querySelector('#photo').files[0];
+        displayImage.src = "";
+        displayImage.value = "";
+        displayImage.hidden = true;
+        image.value = ""
+        console.log(image)
+    } catch(e){
+        console.log(e)
+    }
+}
+
 function main(){
     identifyUserContext()
+    window.history.pushState(null, null, window.location.href);
+    window.onpopstate = function() {
+        window.history.go(1);
+    };
 }
 
 
 window.addEventListener('DOMContentLoaded', main);
+
+
+

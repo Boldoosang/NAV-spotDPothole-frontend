@@ -11403,6 +11403,10 @@ footer > button{
   background-color: #d72013;
 }
 
+#map { 
+  height: 90%; 
+}
+
 /* Animations to fade the snackbar in and out */
 @-webkit-keyframes fadein {
   from {bottom: 0; opacity: 0;}
