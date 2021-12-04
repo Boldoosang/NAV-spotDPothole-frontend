@@ -109,8 +109,8 @@ async function identifyUserContext(){
                                     <hr class="my-0">
                                     <a class="list-group-item list-group-item-action list-group-item-light p-3 pr-5 relative-bottom" onclick="logout()"><i class="bi bi-box-arrow-left" style="font-size:1.5rem;color:black"></i>        Logout</a>`
     } else {
-        userStateArea.innerHTML = `<hr class="my-0">
-        <a class="list-group-item list-group-item-action list-group-item-light p-3 pr-5 relative-bottom" data-bs-toggle="modal" data-bs-target="#loginModal"><i class="bi bi-person-circle" style="font-size:1.5rem;color:black"></i>        Login/Register</a>`
+        //userStateArea.innerHTML = `<hr class="my-0">
+        //<a class="list-group-item list-group-item-action list-group-item-light p-3 pr-5 relative-bottom" data-bs-toggle="modal" data-bs-target="#loginModal"><i class="bi bi-person-circle" style="font-size:1.5rem;color:black"></i>        Login/Register</a>`
     }
 }
 
