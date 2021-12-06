@@ -129,14 +129,14 @@ async function getPotholesByConstituency(){
 
 async function getReportLeaderboardData(){
     leaderboardData = []
-    let result = await sendRequest(SERVER + '/api/potholes', 'GET');
+    let potholes = await getPotholes()
 
     //sort result by numReports
-    result.sort(function(a, b){
+    potholes.sort(function(a, b){
         return b.numReports - a.numReports;
     })
 
-    for(const pothole of result){
+    for(const pothole of potholes){
         var constituency = leafletPip.pointInLayer([pothole.longitude, pothole.latitude], map);
         
         leaderboardData.push({

@@ -139,21 +139,6 @@ async function register(event){
 
 }
 
-window.addEventListener('DOMContentLoaded', event => {
-
-    const sidebarToggle = document.body.querySelector('#sidebarToggle');
-    if (sidebarToggle) {
-        if (localStorage.getItem('sb|sidebar-toggle') === 'true') {
-            document.body.classList.toggle('sb-sidenav-toggled');
-        }
-        sidebarToggle.addEventListener('click', event => {
-            event.preventDefault();
-            document.body.classList.toggle('sb-sidenav-toggled');
-            localStorage.setItem('sb|sidebar-toggle', document.body.classList.contains('sb-sidenav-toggled'));
-        });
-    }
-
-});
 
 function calculateNetVotes(report){
     tally = 0
@@ -204,8 +189,13 @@ async function determineDownVoteButtonColor(report){
     return "btn-secondary"
 }
 
-async function loadReports(potholeID){
+async function getReports(potholeID){
     let potholeReports = await sendRequest(SERVER + "/api/reports/pothole/" + potholeID, "GET")
+    return potholeReports;
+}
+
+async function loadReports(potholeID){
+    let potholeReports = await getReports(potholeID)
     console.log(potholeReports)
     let allReportsContainer = document.querySelector("#reportAccordion")
     let allReportsAccordions = ""
@@ -366,10 +356,7 @@ async function loadLeaderboardData(){
 }
 
 async function displayCouncillorInfo(event, constituencyID){
-    console.log(constituencyID)
-
-    let url = `${PICONG_SERVER}?year=${ELECTION_YEAR}&district=${constituencyID}`
-    let councillorData = await sendRequest(url, "GET")
+    let councillorData = await getCouncillorData(ELECTION_YEAR, constituencyID)
 
     constituencyModalInfoBox = document.querySelector("#councillorInfoModal");
 
@@ -450,9 +437,14 @@ async function voteOnReport(event, potholeID, reportID, isUpvote){
     }
 }
 
-async function loadConstituencyData(constituencyID){
-    let url = `${PICONG_SERVER}?year=${ELECTION_YEAR}&district=${constituencyID}`
+async function getCouncillorData(electionYear, constituencyID){
+    let url = `${PICONG_SERVER}?year=${electionYear}&district=${constituencyID}`
     let councillorData = await sendRequest(url, "GET")
+    return councillorData;
+}
+
+async function loadConstituencyData(constituencyID){
+    let councillorData = await getCouncillorData(ELECTION_YEAR, constituencyID)
 
     let councillorInformationArea = document.querySelector("#councillorInformation")
     let councillorInformation = ""
@@ -623,8 +615,6 @@ async function sendReport(latitude, longitude, photoURL, description = null, url
 	if(photoURL != null){
 		data["images"] = [photoURL];
 	}
-		
-	console.log(JSON.stringify(data));
 	
 	//Attempts to send the request to the endpoint with the data, and returns the outcome.
 	try {
@@ -640,6 +630,18 @@ function main(){
     identifyUserContext()
     disableBackButton()
     document.getElementById('submit-driver-report').addEventListener('click', postDriverReport);
+
+    const sidebarToggle = document.body.querySelector('#sidebarToggle');
+    if (sidebarToggle) {
+        if (localStorage.getItem('sb|sidebar-toggle') === 'true') {
+            document.body.classList.toggle('sb-sidenav-toggled');
+        }
+        sidebarToggle.addEventListener('click', event => {
+            event.preventDefault();
+            document.body.classList.toggle('sb-sidenav-toggled');
+            localStorage.setItem('sb|sidebar-toggle', document.body.classList.contains('sb-sidenav-toggled'));
+        });
+    }
 }
 
 
