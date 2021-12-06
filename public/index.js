@@ -1,3 +1,5 @@
+const {SERVER, PICONG_SERVER, ELECTION_YEAR, DRIVER_REPORT_URL, STANDARD_REPORT_URL} = require('../public/constants')
+
 async function sendRequest(url, method, data){
     try {
         let access_token = window.localStorage.getItem("access_token");
@@ -443,6 +445,8 @@ async function getCouncillorData(electionYear, constituencyID){
     return councillorData;
 }
 
+exports.getCouncillorData = getCouncillorData;
+
 async function loadConstituencyData(constituencyID){
     let councillorData = await getCouncillorData(ELECTION_YEAR, constituencyID)
 
@@ -646,7 +650,4 @@ function main(){
 
 
 window.addEventListener('DOMContentLoaded', main);
-
-
-module.exports = login;
 

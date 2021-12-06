@@ -92,9 +92,9 @@ context('Method Testing',()=>{
 after(async function(){
     await browser.close();
   }); */
+  
+const {getCouncillorData} = require('./../public/index.js');
 
-const login = require('./../public/index.js');
-
-test('adds 1 + 2 to equal 3', () => {
-  expect(login(1, 2)).toBe(3);
+test('Test Get Councillor Data', async () => {
+    console.log(await getCouncillorData(2020,''));
 });
