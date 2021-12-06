@@ -2,6 +2,7 @@
     * @jest-environment jsdom
     */
 
+
 /*const puppeteer = require('puppeteer');
 const {expect, assert } = require('chai');
 const config = require('./config.json');
@@ -92,9 +93,49 @@ context('Method Testing',()=>{
 after(async function(){
     await browser.close();
   }); */
-  
-const {getCouncillorData} = require('./../public/index.js');
+const fetch = require('jest-fetch-mock');
+const {getCouncillorData, getReports, sendRequest, logout, login} = require('./../public/index.js');
+const { DRIVER_REPORT_URL } = require('../public/constants.js');
 
 test('Test Get Councillor Data', async () => {
-    console.log(await getCouncillorData(2020,''));
+    //console.log(await getCouncillorData(2020,''));
+    let result = await getCouncillorData(2020,'');
+    console.log(result);
+});
+
+test ('Test sendRequest with get' , async () => {
+    let result = await sendRequest('https://spotdpothole3613.free.beeceptor.com/testGet', 'GET')
+
+    expect(result).toStrictEqual({
+        "status": "Awesome!"
+      })
+})
+
+test ('Test sendRequest with POST' , async () => {
+    let result = await sendRequest('https://spotdpothole3613.free.beeceptor.com/testPost', 'POST')
+
+    expect(result).toStrictEqual({
+        "status": "Awesome!"
+      })
+})
+
+test ('Test logout' , async () => {
+    const getItem = jest.spyOn(Storage.prototype, 'getItem')
+
+    logout()
+
+    expect(getItem).toHaveBeenCalled()
+})
+
+test('Function getReports produces report data on a pothole', async () => {
+    console.log(await getReports(1));
+    expect(getReports(1).toBeNull);
+});
+
+test('Function login sucessfully returns a token', async () =>{
+    //const setItem = jest.spyOn(Storage.prototype, 'setItem')
+
+    //login();
+
+    //expect(setItem).toHaveBeenCalled()
 });

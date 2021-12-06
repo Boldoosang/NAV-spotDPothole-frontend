@@ -1,4 +1,4 @@
-const {SERVER, PICONG_SERVER, ELECTION_YEAR, DRIVER_REPORT_URL, STANDARD_REPORT_URL} = require('../public/constants')
+const {SERVER, PICONG_SERVER, ELECTION_YEAR, DRIVER_REPORT_URL, STANDARD_REPORT_URL} = require('../public/constants.js');
 
 async function sendRequest(url, method, data){
     try {
@@ -651,3 +651,8 @@ function main(){
 
 window.addEventListener('DOMContentLoaded', main);
 
+exports.getReports = getReports;
+exports.getCouncillorData = getCouncillorData;
+exports.login = login;
+exports.logout = logout;
+exports.sendRequest = sendRequest;
