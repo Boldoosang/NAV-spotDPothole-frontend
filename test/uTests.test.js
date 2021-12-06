@@ -99,8 +99,11 @@ const { DRIVER_REPORT_URL } = require('../public/constants.js');
 
 test('Test Get Councillor Data', async () => {
     //console.log(await getCouncillorData(2020,''));
-    let result = await getCouncillorData(2020,'');
-    console.log(result);
+    let result = await getCouncillorData(2020,'CNE');
+
+    expect(result).toStrictEqual([{
+        "code":"CNE","name":"Rishad Vyash Seecheran","pronouns":"he/him","address":"Lot 54 Dyette Estate, Southern Main Road (Upstairs Indar's Fast Foods), Cunupia","email":"caronie@ttparliament.org","phone":"693-1560"
+    }]);
 });
 
 test ('Test sendRequest with get' , async () => {
