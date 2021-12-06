@@ -646,4 +646,5 @@ function main(){
 window.addEventListener('DOMContentLoaded', main);
 
 
+module.exports = login;
 

@@ -1,4 +1,8 @@
-const puppeteer = require('puppeteer');
+/** 
+    * @jest-environment jsdom
+    */
+
+/*const puppeteer = require('puppeteer');
 const {expect, assert } = require('chai');
 const config = require('./config.json');
 const host = 'https://spotdpothole.web.app/';
@@ -12,14 +16,10 @@ let loginDetails = {
             "password" : "121233"
         }
 
-beforeEach(async function(){
+beforeEach(async function() {
     browser = await puppeteer.launch(config);
     [page] = await browser.pages();
-    const context = browser.defaultBrowserContext();
-    context.clearPermissionOverrides();
-    context.overridePermissions( frontendURL, ['geolocation']);
     await page.setRequestInterception(true);
-    const context=browser.defaultBrowserContext();
     page.on('request', request => {
         requests.push(request.url());
         request.continue();
@@ -91,4 +91,10 @@ context('Method Testing',()=>{
 
 after(async function(){
     await browser.close();
-  });
+  }); */
+
+const login = require('./../public/index.js');
+
+test('adds 1 + 2 to equal 3', () => {
+  expect(login(1, 2)).toBe(3);
+});
