@@ -29,6 +29,12 @@ jobs:
       - name: install dependencies
         run: npm install
         
-      - name: run tests
-        run: npm run test
+      - name: run integration tests
+        run: npm run itest
+
+      - name: run unit tests
+        run: npm run utest
+
+      - name: run end to end tests
+        run: npm run e2etest
 

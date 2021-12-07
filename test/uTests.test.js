@@ -1,101 +1,62 @@
-/** 
-    * @jest-environment jsdom
-    */
+const SERVER = "https://spotdpothole.herokuapp.com/"
+const PICONG_SERVER = "https://project-caigual.herokuapp.com/publicAPI/info/electoraldistrict"
+const ELECTION_YEAR = "2020"
+const DRIVER_REPORT_URL = SERVER + "/api/reports/driver"
+const STANDARD_REPORT_URL = SERVER + "/api/reports/standard"
 
+const fetch = require('node-fetch');
 
-/*const puppeteer = require('puppeteer');
-const {expect, assert } = require('chai');
-const config = require('./config.json');
-const host = 'https://spotdpothole.web.app/';
-
-let browser;
-let page;
-let requests = [];
-
-let loginDetails = {
-            "email" : "tester3@yahoo.com",
-            "password" : "121233"
-        }
-
-beforeEach(async function() {
-    browser = await puppeteer.launch(config);
-    [page] = await browser.pages();
-    await page.setRequestInterception(true);
-    page.on('request', request => {
-        requests.push(request.url());
-        request.continue();
-    });
-    await page.goto(host);
-});
-
-async function LoginUser(email, password){
-    await page.waitForSelector('#wrapper > #sidebar-wrapper > .position-absolute > #userContextGroup > .list-group-item')
-    await page.click('#wrapper > #sidebar-wrapper > .position-absolute > #userContextGroup > .list-group-item')
-
-    await page.waitForTimeout(500)
-
-    await page.focus('#InputEmail')
-    await page.keyboard.type(email)
-
-    await page.focus('#InputPassword')
-    await page.keyboard.type(password)
-
-    await page.waitForSelector('#loginButton')
-    await page.click('#loginButton')
+async function getReports(potholeID){
+    let potholeReports = await sendRequest(SERVER + "/api/reports/pothole/" + potholeID, "GET")
+    return potholeReports;
 }
 
-context('Method Testing',()=>{
-    it('Test 1: sendRequest function returns a json response', async function(){
-        let result;
-        result = await page.evaluate(() => {
-            return sendRequest(SERVER + "/login", "POST", loginDetails);
-        })
-        assert(result.includes(JSON),"JSON object not returned")
-    })
+  async function sendRequest(url, method, data){
+    try {
+        let access_token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9";
 
+        let request = {
+            "method" : method,
+            "headers" : {
+                "Authorization" : `Bearer ${access_token}`
+            }
+        }
 
-    it('Test 2: login function works is successful', async function(){
-        LoginUser(loginDetails.email, loginDetails.password);
-        accessToken1 = await page.evaluate(() => {
-            return localStorage.getItem("access_token");
-        })
-        assert(accessToken1,"should return an access token")
-    })
+        if (data){
+            request = {
+                "method" : method,
+                "headers" : {
+                    "Authorization" : `Bearer ${access_token}`,
+                    "Content-Type" : "application/json"
+                }
+            }
+            request.body = JSON.stringify(data);
+        }
 
+        let response = await fetch(url, request);
+        let results = await response.json()
 
-    it('Test 3: logout function removes access token', async function(){
-        LoginUser(loginDetails.email, loginDetails.password);
-        var accessToken1;
+        if("msg" in results){
+            if(results["msg"] == "Signature verification failed" || results["msg"] == "Token has expired"){
+                //window.localStorage.removeItem('access_token');
+                //alert("Session has expired!")
+                //window.location = "/"
+                return;
+            }
+        }
 
-        await page.evaluate(() => {
-            logout();
-        })
-        accessToken1 = await page.evaluate(() => {
-            return localStorage.getItem("access_token");
-        })
-        assert(!accessToken1,"should not return an access token")
-    })
+        return results;
+    } catch (e){
+        console.log(e)
+        return {"error" : "An unexpected error has occurred!"};
+    }
+}
 
-
-    it('Test 4: identifyUser successfully returns a user', async function(){
-        let user = await page.evaluate(() => {
-            return identifyUser();
-        })
-        assert(!user.includes({"error" : "User is not logged in or session has expired!"}), "should return a user") 
-    })
-
-
-    it('Test 5: register function successfully registers a user', async function(){
-        
-    })
-})
-
-after(async function(){
-    await browser.close();
-  }); */
-const fetch = require('jest-fetch-mock');
-const {getCouncillorData, getReports, sendRequest, logout, login} = require('./../public/index.js');
-const { DRIVER_REPORT_URL } = require('../public/constants.js');
+async function getCouncillorData(electionYear, constituencyID){
+    let url = `${PICONG_SERVER}?year=${electionYear}&district=${constituencyID}`
+    let councillorData = await sendRequest(url, "GET")
+    return councillorData;
+}
 
 test('Test Get Councillor Data', async () => {
     //console.log(await getCouncillorData(2020,''));
@@ -122,23 +83,7 @@ test ('Test sendRequest with POST' , async () => {
       })
 })
 
-test ('Test logout' , async () => {
-    const getItem = jest.spyOn(Storage.prototype, 'getItem')
-
-    logout()
-
-    expect(getItem).toHaveBeenCalled()
-})
-
 test('Function getReports produces report data on a pothole', async () => {
     console.log(await getReports(1));
     expect(getReports(1).toBeNull);
-});
-
-test('Function login sucessfully returns a token', async () =>{
-    //const setItem = jest.spyOn(Storage.prototype, 'setItem')
-
-    //login();
-
-    //expect(setItem).toHaveBeenCalled()
 });
