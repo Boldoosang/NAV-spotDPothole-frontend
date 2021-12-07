@@ -67,6 +67,9 @@ context('Home Screen Tests', () => {
       await page.click('#loginButton')
 
       assert(requests.includes('https://spotdpothole.herokuapp.com//login'), "Request should contain the correct URL")
+
+      await page.waitForSelector('#loginModal > .modal-dialog > .modal-content > .modal-header > .btn-close')
+      await page.click('#loginModal > .modal-dialog > .modal-content > .modal-header > .btn-close')
     })
 
     it('Test 1: Check That offcanvas opens and closes', async function(){

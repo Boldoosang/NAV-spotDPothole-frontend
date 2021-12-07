@@ -7,7 +7,7 @@
         "--disable-dev-shm-usage"
     ],
     "ignoreDefaultArgs": ["--disable-extensions"],
-    "headless": false,
+    "headless": true,
     "devtools": false,
     "ignoreHTTPSErrors": true,
     "dumpio": false,
