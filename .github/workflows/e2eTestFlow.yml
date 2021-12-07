@@ -1,6 +1,6 @@
 # This is a basic workflow to help you get started with Actions
 
-name: Unit, Integration, and End-to-End Testing
+name: End-to-End Testing
 
 # Controls when the workflow will run
 on:
@@ -28,7 +28,7 @@ jobs:
       # Runs a single command using the runners shell
       - name: install dependencies
         run: npm install
-        
-      - name: run tests
-        run: npm run test
+
+      - name: run end to end tests
+        run: npm run e2etest
 
