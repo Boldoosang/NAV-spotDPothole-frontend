@@ -1,7 +1,9 @@
 # NULLIFY - SpotDPothole Frontend
 Welcome to our COMP 3613 Software Engineering Project! This project aims to provide the frontend of an application that is geared towards the logging of potholes located across the roadways of Trinidad and Tobago. This project will be implemented to interface with the corresponding [SpotDPothole Backend](https://github.com/Boldoosang/NULLIFY-spotDPothole-backend). Please note that this project reflects the various prototype stages that will be refined over the course of many sprints. Implemented features of the first prototype can be found below.  
 
-[![Unit, Integration, and End-to-End Testing](https://github.com/Boldoosang/NULLIFY-spotDPothole-frontend/actions/workflows/testFlow.yml/badge.svg)](https://github.com/Boldoosang/NULLIFY-spotDPothole-frontend/actions/workflows/testFlow.yml)
+[![Unit Testing](https://github.com/Boldoosang/NULLIFY-spotDPothole-frontend/actions/workflows/UnitTestFlow.yml/badge.svg)](https://github.com/Boldoosang/NULLIFY-spotDPothole-frontend/actions/workflows/UnitTestFlow.yml)
+[![Integration Testing](https://github.com/Boldoosang/NULLIFY-spotDPothole-frontend/actions/workflows/IntegrationTestFlow.yml/badge.svg)](https://github.com/Boldoosang/NULLIFY-spotDPothole-frontend/actions/workflows/IntegrationTestFlow.yml)
+[![End-to-End Testing](https://github.com/Boldoosang/NULLIFY-spotDPothole-frontend/actions/workflows/e2eTestFlow.yml/badge.svg)](https://github.com/Boldoosang/NULLIFY-spotDPothole-frontend/actions/workflows/e2eTestFlow.yml)
 
 ## FRONTEND IMPLEMENTED FEATURES
 For the first prototype of the application, the following features have been implemented during development:
