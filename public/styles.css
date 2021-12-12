@@ -61,7 +61,7 @@
   --bs-body-font-weight: 400;
   --bs-body-line-height: 1.5;
   --bs-body-color: #212529;
-  --bs-body-bg: #fff;
+  --bs-body-bg: #F8F9FA;
 }
 
 *,
@@ -4027,6 +4027,7 @@ textarea.form-control-lg {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
+  background-color: #212529;
   justify-content: space-between;
   padding-top: 0.5rem;
   padding-bottom: 0.5rem;
