@@ -26,6 +26,13 @@ async function handleStandardReport() {
 
 	//If a valid file was uploaded, upload it to firebase.
 	if (file != null) {
+		//Determines if the file is not an image.
+		console.log(file.type)
+		if(!(['image/png', 'image/jpeg', 'image/gif', 'image/jpg'].includes(file.type))){
+			alert("This file is not an image!")
+			return;
+		}
+
 		//Sets the name of the file
 		const fileName = "REPORT IMG - " + new Date().toLocaleString();
 
@@ -69,6 +76,7 @@ async function handleStandardReport() {
 			//Gets the download URL and description from the report, builds the report, and submits the report.
 			let finalFileURL = await getDownloadURL(uploadTask.snapshot.ref)
 			let description = document.getElementById("descriptionText").value; // get text
+			console.log(finalFileURL)
 			await buildReport(finalFileURL, description, STANDARD_REPORT_URL)
 		});
 	} else {
