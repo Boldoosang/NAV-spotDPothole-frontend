@@ -156,16 +156,15 @@ context("The frontend test suite", async ()=>{
       
 
        
-      const loginButton = await page.$('button[id="loginButton"]')
-      loginButton.evaluate(button => button.click() )  //trigger html click fn using javascript
+      await page.waitForSelector('#loginButton')
+      await page.click('#loginButton')
       
       await page.waitForTimeout(3000)
 
       var accessTokenObj = await page.evaluate(() => {
           return localStorage.getItem("access_token");
         });
-      //close side bar
-      await page.click('#sidebarToggle')
+      
       console.log(`Access token before: ${accessToken1} \n vs after ${accessTokenObj}`)
       return assert.notEqual( accessTokenObj, accessToken1, "No access token detected. Login Unsuccessful")
       
@@ -189,14 +188,12 @@ context("The frontend test suite", async ()=>{
       //await page.click('a[ data-bs-target="#mainTab-leaderboard"]')
       await page.mainFrame().tap('a[data-bs-target="#mainTab-leaderboard"]')
       
-      page.waitForTimeout(1000)
+      page.waitForTimeout(2000)
       //wait for Tab Selector of constitency Leaderboard to show
       const rowCountAfter = await page.$$eval('#constLeaderboard > tbody ', (row) => row.length)
        
 
-      //const rowCountAfter = await page.$$eval('body > .container > .row  tr', (divs) => divs.length);
-      //const rowCountAfter = await page.$$eval('#constLeaderboard > tbody > tr', (row) => row.length)
-      //expect(rowCountBefore).to.equal(0);
+      
        console.log(`Row Count Before: ${rowCountBefore} vs Row Count After: ${rowCountAfter}\t\t`)
        //expect(rowCountBefore < rowCountAfter)
        return assert( rowCountBefore < rowCountAfter , "detected no rows added to table")
