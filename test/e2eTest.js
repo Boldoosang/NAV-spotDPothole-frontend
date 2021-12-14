@@ -163,7 +163,7 @@ context("The frontend test suite", async ()=>{
       
       //Open side bar & click leaderboard
       await page.click('#sidebarToggle')
-      
+      page.waitForTimeout(1000)
       await page.waitForSelector('body > #wrapper > #sidebar-wrapper > .list-group > .list-group-item:nth-child(3)')
       await page.click('body > #wrapper > #sidebar-wrapper > .list-group > .list-group-item:nth-child(3)')
       
