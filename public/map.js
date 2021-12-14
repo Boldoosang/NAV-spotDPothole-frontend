@@ -50,25 +50,29 @@ async function displayPotholes(){
     let potholes = await getPotholes();
     if(potholes.length > 0){
         for(let pothole of potholes){
-            var constituency = await leafletPip.pointInLayer([pothole.longitude, pothole.latitude], map);
+            try {
+                var constituency = await leafletPip.pointInLayer([pothole.longitude, pothole.latitude], map);
 
-            let marker = L.marker([pothole.latitude, pothole.longitude], {
-                constituency: constituency[0].feature.properties.Constituency,
-                potholeID: pothole.potholeID,
-                constituencyID: constituency[0].feature.properties.ID
-            }).on('click', async function(){
-                //to use later
-                var constituency = leafletPip.pointInLayer([pothole.longitude, pothole.latitude], map);
-                var constituencyName = document.getElementById('constituencyName')
-                constituencyName.innerText = constituency[0].feature.properties.Constituency;
+                let marker = L.marker([pothole.latitude, pothole.longitude], {
+                    constituency: constituency[0].feature.properties.Constituency,
+                    potholeID: pothole.potholeID,
+                    constituencyID: constituency[0].feature.properties.ID
+                }).on('click', async function(){
+                    //to use later
+                    var constituency = leafletPip.pointInLayer([pothole.longitude, pothole.latitude], map);
+                    var constituencyName = document.getElementById('constituencyName')
+                    constituencyName.innerText = constituency[0].feature.properties.Constituency;
 
-                loadReports(this.options.potholeID);
-                loadConstituencyData(this.options.constituencyID)
-                
-                var offCanvasReport= getOffCanvas();
-                offCanvasReport.toggle();
-            }).bindPopup(pothole.numReports + " Report(s)").addTo(markersLayer);
-            markers.push(marker)
+                    loadReports(this.options.potholeID);
+                    loadConstituencyData(this.options.constituencyID)
+                    
+                    var offCanvasReport= getOffCanvas();
+                    offCanvasReport.toggle();
+                }).bindPopup(pothole.numReports + " Report(s)").addTo(markersLayer);
+                markers.push(marker)
+            } catch(e){
+                console.log("Pothole " + pothole.potholeID + " may not lie on constituency.")
+            }
         }   
     }  
 }
