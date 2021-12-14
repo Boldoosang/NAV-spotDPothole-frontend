@@ -134,30 +134,8 @@ context("The frontend test suite", async ()=>{
       accessToken1 = await page.evaluate(() => {
             return localStorage.getItem("access_token");
           });
-      //Click side bar
-      //Open side bar & click "Login" in side bar
-      await page.click('#sidebarToggle')
-
-
-      await page.waitForSelector('#wrapper > #sidebar-wrapper > .position-absolute > #userContextGroup > .list-group-item')
-      await page.click('#wrapper > #sidebar-wrapper > .position-absolute > #userContextGroup > .list-group-item')
-
-      await page.waitForTimeout(1000)
-
-      await page.focus('#InputEmail')
-      await page.keyboard.type('tester3@yahoo.com')
-      
-      //wait for modal to show
-
-      
-       // await page.$eval('#InputEmail', (email) => { email.value = 'tester3@yahoo.com' });
-        await page.focus('#InputPassword')
-        await page.keyboard.type('121233');
-      
-
-       
-      await page.waitForSelector('#loginButton')
-      await page.click('#loginButton')
+            
+      await LoginUser( 'tester3@yahoo.com' ,'121233');
       
       await page.waitForTimeout(3000)
 
@@ -185,10 +163,11 @@ context("The frontend test suite", async ()=>{
       
       //Open side bar & click leaderboard
       await page.click('#sidebarToggle')
-      //await page.click('a[ data-bs-target="#mainTab-leaderboard"]')
-      await page.mainFrame().tap('a[data-bs-target="#mainTab-leaderboard"]')
       
-      page.waitForTimeout(2000)
+      await page.waitForSelector('body > #wrapper > #sidebar-wrapper > .list-group > .list-group-item:nth-child(3)')
+      await page.click('body > #wrapper > #sidebar-wrapper > .list-group > .list-group-item:nth-child(3)')
+      
+      page.waitForTimeout(4000)
       //wait for Tab Selector of constitency Leaderboard to show
       const rowCountAfter = await page.$$eval('#constLeaderboard > tbody ', (row) => row.length)
        
