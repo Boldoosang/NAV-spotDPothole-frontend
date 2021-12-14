@@ -305,10 +305,10 @@ async function loadReportLeaderboardData(){
     let leaderboard = document.querySelector("#reportLeaderboard")
     leaderboard.innerHTML = `
     <tr>
-        <th scope="col">#</th>
-        <th scope="col">Pothole ID</th>
-        <th scope="col">Number of Reports</th>
-        <th scope="col">Constituency</th>
+        <th scope="col">RANK</th>
+        <th scope="col">POTHOLE ID</th>
+        <th scope="col">NUMBER OF REPORTS</th>
+        <th scope="col">CONSTITUENCY</th>
     </tr>
     `
 
@@ -316,6 +316,7 @@ async function loadReportLeaderboardData(){
     
     let i = 1;
     for(pothole of leaderboardData){
+        try {
         leaderboard.innerHTML += `
         <tr onclick="reportLeaderboardModal(${pothole.lat}, ${pothole.long}, ${pothole.potholeID})">
             <td>${i}</td>
@@ -325,6 +326,9 @@ async function loadReportLeaderboardData(){
         </tr>
         `
         i++;
+        } catch (e) {
+            console.log("Investigate pothole: " + pothole.potholeID);
+        }
     }
 }
 
