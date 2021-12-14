@@ -6,7 +6,7 @@
   "scripts": {
     "utest": "jest",
     "itest": "mocha ./test/tests.js",
-    "e2etest": "mocha ./test/e2eTest.js"
+    "e2etest": "mocha  ./test/e2eTest.js --timeout 20000 --exit"
   },
   "repository": {
     "type": "git",
