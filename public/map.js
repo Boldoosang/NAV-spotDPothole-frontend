@@ -4,12 +4,13 @@ let markers = [];
 let leaderboardData = []
 let map
 
+//fuction to load the map and the geoJSON data for the constituencies
 async function initMap(){
     map = L.map('map', {
         center: [10.69, -61.23],
         zoom: 9,
     });
-
+    
     L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
         attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
         maxZoom: 18,
@@ -19,6 +20,7 @@ async function initMap(){
         accessToken: 'pk.eyJ1IjoidGhlaHVtYW4iLCJhIjoiY2t3YXJoeTdhMm1ocDJxbW4wMXpuc2NhbCJ9.j0jEiwJsxa-Gm2DMb6Fdzw'
     }).addTo(map);
 
+    //load the geoJSON data for the constituencies
     await fetch("./ttmap.geojson").then(function(response) {
         return response.json();
     }).then(function(data) {
@@ -30,53 +32,50 @@ async function initMap(){
     });
 }
 
-function getRandom(){
-    return today.getSeconds()/today.getMinutes() * 0.05
-}
-
 async function getPotholes(){
     let potholes = await sendRequest(SERVER + '/api/potholes', 'GET');
     return potholes;
 }
 
+//function responsible for displaying the potholes on the map
 async function displayPotholes(){
     if(markers)
     markers = []
     if(markersLayer)
         markersLayer.clearLayers();
 
+    //adds a markers layer to the map
     markersLayer = L.layerGroup().addTo(map); 
 
     let potholes = await getPotholes();
     if(potholes.length > 0){
         for(let pothole of potholes){
-            try {
-                var constituency = await leafletPip.pointInLayer([pothole.longitude, pothole.latitude], map);
-
-                let marker = L.marker([pothole.latitude, pothole.longitude], {
-                    constituency: constituency[0].feature.properties.Constituency,
-                    potholeID: pothole.potholeID,
-                    constituencyID: constituency[0].feature.properties.ID
-                }).on('click', async function(){
-                    //to use later
-                    var constituency = leafletPip.pointInLayer([pothole.longitude, pothole.latitude], map);
-                    var constituencyName = document.getElementById('constituencyName')
-                    constituencyName.innerText = constituency[0].feature.properties.Constituency;
-
-                    loadReports(this.options.potholeID);
-                    loadConstituencyData(this.options.constituencyID)
-                    
-                    var offCanvasReport= getOffCanvas();
-                    offCanvasReport.toggle();
-                }).bindPopup(pothole.numReports + " Report(s)").addTo(markersLayer);
-                markers.push(marker)
-            } catch(e){
-                console.log("Pothole " + pothole.potholeID + " may not lie on constituency.")
-            }
+            var constituency = await leafletPip.pointInLayer([pothole.longitude, pothole.latitude], map);
+            
+            //create a new marker object with the constituency name, pothole id and constituency id
+            let marker = L.marker([pothole.latitude, pothole.longitude], {
+                constituency: constituency[0].feature.properties.Constituency,
+                potholeID: pothole.potholeID,
+                constituencyID: constituency[0].feature.properties.ID
+            }).on('click', async function(){
+                var constituency = leafletPip.pointInLayer([pothole.longitude, pothole.latitude], map);
+                var constituencyName = document.getElementById('constituencyName')
+                constituencyName.innerText = constituency[0].feature.properties.Constituency;
+                
+                //load reports and constituency data when the marker is clicked
+                loadReports(this.options.potholeID);
+                loadConstituencyData(this.options.constituencyID)
+                
+                //toggle the offcanvas
+                var offCanvasReport= getOffCanvas();
+                offCanvasReport.toggle();
+            }).bindPopup(pothole.numReports + " Report(s)").addTo(markersLayer);
+            markers.push(marker)
         }   
     }  
 }
 
+//gets the Report off canvas element
 function getOffCanvas(){
     var offcanvasElementList = [].slice.call(document.querySelectorAll('.offcanvas'))
     var offcanvasList = offcanvasElementList.map(function (offcanvasEl) {
@@ -90,6 +89,8 @@ function getOffCanvas(){
     }
 }
 
+//loads all of the potholes in a constituency and returns an array of objects containing the data for that constituency
+//used for the constituency leaderboard
 async function getPotholesByConstituency(){
     let constituencies = []
     
@@ -131,6 +132,7 @@ async function getPotholesByConstituency(){
     return constituencies;
 }
 
+//gets the pothole data for all potholes and returns an array of objects containing the data for each pothole
 async function getReportLeaderboardData(){
     leaderboardData = []
     let potholes = await getPotholes()
@@ -158,6 +160,7 @@ async function getReportLeaderboardData(){
     return leaderboardData;
 }
 
+//trigger the offcanvas the councilor data is requested
 function reportLeaderboardModal(lat, long, potholeID){
     var constituency = leafletPip.pointInLayer([long, lat], map);
     var constituencyName = document.getElementById('constituencyName')

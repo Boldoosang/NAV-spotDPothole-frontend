@@ -55,8 +55,17 @@ $ firebase deploy
 
 ## TESTING
 In the development environment, testing can be carried out using the following command.
+For Unit Test
 ```
-$ npm run test
+$ npm run utest
+```
+For Integration Test
+```
+$ npm run itest
+```
+For End to End Test
+```
+$ npm run e2etest
 ```
 Tests can also be modified by editing the tests.js file located in the /test folder.
 

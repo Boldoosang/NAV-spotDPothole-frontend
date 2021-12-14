@@ -165,7 +165,8 @@ context("The frontend test suite", async ()=>{
       await page.click('#sidebarToggle')
       page.waitForTimeout(1000)
       await page.waitForSelector('body > #wrapper > #sidebar-wrapper > .list-group > .list-group-item:nth-child(3)')
-      await page.mainFrame().tap('body > #wrapper > #sidebar-wrapper > .list-group > .list-group-item:nth-child(3)')
+      //await page.mainFrame().tap('body > #wrapper > #sidebar-wrapper > .list-group > .list-group-item:nth-child(3)')
+      await page.$eval('body > #wrapper > #sidebar-wrapper > .list-group > .list-group-item:nth-child(3)', link => link.click())
       
       page.waitForTimeout(4000)
       //wait for Tab Selector of constitency Leaderboard to show
