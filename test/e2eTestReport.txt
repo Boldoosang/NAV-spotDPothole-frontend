@@ -1,0 +1,27 @@
+
+> e2eTest
+> mocha test.js --timeout 20000 --exit
+
+
+
+  The frontend test suite
+    Login Test
+Access token before: null 
+ vs after eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTYzOTQ2OTc5MiwianRpIjoiMzY0ZWQxYzAtNTRlMi00OWQwLThhNGMtNmU1ZWQ0NDE0ZjMyIiwidHlwZSI6ImFjY2VzcyIsInN1YiI6InRlc3RlcjNAeWFob28uY29tIiwibmJmIjoxNjM5NDY5NzkyLCJleHAiOjE2Mzk0NzA2OTJ9.Fq5ex4Kl1WOJ-qXPrQFVYCNAKKUIARLn1wBYCg2KRH8
+      Γ£ö Test 1: Check to see if login was successful (4197ms)
+    Leaderboard Page Test
+Row Count Before: 0 vs Row Count After: 5		
+      Γ£ö Test 2: Constituency Leaderboard Populated (81ms)
+Row Count Before: 0 vs Row Count After: 1		
+      Γ£ö Test 3: Report Leaderboard Populated
+    Report Page Test
+200
+      Γ£ö Test 4: Submit Driver Report (3934ms)
+      Γ£ö Test 5: Submit Passenger Report  (2973ms)
+    Home Page Test
+The reportee's name: <td>Barry Padarath</td>
+      Γ£ö Check pothole info displays on click of pin (790ms)
+
+
+  6 passing (31s)
+
