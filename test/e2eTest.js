@@ -123,7 +123,7 @@ beforeEach(async function () {
 context("The frontend test suite", async ()=>{
 
   describe("Login Test", ()=>{
-    it("Test 1: Check to see if login was successful", async()=>{
+    it("Test 1: Check to see if login was successful", async( )=>{
 
       //let loginButtonWrapper = await getHTML('div#userContextGroup')
       //console.log(loginButtonWrapper)
@@ -167,7 +167,7 @@ context("The frontend test suite", async ()=>{
       //close side bar
       await page.click('#sidebarToggle')
       console.log(`Access token before: ${accessToken1} \n vs after ${accessTokenObj}`)
-      assert.notEqual( accessTokenObj, accessToken1, "No access token detected. Login Unsuccessful")
+      return assert.notEqual( accessTokenObj, accessToken1, "No access token detected. Login Unsuccessful")
       
     })//end of login
 
@@ -199,7 +199,7 @@ context("The frontend test suite", async ()=>{
       //expect(rowCountBefore).to.equal(0);
        console.log(`Row Count Before: ${rowCountBefore} vs Row Count After: ${rowCountAfter}\t\t`)
        //expect(rowCountBefore < rowCountAfter)
-       assert( rowCountBefore < rowCountAfter , "detected no rows added to table")
+       return assert( rowCountBefore < rowCountAfter , "detected no rows added to table")
     } );
 
 
@@ -221,7 +221,7 @@ context("The frontend test suite", async ()=>{
       
        console.log(`Row Count Before: ${rowCountBefore} vs Row Count After: ${rowCountAfter}\t\t`)
        //expect(rowCountBefore < rowCountAfter)
-        assert( rowCountBefore < rowCountAfter , "Report Leaderboard Table was not populated")
+       return assert( rowCountBefore < rowCountAfter , "Report Leaderboard Table was not populated")
     });
     
   })// end of Leaderboard Test
@@ -280,7 +280,7 @@ context("The frontend test suite", async ()=>{
         //console.log( JSON.stringify(responses))
         let errormessage = "Unfortunately we couldn't find your coordinates!"
         let successMessage = "Successfully added pothole report to database!"
-        assert( responseStat==201 || responseStat==200 , "Driver Report failed!")
+        return assert( responseStat==201 || responseStat==200 , "Driver Report failed!")
         
     })
   
@@ -318,7 +318,7 @@ context("The frontend test suite", async ()=>{
         responseStat = await page.waitForResponse(response => {  return  response.status()}  ).then( (status)=>{return status["_status"]} )
           
         //console.log("Request Response:" + responseStat)
-        assert( responseStat==201 || responseStat==200 , "Passenger Report failed!")
+        return assert( responseStat==201 || responseStat==200 , "Passenger Report failed!")
     })
 
 });
@@ -326,7 +326,7 @@ context("The frontend test suite", async ()=>{
 
 describe("Home Page Test", ()=>{
 
-  it("Test 6: Check pothole info displays on click of pin", async ()=>{
+  it("Check pothole info displays on click of pin", async ()=>{
 
 
     await page.waitForSelector('body > #wrapper > #sidebar-wrapper > .list-group > .list-group-item:nth-child(1)')
@@ -343,7 +343,7 @@ describe("Home Page Test", ()=>{
 
     let reporter = await getHTML('strong > .table > tbody > tr:nth-child(1) > td')
     console.log(`The reportee's name: ${reporter}`)
-    assert( reporter != '', "No information found for pothole report")
+    return assert( reporter != '', "No information found for pothole report")
   })
 })
 
