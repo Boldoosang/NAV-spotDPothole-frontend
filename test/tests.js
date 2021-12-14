@@ -93,7 +93,7 @@ context('Home Screen Tests', () => {
         await page.waitForSelector('#mapContent > #map > .leaflet-pane > .leaflet-pane > .leaflet-marker-icon:nth-child(1)')
         await page.click('#mapContent > #map > .leaflet-pane > .leaflet-pane > .leaflet-marker-icon:nth-child(1)')
 
-        let url = requests.find(a => a.includes('https://project-caigual.herokuapp.com/'))
+        let url = requests.slice().reverse().find(a => a.includes('https://project-caigual.herokuapp.com/'))
 
         const response = await fetch(url);
         const body = await response.json();
@@ -135,8 +135,9 @@ context('Home Screen Tests', () => {
 
         //await page.waitForTimeout(1000)
         let leaderboard = await getHTML('#reportLeaderboard')
-        let result = leaderboard.includes("#") && leaderboard.includes("Pothole ID") && leaderboard.includes("Number of Reports") && leaderboard.includes("Constituency")
-        assert(result)
+        assert(leaderboard.includes("POTHOLE ID"), "leaderboard should display an ID")
+        assert(leaderboard.includes("NUMBER OF REPORTS"), "leaderboard should display a number of reports")
+        assert(leaderboard.includes("CONSTITUENCY"), "leaderboard should display a constituency")
     })
 
     it('Test 5: Check that the councillor information loads when button pressed', async function() {
@@ -151,9 +152,10 @@ context('Home Screen Tests', () => {
         await page.waitForSelector('#constLeaderboard > tbody:nth-child(2) > tr > td > .btn')
         await page.click('#constLeaderboard > tbody:nth-child(2) > tr > td > .btn')
 
-        let url = requests.find(a => a.includes('https://project-caigual.herokuapp.com/'))
+        let url = requests.slice().reverse().find(a => a.includes('https://project-caigual.herokuapp.com/'))
 
         const response = await fetch(url);
+
         const body = await response.json();
 
         //await page.waitForTimeout(500)
@@ -177,12 +179,13 @@ context('Home Screen Tests', () => {
       await page.waitForSelector('.card > #reportLeaderboard > tbody:nth-child(2) > tr > .text-primary')
       await page.click('.card > #reportLeaderboard > tbody:nth-child(2) > tr > .text-primary')
 
-      let url = requests.find(a => a.includes('https://project-caigual.herokuapp.com/'))
+      let url = requests.slice().reverse().find(a => a.includes('https://project-caigual.herokuapp.com/'))
 
       const response = await fetch(url);
       const body = await response.json();
 
-      //await page.waitForTimeout(1000)
+      await page.waitForTimeout(1000)
+
       let offcanvas = await getHTML('#offcanvasReport')
 
       assert(offcanvas.includes(body[0].name), "Offcanvas should contain the name of the councillor")

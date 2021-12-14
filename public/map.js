@@ -9,6 +9,7 @@ async function initMap(){
     map = L.map('map', {
         center: [10.69, -61.23],
         zoom: 9,
+        minZoom: 10
     });
     
     L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
@@ -52,25 +53,29 @@ async function displayPotholes(){
         for(let pothole of potholes){
             var constituency = await leafletPip.pointInLayer([pothole.longitude, pothole.latitude], map);
             
-            //create a new marker object with the constituency name, pothole id and constituency id
-            let marker = L.marker([pothole.latitude, pothole.longitude], {
-                constituency: constituency[0].feature.properties.Constituency,
-                potholeID: pothole.potholeID,
-                constituencyID: constituency[0].feature.properties.ID
-            }).on('click', async function(){
-                var constituency = leafletPip.pointInLayer([pothole.longitude, pothole.latitude], map);
-                var constituencyName = document.getElementById('constituencyName')
-                constituencyName.innerText = constituency[0].feature.properties.Constituency;
-                
-                //load reports and constituency data when the marker is clicked
-                loadReports(this.options.potholeID);
-                loadConstituencyData(this.options.constituencyID)
-                
-                //toggle the offcanvas
-                var offCanvasReport= getOffCanvas();
-                offCanvasReport.toggle();
-            }).bindPopup(pothole.numReports + " Report(s)").addTo(markersLayer);
-            markers.push(marker)
+            try{
+                //create a new marker object with the constituency name, pothole id and constituency id
+                let marker = L.marker([pothole.latitude, pothole.longitude], {
+                    constituency: constituency[0].feature.properties.Constituency,
+                    potholeID: pothole.potholeID,
+                    constituencyID: constituency[0].feature.properties.ID
+                }).on('click', async function(){
+                    var constituency = leafletPip.pointInLayer([pothole.longitude, pothole.latitude], map);
+                    var constituencyName = document.getElementById('constituencyName')
+                    constituencyName.innerText = constituency[0].feature.properties.Constituency;
+                    
+                    //load reports and constituency data when the marker is clicked
+                    loadReports(this.options.potholeID);
+                    loadConstituencyData(this.options.constituencyID)
+                    
+                    //toggle the offcanvas
+                    var offCanvasReport= getOffCanvas();
+                    offCanvasReport.toggle();
+                }).bindPopup(pothole.numReports + " Report(s)").addTo(markersLayer);
+                markers.push(marker)
+            } catch (e){
+                console.log("PotholeID: " + pothole.potholeID + " may not lie on map!")
+            }
         }   
     }  
 }

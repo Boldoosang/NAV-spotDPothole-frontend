@@ -606,6 +606,12 @@ async function buildReport(photoURL = null, description, url) {
 //Sends a generated report to the endpoint URL.
 async function sendReport(latitude, longitude, photoURL, description = null, url){
 	//Creates the data object containing the report information.
+
+    var inMap = leafletPip.pointInLayer([longitude, latitude], map);
+
+    if(inMap.length == 0)
+        return {error: "You must be within the map to report a pothole!"}
+
 	var data = {
 		"longitude": longitude,
 		"latitude": latitude,
