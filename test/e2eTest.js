@@ -43,7 +43,7 @@ beforeEach(async function () {
     context.overridePermissions( frontendURL, ['geolocation']);
 
 
-    await page.setGeolocation({latitude: 10.8, longitude: -61.8});
+    await page.setGeolocation({latitude: 10.69, longitude: -61.23});
 
     await page.emulateMediaType("screen");  
     //await page.emulate(iPhone);
@@ -120,10 +120,10 @@ beforeEach(async function () {
   }
 
 
-context("The frontend test suite", async ()=>{
+context("End To End test suite", async (  )=>{
 
   describe("Login Test", ()=>{
-    it("Test 1: Check to see if login was successful", async( )=>{
+    it("Test 1: Check to see if login was successful", async(  )=>{
 
       //let loginButtonWrapper = await getHTML('div#userContextGroup')
       //console.log(loginButtonWrapper)
@@ -134,9 +134,13 @@ context("The frontend test suite", async ()=>{
       accessToken1 = await page.evaluate(() => {
             return localStorage.getItem("access_token");
           });
-            
-      await LoginUser( 'tester3@yahoo.com' ,'121233');
       
+               
+      await LoginUser( 'tester3@yahoo.com' ,'121233');
+      [page] = await browser.pages()
+
+        
+
       await page.waitForTimeout(3000)
 
       var accessTokenObj = await page.evaluate(() => {
@@ -146,9 +150,10 @@ context("The frontend test suite", async ()=>{
       console.log(`Access token before: ${accessToken1} \n vs after ${accessTokenObj}`)
       return assert.notEqual( accessTokenObj, accessToken1, "No access token detected. Login Unsuccessful")
       
+      
     })//end of login
 
-  
+   
 
   });
 
@@ -156,27 +161,33 @@ context("The frontend test suite", async ()=>{
   
   describe('Leaderboard Page Test', async ()=>{
 
-    it('Test 2: Constituency Leaderboard Populated', async ()=>{
+    it('Test 2: Constituency Leaderboard Populated', async ( )=>{
 
       //check count of table
       const rowCountBefore = await page.$$eval('#constLeaderboard > tbody ', (row) => row.length);
       
       //Open side bar & click leaderboard
       await page.click('#sidebarToggle')
-      page.waitForTimeout(1000)
+      //await page.click('a[ data-bs-target="#mainTab-leaderboard"]')
+      //await page.mainFrame().tap('a[data-bs-target="#mainTab-leaderboard"]')
+
       await page.waitForSelector('body > #wrapper > #sidebar-wrapper > .list-group > .list-group-item:nth-child(3)')
-      //await page.mainFrame().tap('body > #wrapper > #sidebar-wrapper > .list-group > .list-group-item:nth-child(3)')
+      //await page.click('body > #wrapper > #sidebar-wrapper > .list-group > .list-group-item:nth-child(3)')
       await page.$eval('body > #wrapper > #sidebar-wrapper > .list-group > .list-group-item:nth-child(3)', link => link.click())
+
       
-      page.waitForTimeout(4000)
+      page.waitForTimeout(1000)
       //wait for Tab Selector of constitency Leaderboard to show
       const rowCountAfter = await page.$$eval('#constLeaderboard > tbody ', (row) => row.length)
        
 
-      
-       console.log(`Row Count Before: ${rowCountBefore} vs Row Count After: ${rowCountAfter}\t\t`)
+      //const rowCountAfter = await page.$$eval('body > .container > .row  tr', (divs) => divs.length);
+      //const rowCountAfter = await page.$$eval('#constLeaderboard > tbody > tr', (row) => row.length)
+      //expect(rowCountBefore).to.equal(0);
+       console.log(`\nTest2: Row Count Before: ${rowCountBefore} vs Row Count After: ${rowCountAfter}\t\t`)
        //expect(rowCountBefore < rowCountAfter)
-       return assert( rowCountBefore < rowCountAfter , "detected no rows added to table")
+       assert( rowCountBefore < rowCountAfter , "detected no rows added to table")
+       
     } );
 
 
@@ -185,7 +196,14 @@ context("The frontend test suite", async ()=>{
       //check count of table
       const rowCountBefore = await page.$$eval('#reportLeaderboard > tbody ', (rows) => rows.length);
       
+      //Open side bar & click leaderboard
+      await page.click('#sidebarToggle')
+
+      await page.waitForSelector('body > #wrapper > #sidebar-wrapper > .list-group > .list-group-item:nth-child(3)')
+      await page.$eval('body > #wrapper > #sidebar-wrapper > .list-group > .list-group-item:nth-child(3)', link => link.click())
+
       
+      page.waitForTimeout(1000)
       
       //Click report leaderboard Tab
       //await page.click('button[id="pills-reportLeaderboard-tab"]')
@@ -196,9 +214,10 @@ context("The frontend test suite", async ()=>{
        
 
       
-       console.log(`Row Count Before: ${rowCountBefore} vs Row Count After: ${rowCountAfter}\t\t`)
+       console.log(`\nTest3: Row Count Before: ${rowCountBefore} vs Row Count After: ${rowCountAfter}\t\t`)
        //expect(rowCountBefore < rowCountAfter)
-       return assert( rowCountBefore < rowCountAfter , "Report Leaderboard Table was not populated")
+       //assert( rowCountBefore < rowCountAfter , "Report Leaderboard Table was not populated")
+       assert.isAbove(rowCountAfter, rowCountBefore, "Report Leaderboard Table was not populated")
     });
     
   })// end of Leaderboard Test
@@ -257,7 +276,7 @@ context("The frontend test suite", async ()=>{
         //console.log( JSON.stringify(responses))
         let errormessage = "Unfortunately we couldn't find your coordinates!"
         let successMessage = "Successfully added pothole report to database!"
-        return assert( responseStat==201 || responseStat==200 , "Driver Report failed!")
+        assert( responseStat==201 || responseStat==200 , "Driver Report failed!")
         
     })
   
@@ -295,7 +314,7 @@ context("The frontend test suite", async ()=>{
         responseStat = await page.waitForResponse(response => {  return  response.status()}  ).then( (status)=>{return status["_status"]} )
           
         //console.log("Request Response:" + responseStat)
-        return assert( responseStat==201 || responseStat==200 , "Passenger Report failed!")
+        assert( responseStat==201 || responseStat==200 , "Passenger Report failed!")
     })
 
 });
@@ -303,24 +322,24 @@ context("The frontend test suite", async ()=>{
 
 describe("Home Page Test", ()=>{
 
-  it("Check pothole info displays on click of pin", async ()=>{
+  it("Test 6: Check pothole info displays on click of pin", async ()=>{
 
 
     await page.waitForSelector('body > #wrapper > #sidebar-wrapper > .list-group > .list-group-item:nth-child(1)')
     await page.click('body > #wrapper > #sidebar-wrapper > .list-group > .list-group-item:nth-child(1)')
 
-    await page.waitForSelector('#mapContent > #map > .leaflet-pane > .leaflet-pane > .leaflet-marker-icon:nth-child(7)')
-    await page.click('#mapContent > #map > .leaflet-pane > .leaflet-pane > .leaflet-marker-icon:nth-child(7)')
+    await page.waitForSelector('#mapContent > #map > .leaflet-pane > .leaflet-pane > .leaflet-marker-icon:nth-child(1)')
+    await page.click('#mapContent > #map > .leaflet-pane > .leaflet-pane > .leaflet-marker-icon:nth-child(1)')
 
-    await page.waitForSelector('div > #reportAccordion > .accordion-item > #heading-77 > .accordion-button')
-    await page.click('div > #reportAccordion > .accordion-item > #heading-77 > .accordion-button')
+    //await page.waitForSelector('div > #reportAccordion > .accordion-item > #heading-77 > .accordion-button')
+    //await page.click('div > #reportAccordion > .accordion-item > #heading-77 > .accordion-button')
 
-    await page.waitForSelector('strong > .table > tbody > tr:nth-child(1) > td')
+    //await page.waitForSelector('strong > .table > tbody > tr:nth-child(1) > td')
     //await page.click('strong > .table > tbody > tr:nth-child(1) > td')
 
     let reporter = await getHTML('strong > .table > tbody > tr:nth-child(1) > td')
     console.log(`The reportee's name: ${reporter}`)
-    return assert( reporter != '', "No information found for pothole report")
+    assert( reporter != '', "No information found for pothole report")
   })
 })
 
@@ -330,4 +349,5 @@ describe("Home Page Test", ()=>{
   //To be Executed after test
   afterEach(async function (){
     await browser.close();
+    
   });
