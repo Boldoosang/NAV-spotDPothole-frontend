@@ -1,6 +1,6 @@
 const SERVER = "https://spotdpothole.herokuapp.com/"
 const PICONG_SERVER = "https://project-caigual.herokuapp.com/publicAPI/info/electoraldistrict"
-const ELECTION_YEAR = "2020"
+const ELECTION_YEAR = "10"
 const DRIVER_REPORT_URL = SERVER + "/api/reports/driver"
 const STANDARD_REPORT_URL = SERVER + "/api/reports/standard"
 
@@ -59,8 +59,7 @@ async function getCouncillorData(electionYear, constituencyID){
 }
 
 test('Test Get Councillor Data', async () => {
-    //console.log(await getCouncillorData(2020,''));
-    let result = await getCouncillorData(2020,'CNE');
+    let result = await getCouncillorData(ELECTION_YEAR,'CNE');
 
     expect(result).toStrictEqual([{
         "code":"CNE","name":"Rishad Vyash Seecheran","pronouns":"he/him","address":"Lot 54 Dyette Estate, Southern Main Road (Upstairs Indar's Fast Foods), Cunupia","email":"caronie@ttparliament.org","phone":"693-1560"

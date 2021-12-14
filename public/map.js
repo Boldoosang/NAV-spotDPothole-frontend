@@ -144,15 +144,18 @@ async function getReportLeaderboardData(){
 
     for(const pothole of potholes){
         var constituency = leafletPip.pointInLayer([pothole.longitude, pothole.latitude], map);
-        
-        leaderboardData.push({
-            constituency: constituency[0].feature.properties.Constituency,
-            potholeID: pothole.potholeID,
-            numReports: pothole.numReports,
-            lat: pothole.latitude,
-            long: pothole.longitude,
+        try {
+            leaderboardData.push({
+                constituency: constituency[0].feature.properties.Constituency,
+                potholeID: pothole.potholeID,
+                numReports: pothole.numReports,
+                lat: pothole.latitude,
+                long: pothole.longitude,
 
-        })
+            })
+        } catch(e){
+            console.log("PotholeID: " + pothole.potholeID + " may not lie on map!")
+        }
     }
     return leaderboardData;
 }
