@@ -166,7 +166,9 @@
                                             <label class="input-group-text " for="photo"><i class="bi bi-images"></i> <div class="ms-2">Select Image </div></label>
                                         </button>
                                         <button onclick="removeImage()" class="btn btn-danger rounded">x</button>
-                                        <input id="photo" class="form-control-file" type="file" accept="image/*" onchange="showImage()" hidden> 
+                                        <div id="photoContainer">
+                                            <input id="photo" class="form-control-file" type="file" accept="image/*" onchange="showImage()" hidden> 
+                                        </div>
                                     </div>
                                     <div class="text-center" id="uploadProgress"></div>
                                 </div>
