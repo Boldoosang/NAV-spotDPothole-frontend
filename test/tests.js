@@ -203,50 +203,6 @@ context('Home Screen Tests', () => {
       await page.waitForSelector('#offcanvasReport > .offcanvas-header > .btn-close')
       await page.click('#offcanvasReport > .offcanvas-header > .btn-close')
     })
-
-
-    // it('Test 7: Test that the standard report generates the correct request', async function(){
-    //   this.timeout(config.timeout);
-
-    //   await page.waitForTimeout(500)
-    //   await page.waitForSelector('#wrapper > #sidebar-wrapper > .list-group > .list-group-item:nth-child(2)')
-    //   await page.click('#wrapper > #sidebar-wrapper > .list-group > .list-group-item:nth-child(2)')
-
-    //   await page.waitForSelector('#standard-button')
-    //   await page.click('#standard-button')
-    //   await page.waitForTimeout(500)
-
-    //   await page.focus('#descriptionText')
-    //   await page.keyboard.type('This is a test report')
-
-    //   await page.waitForSelector('#submit-passenger-report')
-    //   await page.click('#submit-passenger-report')
-
-    //   let url = requests
-
-    //   console.log(url)
-    // })
-
-    // it('Test 8: Test that the driver report generates the correct request', async function(){
-    //   this.timeout(config.timeout);
-
-    //   await page.waitForTimeout(500)
-    //   await page.waitForSelector('#wrapper > #sidebar-wrapper > .list-group > .list-group-item:nth-child(2)')
-    //   await page.click('#wrapper > #sidebar-wrapper > .list-group > .list-group-item:nth-child(2)')
-
-    //   await page.waitForSelector('#driver-button')
-    //   await page.click('#driver-button')
-
-    //   await page.waitForSelector('#submit-driver-prereport')
-    //   await page.click('#submit-driver-prereport')
-
-    //   await page.waitForSelector('#submit-driver-report')
-    //   await page.click('#submit-driver-report')
-
-    //   let url = requests
-
-    //   console.log(url)
-    // })
 })
 
 after(async function(){
