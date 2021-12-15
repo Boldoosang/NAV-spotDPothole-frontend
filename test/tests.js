@@ -49,6 +49,7 @@ before(async function(){
   }
 
 context('Home Screen Tests', () => {
+    //Assertion Test 1: This test checks if the login button generates the correct request when pressed
     it('Test 0: Test that the login button generates the correct request', async function(){
       this.timeout(config.timeout)
       
@@ -72,6 +73,7 @@ context('Home Screen Tests', () => {
       await page.click('#loginModal > .modal-dialog > .modal-content > .modal-header > .btn-close')
     })
 
+    //Assertion Test 2: This test checks that the offcanvas opens and closes when the relevant elements are clicked
     it('Test 1: Check That offcanvas opens and closes', async function(){
         this.timeout(config.timeout);
         await page.waitForSelector('#mapContent > #map > .leaflet-pane > .leaflet-pane > .leaflet-marker-icon:nth-child(1)')
@@ -88,6 +90,7 @@ context('Home Screen Tests', () => {
         assert(!offcanvas.includes('offcanvas offcanvas-end show'), "Offcanvas should be closed")
     })
 
+    //Assertion Test 3: Checks that the offcanvas displays the correct data.
     it('Test 2: Check that The offcanvas contains constituency data', async function(){
         this.timeout(config.timeout);
         await page.waitForSelector('#mapContent > #map > .leaflet-pane > .leaflet-pane > .leaflet-marker-icon:nth-child(1)')
@@ -111,6 +114,7 @@ context('Home Screen Tests', () => {
         await page.click('#offcanvasReport > .offcanvas-header > .btn-close')
     })
 
+    //Assertion Test 4: Checks that the constituency leaderboard displays
     it('Test 3: Check that the constituency leaderboard displays', async function(){
         this.timeout(config.timeout);
         await page.waitForSelector('#wrapper > #sidebar-wrapper > .list-group > .list-group-item:nth-child(3)')
@@ -125,6 +129,7 @@ context('Home Screen Tests', () => {
         assert(result)
     })
 
+    //Assertion Test 5: Checks that the report leaderboard displays
     it('Test 4: Check that the report leaderboard displays', async function() {
         this.timeout(config.timeout);
         await page.waitForSelector('#wrapper > #sidebar-wrapper > .list-group > .list-group-item:nth-child(3)')
@@ -140,6 +145,7 @@ context('Home Screen Tests', () => {
         assert(leaderboard.includes("CONSTITUENCY"), "leaderboard should display a constituency")
     })
 
+    //Assertion Test 6: Checks that the councillor information modal loads when the relevant data is pressed
     it('Test 5: Check that the councillor information loads when button pressed', async function() {
         this.timeout(config.timeout);
         await page.waitForSelector('#wrapper > #sidebar-wrapper > .list-group > .list-group-item:nth-child(3)')
@@ -167,6 +173,7 @@ context('Home Screen Tests', () => {
         assert(infoModal.includes(body[0].phone), "Modal should contain the phone number of the councillor")
     })
 
+    //Assertion Test 7: Checks that clicking on the pothole ID opens the correct councillor info in the offcanvas
     it('Test 6: Check that clicking on the pothole ID opens the correct councillor info', async function(){
       this.timeout(config.timeout);
       //await page.waitForTimeout(500)
