@@ -6,11 +6,13 @@ const STANDARD_REPORT_URL = SERVER + "/api/reports/standard"
 
 const fetch = require('node-fetch');
 
+// function that returns the pothole report from the database based on the parameter potholeID
 async function getReports(potholeID){
     let potholeReports = await sendRequest(SERVER + "/api/reports/pothole/" + potholeID, "GET")
     return potholeReports;
 }
 
+  // function that performs an api request based on the method passed in the parameters
   async function sendRequest(url, method, data){
     try {
         let access_token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9";
@@ -52,12 +54,14 @@ async function getReports(potholeID){
     }
 }
 
+// returns data pertaining to a councillor that is referenced by their constituencyID and their electionYear, through a sendRequest
 async function getCouncillorData(electionYear, constituencyID){
     let url = `${PICONG_SERVER}?year=${electionYear}&district=${constituencyID}`
     let councillorData = await sendRequest(url, "GET")
     return councillorData;
 }
 
+// test to determine whether the request for councillor data through the use of getCouncillorData returns the right data based on parameters passed
 test('Test Get Councillor Data', async () => {
     let result = await getCouncillorData(ELECTION_YEAR,'CNE');
 
@@ -66,6 +70,7 @@ test('Test Get Councillor Data', async () => {
     }]);
 });
 
+// test to determine whether a sendRequest with method parameter GET returns a success, "status": "Awesome!"
 test ('Test sendRequest with get' , async () => {
     let result = await sendRequest('https://spotdpothole3613.free.beeceptor.com/testGet', 'GET')
 
@@ -74,6 +79,7 @@ test ('Test sendRequest with get' , async () => {
       })
 })
 
+// test to determine whether a sendRequest with method parameter POST returns a success, "status": "Awesome!"
 test ('Test sendRequest with POST' , async () => {
     let result = await sendRequest('https://spotdpothole3613.free.beeceptor.com/testPost', 'POST')
 
@@ -82,6 +88,7 @@ test ('Test sendRequest with POST' , async () => {
       })
 })
 
+// test to determing whether the getReports function returns the right information on a pothole from the database
 test('Function getReports produces report data on a pothole', async () => {
     console.log(await getReports(1));
     expect(getReports(1).toBeNull);
