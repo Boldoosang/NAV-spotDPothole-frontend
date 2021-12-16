@@ -70,5 +70,8 @@ $ npm run e2etest
 Tests can also be modified by editing the test files located in the /test folder.
 
 ## PROJECT DELIVERABLES
-* [SpotDPothole Web Application](https://spotdpothole.justinbaldeo.com/)
+* [SpotDPothole Web Application](https://spotdpothole.web.app/)
 * [Project Report](https://docs.google.com/document/d/1k6Yjrqm8VEjkWNdJe1c3Nl7906Izm-eqz-5WTjxHqOg/edit?usp=sharing)
+* [Trello Board](https://trello.com/b/bCe8RVWj/spotdpothole-board)
+* [Presentation Video](https://drive.google.com/file/d/1I26Kmw9RUOWzvvWH7LVCLmI33z4OshX7/view)
+* [Sprint Reports](https://docs.google.com/document/d/1rzwRfEgYDmo_6frSKnmDBtEQMES-08MSD8YJcVXLk3E)
