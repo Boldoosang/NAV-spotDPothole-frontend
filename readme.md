@@ -71,4 +71,4 @@ Tests can also be modified by editing the test files located in the /test folder
 
 ## PROJECT DELIVERABLES
 * [SpotDPothole Web Application](https://spotdpothole.justinbaldeo.com/)
-* [Project Report](https://spotdpothole.justinbaldeo.com/projectReport)
+* [Project Report](https://docs.google.com/document/d/1k6Yjrqm8VEjkWNdJe1c3Nl7906Izm-eqz-5WTjxHqOg/edit?usp=sharing)
