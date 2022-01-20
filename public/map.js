@@ -31,6 +31,8 @@ async function initMap(){
             }
         }).addTo(map)
     });
+
+    
 }
 
 async function getPotholes(){
@@ -77,7 +79,11 @@ async function displayPotholes(){
                 console.log("PotholeID: " + pothole.potholeID + " may not lie on map!")
             }
         }   
-    }  
+    } 
+    
+    setTimeout(() => {
+        map.invalidateSize();
+    }, 500);
 }
 
 //gets the Report off canvas element
