@@ -33,6 +33,13 @@ async function getUserPotholes(){
     return potholes;
 }
 
+async function getUserReportImages(potholeID, reportID){
+    let images = await sendRequest(SERVER + `/api/reports/pothole/${potholeID}/report/${reportID}/images`, 'GET');
+    console.log(images);
+
+    return images;
+}
+
 //gets the dashboard modal
 function getDashboardModal(){
     var modalElementList = [].slice.call(document.querySelectorAll('.dashboardModal'))
@@ -99,11 +106,110 @@ async function loadUserReport(potholeID){
     let dashboardFooter = document.querySelector("#dashboard-footer");
 
     dashboardTitle.innerText = "Manage Report";
-    let report = await getIndividualReport(potholeID);
+    let potholeReport = await getIndividualReport(potholeID);
+    let reportedImages = await getUserReportImages(potholeID, potholeReport.reportID)
+
+    allReportImages = ""
+
+    //Attempts to load the reports into the pane.
+    try {
+        //Determines if there are pothole images to be added. If not, display a message.
+        if(reportedImages.length == 0){
+            allReportImages = `<div class="d-flex justify-content-center mt-3"><strong>No report images uploaded!</strong></div>`
+        } else {
+        //Otherwise, iterate over all of the images and add them to the image carousel for the report.
+            let tag = "active"
+            let i = 0
+            for(reportImage of reportedImages){
+                if(i > 0)
+                    tag = ""
+                allReportImages +=
+                `<div class="carousel-item ${tag}">
+                    <img src="${reportImage.imageURL}" style="height: 300px; background-position: center center; object-fit: cover; background-repeat: no-repeat;" class="d-block w-100">
+                    <div class="carousel-caption d-none d-md-block">
+                        <button type="button" data-bs-toggle="collapse" data-bs-target="#dashDeleteImage-${potholeReport.reportID}-${reportImage.imageID}" aria-expanded="false" aria-controls="collapseExample" class="btn btn-danger"><i class="bi bi-trash-fill"></i> Delete Image</button>
+                        <div class="collapse" id="dashDeleteImage-${potholeReport.reportID}-${reportImage.imageID}">
+                            <div class="card card-body bg-dark text-white mt-3">
+                                <b>Confirm image deletion?</b>
+                                <button type="button" data-bs-toggle="collapse" data-bs-target="#dashDeleteImage-${potholeReport.reportID}-${reportImage.imageID}" aria-expanded="false" aria-controls="collapseExample" class="btn btn-danger my-2">Delete Image</button>
+                                <button type="button" data-bs-toggle="collapse" data-bs-target="#dashDeleteImage-${potholeReport.reportID}-${reportImage.imageID}" aria-expanded="false" aria-controls="collapseExample" class="btn btn-secondary my-2">Close</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>`
+                i++;
+            }
+        }
+
+        console.log(allReportImages)      
+    } catch(e){
+        //If any error occurs, display that there were no reports for ht pothole.
+        allReportImages = `<div class="d-flex justify-content-center mt-3"><strong>Error retrieving images for report!</strong></div>`
+    }
+
 
     if(report != null){
         console.log(report)
         dashboardBody.innerHTML = 
+        `
+        <p class="fw-bold" for="editImages-${report.reportID}">Pothole Images</p>
+        <div id="dashCarouselReport-${potholeReport.reportID}" class="carousel slide my-2" data-bs-ride="carousel">
+            <div id="dashReportImages-${potholeReport.reportID}" class="carousel-inner">
+                ${allReportImages}
+            </div>
+            <button class="carousel-control-prev" type="button" data-bs-target="#dashCarouselReport-${potholeReport.reportID}" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#dashCarouselReport-${potholeReport.reportID}" data-bs-slide="next">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            </button>
+        </div>
+
+
+        <div class="form-group mb-2">
+            <label class="fw-bold" for="editDescription-${report.reportID}">Pothole Description</label>
+            <input type="text" class="form-control mt-2" id="editDescription-${report.reportID}" readonly disabled placeholder="${report.description}">
+        </div>
+
+        <p>
+            <a class="w-100 mt-1 ms-auto btn btn-primary" data-bs-toggle="collapse" href="#editPotholeDescription-${report.reportID}" role="button" aria-expanded="false" aria-controls="collapseExample">
+                Update Description
+            </a>
+        </p>
+
+        <div class="collapse" id="editPotholeDescription-${report.reportID}">
+            <div class="card card-body bg-dark text-white mb-2">
+                <form class="form-group mb-1" onsubmit="updatePotholeDescription(event, ${report.potholeID}, ${report.reportID})">
+                    <label for="updatePotholeDescription-${report.reportID}">Pothole Description</label>
+                    <input type="text" id="updatePotholeDescription-${report.reportID}" class="text-muted form-control mt-2" name="description" value="${report.description}" required>
+                    <br>
+                    <button type="submit" class="btn btn-success">Update Description</button>
+                    <div class="mt-3" id="updateDescriptionMessage"></div>
+                </form>
+            </div>
+        </div>
+
+
+        <p>
+            <a class="btn btn-danger w-100" data-bs-toggle="collapse" href="#deletePotholeReport-${report.reportID}" role="button" aria-expanded="false" aria-controls="collapseExample">
+                Delete Report
+            </a>
+        </p>
+        <div class="collapse" id="deletePotholeReport-${report.reportID}">
+            <div class="card card-body bg-dark text-white">
+                <b>Are you sure you want to delete this report?</b><br>
+                <div class="mt-0 text-center">
+                    <button onclick="deletePotholeReport(event, ${report.potholeID}, ${report.reportID})" class="btn btn-danger">Confirm</button>
+                    <button class="btn btn-secondary" type="button" data-bs-toggle="collapse" data-bs-target="#deletePotholeReport-${report.reportID}" aria-expanded="false" aria-controls="collapseExample">
+                        Close
+                    </button>
+                </div>
+                <div class="mt-3" id="deletePotholeMessage"></div>
+            </div>
+        </div>
+        `
+
+        /*
         `<p>${report.dateReported}</p>
         <p>${report.description}</p>
         <p>${report.potholeID}</p>
@@ -112,8 +218,81 @@ async function loadUserReport(potholeID){
         <p>${report.reportedImages}</p>
         <p>${report.userID}</p>
         <p>${report.votes}</p>`
+        */
     } else {
         dashboardBody.innerHTML = `<p>An error has occurred!</p>`
+    }
+}
+
+async function deletePotholeReport(event, potholeID, reportID){
+    let result = await sendRequest(SERVER + `/api/reports/pothole/${potholeID}/report/${reportID}`, "DELETE");
+    let messageOutcomeArea  = document.querySelector("#deletePotholeMessage");
+
+    if("error" in result || "msg" in result){
+        messageOutcomeArea.innerHTML = `<div class="align-middle text-center">
+        <b class="text-danger text-center">${result["error"]}</b></div>`;
+    } else {
+        messageOutcomeArea.innerHTML = `<div class="align-middle text-center">
+                                            <b class="align-middle text-success text-center">Pothole Deleted Successfully!</b>
+                                        </div>`;
+
+        loadDashboard();
+    }
+
+}
+
+async function updatePotholeDescription(event, potholeID, reportID){
+    event.preventDefault();
+
+    let form = event.target;
+
+    let newDescription = {
+        "description" : form.elements["description"].value
+    }
+
+    let result = await sendRequest(SERVER + `/api/reports/pothole/${potholeID}/report/${reportID}`, "PUT", newDescription);
+    let messageOutcomeArea  = document.querySelector("#updateDescriptionMessage");
+
+    if("error" in result || "msg" in result){
+        messageOutcomeArea.innerHTML = `<div class="align-middle text-center">
+        <b class="text-danger text-center">${result["error"]}</b></div>`;
+    } else {
+        messageOutcomeArea.innerHTML = `<div class="align-middle text-center">
+                                            <div class="spinner-border text-success mb-2" role="status"></div><br>
+                                            <b class="align-middle text-success text-center">Description Updated Successfully!</b>
+                                        </div>`;
+        setTimeout(()=>{
+            loadUserReport(potholeID)
+        }, 3000, potholeID)
+        
+    }
+}
+
+
+async function deleteImageFromReport(event, potholeID, reportID){
+    event.preventDefault();
+
+    let form = event.target;
+
+    let newDescription = {
+        "description" : form.elements["description"].value
+    }
+
+    let result = await sendRequest(SERVER + `/api/reports/pothole/${potholeID}/report/${reportID}`, "PUT", newDescription);
+    let messageOutcomeArea  = document.querySelector("#updateDescriptionMessage");
+
+    if("error" in result || "msg" in result){
+        messageOutcomeArea.innerHTML = `<div class="align-middle text-center">
+        <b class="text-danger text-center">${result["error"]}</b></div>`;
+    } else {
+        messageOutcomeArea.innerHTML = `<div class="align-middle text-center">
+                                            <div class="spinner-border text-success mb-2" role="status"></div><br>
+                                            <b class="align-middle text-success text-center">Description Updated Successfully!</b>
+                                        </div>`;
+        setTimeout(()=>{
+            loadUserReport(potholeID)
+        }, 3000, potholeID)
+        
     }
 }
 
@@ -134,16 +313,30 @@ async function getIndividualReport(potholeID){
 
 
 async function loadDashboard(){
-    getUserPotholes();
-    setTimeout(() => {
-        dashboardMap.invalidateSize();
-    }, 500);
+    let user = await identifyUser();
+    console.log(user)
+    let loginStateArea = document.querySelector("#dashboardMap");
+
+    if("error" in user || "msg" in user){
+        loginStateArea.innerHTML = `<div class="mt-5 text-center text-black">
+                                        <h2>User is not logged in!</h2>
+                                        <p>${user["error"]}</p>
+                                    </div>`
+    } else {
+        await displayUserPotholes();
+        setTimeout(() => {
+            dashboardMap.invalidateSize();
+        }, 200);
+    }
 }
 
 
 async function dashMain(){
-    await initDashboardMap();
-    displayUserPotholes();
+    let user = await identifyUser();
+    if(!("error" in user || "msg" in user)){
+        await initDashboardMap();
+        displayUserPotholes();
+    }
 }
 
 window.addEventListener('DOMContentLoaded', dashMain);

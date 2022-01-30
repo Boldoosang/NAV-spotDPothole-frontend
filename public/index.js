@@ -341,15 +341,31 @@ async function loadReports(potholeID){
 }
 
 //Loads the report page content into the report page based on the device that is being used.
-function loadReportPage(){
+async function loadReportPage(){
     let reportArea = document.querySelector("#reportContent");
-    //If a mobile device is not being used, display that their device is unsupported.
-    if(!isMobileDevice()){
-        // reportArea.innerHTML = `
-        // <div class="col col-sm-12 mt-3 text-center">
-        //    <h5 class="fw-bold">Unsupported Device!</h5>
-        //    <p>Sorry, but you need to use a mobile device in order to make a report.</p>
-        // </div>`
+
+    let user = await identifyUser();
+
+    if("error" in user || "msg" in user){
+        reportArea.innerHTML = `<div class="mt-5 text-center text-black">
+                                        <h2>User is not logged in!</h2>
+                                        <p>${user["error"]}</p>
+                                    </div>`
+    } else {
+        //If a mobile device is not being used, display that their device is unsupported.
+        //if(isMobileDevice()){
+             //reportArea.innerHTML = `
+             //<div class="text-center mt-5 text-center text-black">
+             //   <h2>Unsupported Device!</h2>
+             //   <p>Sorry, but you need to use a mobile device in order to make a report.</p>
+             //</div>`
+        //} else {
+            reportArea.innerHTML = 
+            `<div class="list-group p-3 d-flex flex-column justify-content-evenly align-items-middle" style="min-height: 75vh">
+                <button data-bs-target="#standardReportModal" data-bs-toggle="modal" id="standard-button"  type="button" class="btn btn-dark py-5">Standard Report</button>                       
+                <button data-bs-target="#driverReportModal" data-bs-toggle="modal" id="driver-button" type="button" class="btn btn-dark py-5">Driver Report</button>
+            </div>`
+        //}
     }
 }
 

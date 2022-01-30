@@ -83,7 +83,7 @@ async function displayPotholes(){
     
     setTimeout(() => {
         map.invalidateSize();
-    }, 500);
+    }, 200);
 }
 
 //gets the Report off canvas element
