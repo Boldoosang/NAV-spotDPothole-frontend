@@ -11,19 +11,14 @@ const firebaseConfig = {
 // Initialize Firebase
 const app = firebase.initializeApp(firebaseConfig);
 
-//Facilitates the submission of a standard report for processing at the backend.
-async function postStandardReport() {
-	//Handles both cases of standard reports with images, and without.
-	await handleStandardReport()
-}
-
 // Handles the submission of a standard pothole report for both image and non-image cases.
 async function handleStandardReport() {
 	//Get the single file input
 	const file = document.querySelector('#photo').files[0];
+    let currentUser = await identifyUser();
 
 	//If a valid file was uploaded, upload it to firebase.
-	if (file != null) {
+	if (file != null && "email" in currentUser) {
 		//Determines if the file is not an image.
 		console.log(file.type)
 		if(!(['image/png', 'image/jpeg', 'image/gif', 'image/jpg'].includes(file.type))){
@@ -92,9 +87,10 @@ async function handleAddImage(event, potholeID, reportID) {
 
     //Get the upload progress text area.
 	let uploadProgress = document.querySelector("#dashboardUploadProgress")
+    let currentUser = await identifyUser();
 
 	//If a valid file was uploaded, upload it to firebase.
-	if (file != null) {
+	if (file != null && "email" in currentUser) {
 		//Determines if the file is not an image.
 		console.log(file.type)
 		if(!(['image/png', 'image/jpeg', 'image/gif', 'image/jpg'].includes(file.type))){
@@ -103,7 +99,7 @@ async function handleAddImage(event, potholeID, reportID) {
 		}
 
 		//Sets the name of the file
-		const fileName = "REPORT IMG - " + new Date().toLocaleString();
+		const fileName = "REPORT " + new Date().getTime() + "_" + Math.random().toString(36).replace(/[^a-z]+/g, '').substr(0, 5);
 
 		const uploadTask = firebase.storage().ref("test/" + fileName + ".png").put(file);
 
@@ -514,12 +510,14 @@ async function loadReportPage(){
         //} else {
             reportArea.innerHTML = 
             `<div class="list-group p-3 d-flex flex-column justify-content-evenly align-items-middle" style="min-height: 75vh">
-                <button data-bs-target="#standardReportModal" data-bs-toggle="modal" id="standard-button"  type="button" class="btn btn-dark py-5">Standard Report</button>                       
-                <button data-bs-target="#driverReportModal" data-bs-toggle="modal" id="driver-button" type="button" class="btn btn-dark py-5">Driver Report</button>
+                <button data-bs-target="#standardReportModal" data-bs-toggle="modal" id="standard-button" onclick="updateLocalCoords()" type="button" class="btn btn-dark py-5">Standard Report</button>                       
+                <button data-bs-target="#driverReportModal" data-bs-toggle="modal" id="driver-button" onclick="updateLocalCoords()" type="button" class="btn btn-dark py-5">Driver Report</button>
             </div>`
         //}
     }
 }
+
+
 
 //Loads the report leaderboard data into the report leaderboard page.
 async function loadReportLeaderboardData(){
@@ -818,9 +816,10 @@ async function postDriverReport() {
   	await buildReport(null, null, DRIVER_REPORT_URL);
 }
 
-//Generates the report using the photoURL, description, and endpoint URL.
-async function buildReport(photoURL = null, description, url) {
-	var latitude, longitude;
+async function updateLocalCoords(){
+    var latitude, longitude;
+
+    let coordTextArea = document.querySelector("#coordinatesText");
 	
 	//Checks to see if the device supports geolocation.
 	if (navigator.geolocation) {
@@ -829,41 +828,77 @@ async function buildReport(photoURL = null, description, url) {
 			//If the coordinates are successfully obtained, store them.
 			latitude = position.coords.latitude;
 			longitude = position.coords.longitude;
-			
-			//Sends the report to the endpoint and stores the results.
-			let results = await sendReport(latitude, longitude, photoURL, description, url)
 
-			//Prints the results of sending the report.
-			try {
-				if("msg" in results){
-					displayToast("failed", "You must be logged in to report a pothole!")
-				} else if("error" in results){
-					displayToast("failed", results["error"])
-				} else if("message" in results){
-					displayToast("success", results["message"])
-				}
-			} catch (e) {
-				displayToast("failed", e.message)
-			}
+            console.log(latitude, longitude)
+
+            localStorage.setItem("latitude", latitude)
+            localStorage.setItem("longitude", longitude)
 
 		}, function(){
 		//If the coordinates were not succesfully obtained, display an error.
 			//If the latitude and longitude could not be obtained, display an error message.
-			if(longitude == null || latitude == null){
+			if(longitude == undefined || latitude == undefined){
 				//Displays error message as a toast.
+                localStorage.setItem("latitude", latitude)
+                localStorage.setItem("longitude", longitude)
 				displayToast("failed", "Unfortunately we couldn't find your coordinates!")
 			}
 		})
  	} else {
-	//If the device does not support geolocation, display an error message.
-		displayToast("failed", "unfortunately we couldn't find your coordinates!")
+        localStorage.setItem("latitude", latitude)
+        localStorage.setItem("longitude", longitude)
+	    //If the device does not support geolocation, display an error message.
+		displayToast("failed", "Unfortunately we couldn't find your coordinates!")
+	}
+
+    latitude = localStorage.getItem("latitude")
+    longitude = localStorage.getItem("longitude")
+
+    coordTextArea.placeholder = `Latitude: ${latitude}, Longitude: ${longitude}`
+}
+
+//Generates the report using the photoURL, description, and endpoint URL.
+async function buildReport(photoURL = null, description, url) {
+	var latitude, longitude;
+
+    try {
+        latitude = parseFloat(localStorage.getItem("latitude"))
+        longitude = parseFloat(localStorage.getItem("longitude"))
+    } catch(e){
+        console.log("Unable to retrieve latitude and longitude coordaintes.")
+        latitude = undefined;
+        longitude = undefined;
+    }
+
+
+	console.log(latitude, longitude)
+	//Checks to see if the device supports geolocation.
+	if (longitude != undefined && latitude != undefined) {
+        //Sends the report to the endpoint and stores the results.
+        let results = await sendReport(latitude, longitude, photoURL, description, url)
+        console.log(results)
+        //Prints the results of sending the report.
+        try {
+            if("msg" in results){
+                displayToast("failed", "You must be logged in to report a pothole!")
+            } else if("error" in results){
+                displayToast("failed", results["error"])
+            } else if("message" in results){
+                displayToast("success", results["message"])
+            }
+        } catch (e) {
+            displayToast("failed", e.message)
+        }
+ 	} else {
+        console.log("One of them is undefined!")
+	    //If the device does not support geolocation, display an error message.
+		displayToast("failed", "Unfortunately we couldn't find your coordinates!")
 	}
 }
 
 //Sends a generated report to the endpoint URL.
 async function sendReport(latitude, longitude, photoURL, description = null, url){
 	
-
     var inMap = leafletPip.pointInLayer([longitude, latitude], map);
 
     if(inMap.length == 0)
@@ -885,6 +920,8 @@ async function sendReport(latitude, longitude, photoURL, description = null, url
 	if(photoURL != null){
 		data["images"] = [photoURL];
 	}
+
+    console.log(data)
 	
 	//Attempts to send the request to the endpoint with the data, and returns the outcome.
 	try {
@@ -917,7 +954,7 @@ function main(){
         });
     }
 
-    document.getElementById('submit-passenger-report').addEventListener('click', postStandardReport);
+    document.getElementById('submit-passenger-report').addEventListener('click', handleStandardReport);
 }
 
 //Once the DOM has loaded, bootstrap the application.
