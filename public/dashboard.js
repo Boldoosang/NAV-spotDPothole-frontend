@@ -127,11 +127,11 @@ async function loadUserReport(potholeID){
                 `<div class="carousel-item ${tag}">
                     <img src="${reportImage.imageURL}" style="height: 300px; background-position: center center; object-fit: cover; background-repeat: no-repeat;" class="d-block w-100">
                     <div class="carousel-caption d-none d-md-block">
-                        <button type="button" data-bs-toggle="collapse" data-bs-target="#dashDeleteImage-${potholeReport.reportID}-${reportImage.imageID}" aria-expanded="false" aria-controls="collapseExample" class="btn btn-danger"><i class="bi bi-trash-fill"></i> Delete Image</button>
+                        <button type="button" dashDeleteReportImage()" data-bs-toggle="collapse" data-bs-target="#dashDeleteImage-${potholeReport.reportID}-${reportImage.imageID}" aria-expanded="false" aria-controls="collapseExample" class="btn btn-danger"><i class="bi bi-trash-fill"></i> Delete Image</button>
                         <div class="collapse" id="dashDeleteImage-${potholeReport.reportID}-${reportImage.imageID}">
                             <div class="card card-body bg-dark text-white mt-3">
                                 <b>Confirm image deletion?</b>
-                                <button type="button" data-bs-toggle="collapse" data-bs-target="#dashDeleteImage-${potholeReport.reportID}-${reportImage.imageID}" aria-expanded="false" aria-controls="collapseExample" class="btn btn-danger my-2">Delete Image</button>
+                                <button type="button" data-bs-toggle="collapse" onclick="deleteImageFromReport(event, ${potholeReport.potholeID}, ${potholeReport.reportID}, ${reportImage.imageID})" data-bs-target="#dashDeleteImage-${potholeReport.reportID}-${reportImage.imageID}" aria-expanded="false" aria-controls="collapseExample" class="btn btn-danger my-2">Delete Image</button>
                                 <button type="button" data-bs-toggle="collapse" data-bs-target="#dashDeleteImage-${potholeReport.reportID}-${reportImage.imageID}" aria-expanded="false" aria-controls="collapseExample" class="btn btn-secondary my-2">Close</button>
                             </div>
                         </div>
@@ -164,7 +164,39 @@ async function loadUserReport(potholeID){
                 <span class="carousel-control-next-icon" aria-hidden="true"></span>
             </button>
         </div>
+        
 
+        <p>
+            <a class="w-100 mt-1 ms-auto btn btn-primary" data-bs-toggle="collapse" href="#addReportImage-${report.reportID}" role="button" aria-expanded="false" aria-controls="collapseExample">
+                Add Image
+            </a>
+        </p>
+
+        <div class="collapse" id="addReportImage-${report.reportID}">
+            <div class="card card-body bg-dark text-white mb-2">
+
+                <!-- Image Preview Area -->
+                <div id ="dashboard-img-container" class="d-flex justify-content-around">
+                    <img id="dashboard-pothole-img" class="w-100" src="" hidden/>
+                </div>
+                
+                <!-- Image Upload Area --> <!-- Refactor again -->
+                <div class="input-group justify-content-center mt-5 mb-5">
+                    <button class="btn btn-outline-transparent" > 
+                        <label class="input-group-text " for="dashboardPhoto"><i class="bi bi-images"></i> <div class="ms-2">Select Image </div></label>
+                    </button>
+                    <button onclick="removeDashboardImage()" class="btn btn-danger rounded">x</button>
+                    <div id="dashboardPhotoContainer">
+                        <input id="dashboardPhoto" class="form-control-file" type="file" accept="image/*" onchange="showDashboardImage()" hidden> 
+                    </div>
+                </div>
+                <div class="text-center" id="dashboardUploadProgress"></div>
+
+                <button type="submit" id="test123"  class="btn btn-success">Add Image</button> //onclick="postAddImage()"
+            </div>
+        </div>
+
+        <div class="mt-3" id="imageUpdateMessage"></div>
 
         <div class="form-group mb-2">
             <label class="fw-bold" for="editDescription-${report.reportID}">Pothole Description</label>
@@ -224,6 +256,10 @@ async function loadUserReport(potholeID){
     }
 }
 
+async function postAddImage(){
+    console.log("test")
+}
+
 async function deletePotholeReport(event, potholeID, reportID){
     let result = await sendRequest(SERVER + `/api/reports/pothole/${potholeID}/report/${reportID}`, "DELETE");
     let messageOutcomeArea  = document.querySelector("#deletePotholeMessage");
@@ -269,25 +305,18 @@ async function updatePotholeDescription(event, potholeID, reportID){
 }
 
 
-async function deleteImageFromReport(event, potholeID, reportID){
+async function deleteImageFromReport(event, potholeID, reportID, imageID){
     event.preventDefault();
 
-    let form = event.target;
-
-    let newDescription = {
-        "description" : form.elements["description"].value
-    }
-
-    let result = await sendRequest(SERVER + `/api/reports/pothole/${potholeID}/report/${reportID}`, "PUT", newDescription);
-    let messageOutcomeArea  = document.querySelector("#updateDescriptionMessage");
-
+    let result = await sendRequest(SERVER + `/api/reports/pothole/${potholeID}/report/${reportID}/images/${imageID}`, "DELETE");
+    let messageOutcomeArea  = document.querySelector("#imageUpdateMessage");
     if("error" in result || "msg" in result){
         messageOutcomeArea.innerHTML = `<div class="align-middle text-center">
         <b class="text-danger text-center">${result["error"]}</b></div>`;
     } else {
-        messageOutcomeArea.innerHTML = `<div class="align-middle text-center">
+        messageOutcomeArea.innerHTML = `<div class="align-middle text-center mb-2">
                                             <div class="spinner-border text-success mb-2" role="status"></div><br>
-                                            <b class="align-middle text-success text-center">Description Updated Successfully!</b>
+                                            <b class="align-middle text-success text-center">Image Deleted Successfully!</b>
                                         </div>`;
         setTimeout(()=>{
             loadUserReport(potholeID)
@@ -330,6 +359,47 @@ async function loadDashboard(){
     }
 }
 
+//Displays the selected image after the user has chosen their upload.
+function showDashboardImage(){
+    //Gets the uploaded image file.
+    const image = event.target.files[0];
+    console.log(image)
+    const displayImage = document.getElementById("dashboard-pothole-img");
+    try {
+        //Displays the image as a preview.
+        displayImage.src = URL.createObjectURL(image);
+        console.log(displayImage.src)
+        displayImage.hidden = false;
+    } catch(e){
+        //For any error , hide the image and resets the source.
+        console.log("Error")
+        displayImage.hidden = true;
+        displayImage.src = "";
+    }
+
+    
+}
+
+
+//Removes the selected image as the upload image.
+function removeDashboardImage(){
+    const displayImage = document.getElementById("dashboard-pothole-img");
+    
+    //Attempts to remove the image from the report page.
+    try {
+        var image = document.querySelector('#dashboardPhotoContainer');
+        //Resets the file input field.
+        image.innerHTML = `<input id="dashboardPhoto" class="form-control-file" type="file" accept="image/*" onchange="showDashboardImage()" hidden> `
+        //Hides the preview and resets the source.
+        displayImage.src = "";
+        displayImage.value = "";
+        displayImage.hidden = true;
+        image.value = ""
+    } catch(e){
+        //If there are any errors in removing the image, log them.
+        console.log(e)
+    }
+}
 
 async function dashMain(){
     let user = await identifyUser();

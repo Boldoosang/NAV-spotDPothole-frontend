@@ -19,6 +19,15 @@ async function postStandardReport() {
 	await handleStandardReport()
 }
 
+
+async function handleAddImageToReport() {
+	console.log("add image")
+}
+
+
+
+
+
 // Handles the submission of a standard pothole report for both image and non-image cases.
 async function handleStandardReport() {
 	//Get the single file input
