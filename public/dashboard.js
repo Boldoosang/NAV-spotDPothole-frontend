@@ -139,9 +139,7 @@ async function loadUserReport(potholeID){
                 </div>`
                 i++;
             }
-        }
-
-        console.log(allReportImages)      
+        }  
     } catch(e){
         //If any error occurs, display that there were no reports for ht pothole.
         allReportImages = `<div class="d-flex justify-content-center mt-3"><strong>Error retrieving images for report!</strong></div>`
@@ -190,9 +188,9 @@ async function loadUserReport(potholeID){
                         <input id="dashboardPhoto" class="form-control-file" type="file" accept="image/*" onchange="showDashboardImage()" hidden> 
                     </div>
                 </div>
-                <div class="text-center" id="dashboardUploadProgress"></div>
+                <div class="text-center mb-3" id="dashboardUploadProgress"></div>
 
-                <button type="submit" id="test123"  class="btn btn-success">Add Image</button> //onclick="postAddImage()"
+                <button type="submit" onclick="handleAddImage(event, ${report.potholeID}, ${report.reportID})" class="btn btn-success">Add Image</button> 
             </div>
         </div>
 
@@ -256,9 +254,7 @@ async function loadUserReport(potholeID){
     }
 }
 
-async function postAddImage(){
-    console.log("test")
-}
+
 
 async function deletePotholeReport(event, potholeID, reportID){
     let result = await sendRequest(SERVER + `/api/reports/pothole/${potholeID}/report/${reportID}`, "DELETE");
@@ -296,6 +292,28 @@ async function updatePotholeDescription(event, potholeID, reportID){
         messageOutcomeArea.innerHTML = `<div class="align-middle text-center">
                                             <div class="spinner-border text-success mb-2" role="status"></div><br>
                                             <b class="align-middle text-success text-center">Description Updated Successfully!</b>
+                                        </div>`;
+        setTimeout(()=>{
+            loadUserReport(potholeID)
+        }, 3000, potholeID)
+        
+    }
+}
+
+async function addImageToReport(url, potholeID, reportID){
+    let imageURL = {
+        "images" : [url]
+    }
+
+    let result = await sendRequest(SERVER + `/api/reports/pothole/${potholeID}/report/${reportID}/images`, "POST", imageURL);
+    let messageOutcomeArea  = document.querySelector("#imageUpdateMessage");
+    if("error" in result || "msg" in result){
+        messageOutcomeArea.innerHTML = `<div class="align-middle text-center">
+        <b class="text-danger text-center">${result["error"]}</b></div>`;
+    } else {
+        messageOutcomeArea.innerHTML = `<div class="align-middle text-center mb-2">
+                                            <div class="spinner-border text-success mb-2" role="status"></div><br>
+                                            <b class="align-middle text-success text-center">Image Added successfully!</b>
                                         </div>`;
         setTimeout(()=>{
             loadUserReport(potholeID)
