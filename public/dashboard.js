@@ -28,7 +28,6 @@ async function initDashboardMap(){
 
 async function getUserPotholes(){
     let potholes = await sendRequest(SERVER + '/api/dashboard/potholes', 'GET');
-    console.log(potholes);
 
     return potholes;
 }
@@ -67,7 +66,6 @@ async function displayUserPotholes(){
     let potholes = await getUserPotholes();
     if(potholes.length > 0){
         for(let pothole of potholes){
-            console.log(pothole)
             try {
                 //create a new marker object with the constituency name, pothole id and constituency id
                 let marker = L.marker([pothole.latitude, pothole.longitude], {

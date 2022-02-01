@@ -1,5 +1,5 @@
 // the cache version gets updated every time there is a new deployment
-const CACHE_VERSION = 10;
+const CACHE_VERSION = 1;
 const CURRENT_CACHE = `main-${CACHE_VERSION}`;
 
 // these are the routes we are going to cache for offline support
@@ -48,13 +48,12 @@ const fromCache = request =>
       cache
         .match(request)
         .then(function(matching){
-          if(matching){
+            console.log("This matches something in the cache!")
+            //console.log(await matching.json())
             return matching;
-          } else {
-            console.log("No matching request!")
-            //var init = { "status" : 200 , "statusText" : "I am a custom service worker response!" };
-            //return new Response(null, init);
-          }
+        }).catch(function(e){
+            console.log("This doesn't match anything in the cache!")
+            return new Response();
         })
     );
 
@@ -62,13 +61,9 @@ const fromCache = request =>
 const update = request =>
   caches
     .open(CURRENT_CACHE)
-    .then(async function(cache){
-      await fetch(request).then(function(response){
-        console.log(request)
-        console.log(response)
-        cache.put(request, response).catch()
-      })
-    });
+    .then(cache =>
+      fetch(request).then(response => cache.put(request, response)).catch(console.log)
+    );
 
 // general strategy when making a request (eg if online try to fetch it
 // from the network with a timeout, if something fails serve from cache)
