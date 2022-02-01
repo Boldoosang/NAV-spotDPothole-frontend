@@ -9,9 +9,17 @@
         <link rel="icon" type="image/png" sizes="16x16" href="images/favicon-16x16.png">
         <!-- Sets website title -->
         <title>SpotDPothole</title>
+        <link rel="manifest" href="manifest.json">
         <!-- Imports leaflet libraries -->
         <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js" integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA==" crossorigin=""></script>
         <script src="https://unpkg.com/@mapbox/leaflet-pip@latest/leaflet-pip.js"></script>
+
+
+        <script>
+            if("serviceWorker" in navigator){
+                navigator.serviceWorker.register("sw.js");
+            }
+        </script>
     </head>
         
     <body>
@@ -96,7 +104,7 @@
                             <!-- Leaderboard content is displayed here -->
                             <div id="dashboardContent" class="p-0 mx-0" role="tabpanel">
                                 <!-- Dashboard Map is rendered here -->
-                                <div id="dashboardMap" style="min-height: 75vh;"></div>
+                                <div id="dashboardMap" style="min-height: 90vh;"></div>
                             </div>  
                         </div>
                             
@@ -257,7 +265,7 @@
                                         <div class="row align-items-start">
                                             <!-- Displays application logo -->
                                             <div class="col col-12 mb-5 d-flex justify-content-center">
-                                                <img id="logo" src="images/SpotDPothole-Logo.png" style="max-height: 200px" class="rounded float-start img-fluid">
+                                                <img id="logo" src="images/icons-512.png" style="max-height: 200px" class="rounded float-start img-fluid">
                                             </div>
                                             
                                             <!-- Displays login form -->
@@ -340,6 +348,79 @@
                                             </div>
                                         </form>
                                     </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+                <!-- Profile Management Modal -->
+                <div class="modal fade" id="profileManagementModal" tabindex="-1">
+                    <div class="modal-dialog">
+                        <div id="profileManagementSection" class="modal-content">
+                            <!-- Enables menu options for login/registration, and a close button. -->
+                            <div class="modal-header">
+                                <!-- Enables the user to select between login and registration at the top of the form. -->
+                                <h5 class="modal-title" id="profileManagementModal">Profile Management</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+
+                            <!-- Holds the registration and login tab content forms -->
+                            <div class="modal-body">
+                                <!-- Displays login form -->
+                                <div class="col col-12">
+                                    <h6 class="fw-bold">Password</h6>
+                                    <p>
+                                        <a class="ms-auto btn btn-primary" data-bs-toggle="collapse" href="#updatePassword" role="button" aria-expanded="false" aria-controls="collapseExample">
+                                            Update Password
+                                        </a>
+                                    </p>
+                            
+                                    <div class="collapse" id="updatePassword">
+                                        <div class="card card-body bg-dark text-white mb-2">
+                                            <form class="form-group mb-1" onsubmit="changePassword(event)">
+                                                <label for="updatePassword-original">Old Password</label>
+                                                <input type="password" id="updatePassword-original" class="form-control mt-2" name="oldPassword" required>
+                                                <br>
+                                                <label for="updatePassword-password">Password</label>
+                                                <input type="password" id="updatePassword-password" class="form-control mt-2" name="password" required>
+                                                <br>
+                                                <label for="updatePassword-confirmPassword">Confirm Password</label>
+                                                <input type="password" id="updatePassword-confirmPassword" class="form-control mt-2" name="confirmPassword" required>
+                                                <br>
+                                                <button type="submit" class="btn btn-success">Update Password</button>
+                                                <div class="mt-3" id="updatePasswordMessage"></div>
+                                            </form>
+                                        </div>
+                                    </div>
+
+                                    <h6 class="fw-bold">Profile</h6>
+                                    <p>
+                                        <a class="mt-1 ms-auto btn btn-primary" onclick="loadProfileData()" data-bs-toggle="collapse" href="#updateProfile" role="button" aria-expanded="false" aria-controls="collapseExample">
+                                            Update Profile
+                                        </a>
+                                    </p>
+                            
+                                    <div class="collapse" id="updateProfile">
+                                        <div class="card card-body bg-dark text-white mb-2">
+                                            <form class="form-group mb-1" onsubmit="updateProfile(event)">
+                                                <label for="updateProfile-firstName">First Name</label>
+                                                <input type="text" id="updateProfile-firstName" class="form-control mt-2" name="firstName" required>
+                                                <br>
+                                                <label for="updateProfile-lastName">Last Name</label>
+                                                <input type="text" id="updateProfile-lastName" class="form-control mt-2" name="lastName" required>
+                                                <br>
+                                                <button type="submit" class="btn btn-success">Update Profile</button>
+                                                <div class="mt-3" id="updateProfileMessage"></div>
+                                            </form>
+                                        </div>
+                                    </div>
+
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                    </div>
+
                                 </div>
                             </div>
                         </div>

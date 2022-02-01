@@ -300,6 +300,71 @@ async function updatePotholeDescription(event, potholeID, reportID){
     }
 }
 
+
+async function changePassword(event){
+    event.preventDefault();
+
+    let form = event.target;
+
+    let passwordDetails = {
+        "oldPassword" : form.elements["oldPassword"].value,
+        "password" : form.elements["password"].value,
+        "confirmPassword" : form.elements["confirmPassword"].value
+    }
+
+    let result = await sendRequest(SERVER + `/user/password`, "PUT", passwordDetails);
+    let messageOutcomeArea  = document.querySelector("#updatePasswordMessage");
+
+    if("error" in result || "msg" in result){
+        messageOutcomeArea.innerHTML = `<div class="align-middle text-center">
+        <b class="text-danger text-center">${result["error"]}</b></div>`;
+    } else {
+        messageOutcomeArea.innerHTML = `<div class="align-middle text-center">
+                                            <b class="align-middle text-success text-center">Password Updated Successfully!</b>
+                                        </div>`;     
+    }
+}
+
+async function updateProfile(event){
+    event.preventDefault();
+
+    let form = event.target;
+
+    let profileDetails = {
+        "firstName" : form.elements["firstName"].value,
+        "lastName" : form.elements["lastName"].value,
+    }
+
+    let result = await sendRequest(SERVER + `/user/profile`, "PUT", profileDetails);
+    let messageOutcomeArea  = document.querySelector("#updateProfileMessage");
+
+    if("error" in result || "msg" in result){
+        messageOutcomeArea.innerHTML = `<div class="align-middle text-center">
+        <b class="text-danger text-center">${result["error"]}</b></div>`;
+    } else {
+        messageOutcomeArea.innerHTML = `<div class="align-middle text-center">
+                                            <b class="align-middle text-success text-center">Profile Updated Successfully!</b>
+                                        </div>`;        
+    }
+}
+
+
+async function loadProfileData(){
+    let user = await identifyUser();
+
+    let firstName = document.querySelector("#updateProfile-firstName")
+    let lastName = document.querySelector("#updateProfile-lastName")
+
+    let messageOutcomeArea  = document.querySelector("#updateProfileMessage");
+
+    if("error" in user || "msg" in user){
+        messageOutcomeArea.innerHTML = `<b class="text-danger text-center">User is not logged in.</b></div>`;
+    } else {
+        firstName.value = user["firstName"];
+        lastName.value = user["lastName"];
+    }
+}
+
 async function addImageToReport(url, potholeID, reportID){
     let imageURL = {
         "images" : [url]

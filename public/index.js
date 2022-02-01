@@ -270,7 +270,7 @@ async function identifyUserContext(){
     //Writes the appropriate menu options to the user context actions for login/register, or logout.
     let userStateArea = document.querySelector("#userContextGroup");
     if("email" in user){
-        userStateArea.innerHTML = `<h6 class="text-center">Logged in as <span class="text-primary">${user.firstName} ${user.lastName}</span></h3>
+        userStateArea.innerHTML = ` <h6 class="text-center "><a data-bs-toggle="modal" data-bs-target="#profileManagementModal" class="text-primary fw-bold text-decoration-underline"><i class="bi bi-person-lines-fill"></i> ${user.firstName} ${user.lastName}</a></h6>
                                     <hr class="my-0">
                                     <a class="list-group-item list-group-item-action list-group-item-light p-3 pr-5 relative-bottom" onclick="logout()"><i class="bi bi-box-arrow-left" style="font-size:1.5rem;color:black"></i>        Logout</a>`
     }
