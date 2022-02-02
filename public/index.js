@@ -173,6 +173,14 @@ async function sendRequest(url, method, data){
             request.body = JSON.stringify(data);
         }
 
+        if(method == "POST"){
+            console.log("This is a post request!")
+            let form_data = {
+                "form_data" : request
+            }
+            navigator.serviceWorker.controller.postMessage(form_data)  // <--- This line right here sends our data to sw.js
+        }
+
         //Carries out the requests and collects the results.
         let response = await fetch(url, request);
         let results = await response.json()
@@ -190,8 +198,12 @@ async function sendRequest(url, method, data){
         //Otherwise, return the parsed results.
         return results;
     } catch (e){
-        //If unable to send the request, return an error.
         console.log(e)
+        //If unable to send the request, return an error.
+        if(e instanceof TypeError && !window.navigator.onLine){
+            return {"error" : "Please go online to use this feature!"};
+        }
+        
         return {"error" : "An unexpected error has occurred!"};
     }
 }
@@ -511,7 +523,7 @@ async function loadReportPage(){
             reportArea.innerHTML = 
             `<div class="list-group p-3 d-flex flex-column justify-content-evenly align-items-middle" style="min-height: 75vh">
                 <button data-bs-target="#standardReportModal" data-bs-toggle="modal" id="standard-button" onclick="updateLocalCoords()" type="button" class="btn btn-dark py-5">Standard Report</button>                       
-                <button data-bs-target="#driverReportModal" data-bs-toggle="modal" id="driver-button" onclick="updateLocalCoords()" type="button" class="btn btn-dark py-5">Driver Report</button>
+                <button data-bs-target="#driverReportModal" data-bs-toggle="modal" id="driver-button" type="button" class="btn btn-dark py-5">Driver Report</button>
             </div>`
         //}
     }
@@ -622,8 +634,12 @@ async function displayCouncillorInfo(event, constituencyID){
         </table>
         `
     } catch(e){
-        //If the fields of the councillor data cannot be accessed, display that no constituency councillor information is available.
-        councillorModalInfo.innerHTML = `<div class="d-flex justify-content-center my-3"><strong>No constituency information available!</strong></div>`
+        if(!window.navigator.onLine){
+            councillorModalInfo.innerHTML = `<div class="text-center"><b class="text-danger text-center">Please visit this page when online to save for offline use!</b><div>`
+        } else {
+            //If the fields of the councillor data cannot be accessed, display that no constituency councillor information is available.
+            councillorModalInfo.innerHTML = `<div class="d-flex justify-content-center my-3"><strong>No constituency information available!</strong></div>`
+        }
     }
 }
 
@@ -648,7 +664,11 @@ async function voteOnReport(event, potholeID, reportID, isUpvote){
     
     //If there was an error in voting, display the login error. (The only type of error possible)
     if("error" in result || "msg" in result){
-        messageArea.innerHTML = `<b class="text-danger text-center">Please login to vote!</b>`
+        if(!window.navigator.onLine && "error" in result){
+            messageArea.innerHTML = `<b class="text-danger text-center">Vote will be synced once reconnected!</b>`
+        } else {
+            messageArea.innerHTML = `<b class="text-danger text-center">Please login to vote!</b>`
+        }
     } else {
         //Updates the message area to a success message and attempts to update the colors, text and counter.
         messageArea.innerHTML = `<b class="text-success text-center">${result["message"]}</b>`
@@ -721,8 +741,12 @@ async function loadConstituencyData(constituencyID){
         </table>
         `
     } catch(e){
-    //If there was an error formatting or accessing the data, display an error message saying that no constituency information is available.
-        councillorInformationArea.innerHTML = `<div class="d-flex justify-content-center my-3"><strong>No constituency information available!</strong></div>`
+        if(!window.navigator.onLine){
+            councillorInformationArea.innerHTML = `<div class="text-center"><b class="text-danger text-center">Please visit this page when online to save for offline use!</b><div>`
+        } else {
+            //If there was an error formatting or accessing the data, display an error message saying that no constituency information is available.
+            councillorInformationArea.innerHTML = `<div class="d-flex justify-content-center my-3"><strong>No constituency information available!</strong></div>`
+        }
     }
 }
 
@@ -807,7 +831,7 @@ function displayToast(type, message) {
 		console.log(id)
 		let element = document.getElementById(id);
 		element.className = element.className.replace("show", "hide"); 
-	}, 4000);
+	}, 3000);
 }
 
 //Facilitates the submission of a driver report for processing at the backend.
@@ -881,6 +905,8 @@ async function buildReport(photoURL = null, description, url) {
         try {
             if("msg" in results){
                 displayToast("failed", "You must be logged in to report a pothole!")
+            } else if("error" in results && !window.navigator.onLine){
+                displayToast("failed", "Your report will sync once you reconnect to the internet!")
             } else if("error" in results){
                 displayToast("failed", results["error"])
             } else if("message" in results){
@@ -921,8 +947,6 @@ async function sendReport(latitude, longitude, photoURL, description = null, url
 		data["images"] = [photoURL];
 	}
 
-    console.log(data)
-	
 	//Attempts to send the request to the endpoint with the data, and returns the outcome.
 	try {
 		return await sendRequest(url, "POST", data)
@@ -955,6 +979,14 @@ function main(){
     }
 
     document.getElementById('submit-passenger-report').addEventListener('click', handleStandardReport);
+
+    window.addEventListener("offline", (event)=>{
+        displayToast("failed", "Your network connection has been lost!")
+    })
+
+    window.addEventListener("online", (event)=>{
+        displayToast("success", "Network connection established!")
+    })
 }
 
 //Once the DOM has loaded, bootstrap the application.

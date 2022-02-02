@@ -16,8 +16,20 @@
 
 
         <script>
-            if("serviceWorker" in navigator){
-                navigator.serviceWorker.register("sw.js");
+            if ('serviceWorker' in navigator) {
+            // we are checking here to see if the browser supports the service worker api
+            window.addEventListener('load', function() {
+                navigator.serviceWorker.register('sw.js');
+
+                navigator.serviceWorker.ready.then(function(registration) {
+                    console.log('Service Worker Ready!')
+                    return registration.sync.register('sendFormData')
+                }).then(function () {
+                    console.log('Sync event registered!')
+                }).catch(function() {
+                    console.log('Sync registration failed!')
+                });
+            }); 
             }
         </script>
     </head>
@@ -221,7 +233,7 @@
                                     <!-- Displays the submit button as an accordion for confirmation -->
                                     <div class="accordion-item">
                                         <!-- Submit button for driver mode -->
-                                        <button class="btn btn-dark p-5 w-100"  id="submit-driver-prereport" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseOne" aria-expanded="false" aria-controls="flush-collapseOne">
+                                        <button class="btn btn-dark p-5 w-100" onclick="updateLocalCoords()" id="submit-driver-prereport" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseOne" aria-expanded="false" aria-controls="flush-collapseOne">
                                             Submit Pothole Report
                                         </button>
 
@@ -462,7 +474,9 @@
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div id="dashboard-body" class="modal-body">
-                        ...
+                        <div class="text-center">
+                            <b class="text-danger text-center">Please go online to use this feature!</b>
+                        </div>
                     </div>
                     <div id="dashboard-footer" class="modal-footer">
                         <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>

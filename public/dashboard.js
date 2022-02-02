@@ -104,8 +104,13 @@ async function loadUserReport(potholeID){
     let dashboardFooter = document.querySelector("#dashboard-footer");
 
     dashboardTitle.innerText = "Manage Report";
-    let potholeReport = await getIndividualReport(potholeID);
-    let reportedImages = await getUserReportImages(potholeID, potholeReport.reportID)
+
+    try {
+        var potholeReport = await getIndividualReport(potholeID);
+        var reportedImages = await getUserReportImages(potholeID, potholeReport.reportID)
+    } catch (e){
+        console.log(e)
+    }
 
     allReportImages = ""
 
