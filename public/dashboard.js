@@ -112,6 +112,14 @@ async function loadUserReport(potholeID){
         console.log(e)
     }
 
+    if(!window.navigator.onLine){
+        dashboardBody.innerHTML = `<div class="mt-5 text-center text-black">
+                                    <h2>Unavailable!</h2>
+                                    <p>Sorry, the dashboard is only available in online mode.</p>
+                                </div>`;
+        return;
+    }
+
     allReportImages = ""
 
     //Attempts to load the reports into the pane.

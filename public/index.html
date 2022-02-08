@@ -35,6 +35,7 @@
     </head>
         
     <body>
+        <noscript class="text-center text-primary"><h3>Please enable javascript to use this application.</h3></noscript>
         <!-- Offcanvas used to display constituency information, reports, and votes for whenever a pothole is clicked on the map -->
         <div class="offcanvas offcanvas-end" data-bs-scroll="true" tabindex="-1" id="offcanvasReport" aria-labelledby="offcanvasWithBothOptionsLabel">
             <div class="offcanvas-header">
@@ -62,7 +63,7 @@
             <!-- Main Sidebar Navigation Menu-->
             <div class="border-end bg-white position-relative" id="sidebar-wrapper">
 
-                <div class="sidebar-heading border-bottom bg-light fw-bold"><div class="text-center text-danger">PROTOTYPE<br><hr class="my-2"></div>MENU</div>
+                <div class="sidebar-heading border-bottom bg-light fw-bold"><div class="text-center text-danger">PROTOTYPE V2<br><hr class="my-2"></div>MENU</div>
                 <!-- Displays the list of menu options for the application -->
                 <div class="list-group list-group-flush" style="font-size: 1.2rem;">
                     <a class="list-group-item list-group-item-action list-group-item-light p-3"onclick="displayPotholes()" data-bs-toggle="pill" data-bs-target="#mainTab-map"><i class="bi bi-house-fill" style="font-size:1.5rem;color:black"></i>        Home</a>
@@ -476,7 +477,7 @@
                     </div>
                     <div id="dashboard-body" class="modal-body">
                         <div class="text-center">
-                            <b class="text-danger text-center">Please go online to use this feature!</b>
+                            <b class="text-danger text-center">Loading...</b>
                         </div>
                     </div>
                     <div id="dashboard-footer" class="modal-footer">

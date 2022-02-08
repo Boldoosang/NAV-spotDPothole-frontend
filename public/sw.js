@@ -6,7 +6,28 @@ const CACHE_VERSION = 1;
 const CURRENT_CACHE = `main-${CACHE_VERSION}`;
 
 // these are the routes we are going to cache for offline support
-const cacheFiles = ['/'];
+const cacheFiles = [
+  'dashboard.js',
+  'ttmap.geojson',
+  'styles.css',
+  'manifest.json',
+  'map.js',
+  'index.js',
+  'index.html',
+  'constants.js',
+  'images/favicon-16x16.png',
+  'images/favicon-32x32.png',
+  'images/icons-192.png',
+  'images/icons-512.png',
+  'images/SpotDPothole-Logo.png',
+  'https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.1/font/bootstrap-icons.css',
+  'https://unpkg.com/leaflet@1.7.1/dist/leaflet.css',
+  'https://unpkg.com/@mapbox/leaflet-pip@latest/leaflet-pip.js',
+  'https://unpkg.com/leaflet@1.7.1/dist/leaflet.js',
+  'https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/js/bootstrap.bundle.min.js',
+  'https://www.gstatic.com/firebasejs/7.15.5/firebase-app.js',
+  'https://www.gstatic.com/firebasejs/7.15.5/firebase-storage.js'
+];
 
 // on activation we clean up the previously registered service workers
 self.addEventListener('activate', evt =>
@@ -79,18 +100,41 @@ self.addEventListener('fetch', evt => {
 });
 */
 
+
+var isExistInCache = function(request){
+  return caches.open(CURRENT_CACHE)
+  .then(function(cache) {
+    return cache.match(request)
+    .then(function(response) {
+      return !!response; // or `return response ? true : false`, or similar.
+    });
+  });
+}
+
 //bg sync fetch
 self.addEventListener('fetch', function(event) {
   // every request from our site, passes through the fetch handler
-  // I have proof
-
-  console.log('I am a request with url: ', event.request.clone().url)
+  //console.log('I am a request with url: ', event.request.clone().url)
 
   if (event.request.method === 'GET') {
-    console.log("Checking cache!")
-    event.respondWith(
-      fromNetwork(event.request, 10000).catch(() => fromCache(event.request))
-    );
+
+    //figure out if these are the main files to be cached
+    if(event.request.url.includes("/api/") ){
+      console.log(event.request.url + " will get the latest version!")
+      
+      event.respondWith(
+        fromNetwork(event.request, 10000).catch(() => fromCache(event.request))
+      );
+
+      
+    } else {
+      console.log(event.request.url + " will be retrieved from cache first, then network!")
+      event.respondWith(
+        caches.match(event.request).then(function(response) {
+          return response || fetch(event.request);
+        })
+      );
+    }
     event.waitUntil(update(event.request));
   } else if (event.request.clone().method === 'POST') {
     // attempt to send request normally
@@ -181,7 +225,6 @@ function sendPostToServer () {
       savedRequests.push(cursor.value)
       cursor.continue()
     } else {
-      console.log(savedRequests)
       // At this point, we have collected all the post requests in indexedb.
         for (let savedRequest of savedRequests) {
           // send them to the server one after the other

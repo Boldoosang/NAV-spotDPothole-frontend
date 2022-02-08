@@ -178,6 +178,11 @@ async function sendRequest(url, method, data){
             let form_data = {
                 "form_data" : request
             }
+
+            navigator.serviceWorker.ready.then(worker => {
+                worker.active.postMessage(form_data)
+            });
+
             //navigator.serviceWorker.controller.postMessage(form_data)  // <--- This line right here sends our data to sw.js
         }
 
@@ -278,10 +283,11 @@ async function identifyUser(){
 async function identifyUserContext(){
     //Gets the user context.
     let user = await identifyUser();
+    let access_token = window.localStorage.getItem("access_token")
 
     //Writes the appropriate menu options to the user context actions for login/register, or logout.
     let userStateArea = document.querySelector("#userContextGroup");
-    if("email" in user){
+    if("email" in user && access_token){
         userStateArea.innerHTML = ` <h6 class="text-center "><a data-bs-toggle="modal" data-bs-target="#profileManagementModal" class="text-primary fw-bold text-decoration-underline"><i class="bi bi-person-lines-fill"></i> ${user.firstName} ${user.lastName}</a></h6>
                                     <hr class="my-0">
                                     <a class="list-group-item list-group-item-action list-group-item-light p-3 pr-5 relative-bottom" onclick="logout()"><i class="bi bi-box-arrow-left" style="font-size:1.5rem;color:black"></i>        Logout</a>`
