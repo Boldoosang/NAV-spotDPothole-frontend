@@ -1,12 +1,12 @@
 // Imports firebase credentials for connecting to firebase storage app
 const firebaseConfig = {
-	apiKey: "AIzaSyD8jpQ-AMBIHpFwpUfNyITEndS0A-5WwOE",
-	authDomain: "spotdpothole.firebaseapp.com",
-	projectId: "spotdpothole",
-	storageBucket: "spotdpothole.appspot.com",
-	messagingSenderId: "500033402497",
-	appId: "1:500033402497:web:e01a744396c50b8c033f80"
-};
+    apiKey: "AIzaSyAFJQVYCaIhUWHoEIAhllfXK6sZdq6zgws",
+    authDomain: "spotdpoth.firebaseapp.com",
+    projectId: "spotdpoth",
+    storageBucket: "spotdpoth.appspot.com",
+    messagingSenderId: "762264703594",
+    appId: "1:762264703594:web:355f7105be2eeda5f33013"
+  };
 
 // Initialize Firebase
 const app = firebase.initializeApp(firebaseConfig);
@@ -27,7 +27,7 @@ async function handleStandardReport() {
 		}
 
 		//Sets the name of the file
-		const fileName = "REPORT IMG - " + new Date().toLocaleString();
+		const fileName = "REPORT IMG - " + new Date().getTime();
 
 		const uploadTask = firebase.storage().ref("test/" + fileName + ".png").put(file);
 
@@ -178,7 +178,7 @@ async function sendRequest(url, method, data){
             let form_data = {
                 "form_data" : request
             }
-            navigator.serviceWorker.controller.postMessage(form_data)  // <--- This line right here sends our data to sw.js
+            //navigator.serviceWorker.controller.postMessage(form_data)  // <--- This line right here sends our data to sw.js
         }
 
         //Carries out the requests and collects the results.
