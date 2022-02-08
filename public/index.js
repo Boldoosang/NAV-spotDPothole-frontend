@@ -1,3 +1,151 @@
+// Imports firebase credentials for connecting to firebase storage app
+const firebaseConfig = {
+    apiKey: "AIzaSyAFJQVYCaIhUWHoEIAhllfXK6sZdq6zgws",
+    authDomain: "spotdpoth.firebaseapp.com",
+    projectId: "spotdpoth",
+    storageBucket: "spotdpoth.appspot.com",
+    messagingSenderId: "762264703594",
+    appId: "1:762264703594:web:355f7105be2eeda5f33013"
+  };
+
+// Initialize Firebase
+const app = firebase.initializeApp(firebaseConfig);
+
+// Handles the submission of a standard pothole report for both image and non-image cases.
+async function handleStandardReport() {
+	//Get the single file input
+	const file = document.querySelector('#photo').files[0];
+    let currentUser = await identifyUser();
+
+	//If a valid file was uploaded, upload it to firebase.
+	if (file != null && "email" in currentUser) {
+		//Determines if the file is not an image.
+		console.log(file.type)
+		if(!(['image/png', 'image/jpeg', 'image/gif', 'image/jpg'].includes(file.type))){
+			alert("This file is not an image!")
+			return;
+		}
+
+		//Sets the name of the file
+		const fileName = "REPORT IMG - " + new Date().getTime();
+
+		const uploadTask = firebase.storage().ref("test/" + fileName + ".png").put(file);
+
+		console.log(uploadTask)
+		// Register three observers:
+		// 1. 'state_changed' observer, called any time the state changes
+		// 2. Error observer, called on failure
+		// 3. Completion observer, called on successful completion
+
+		//Get the upload progress text area.
+		let uploadProgress = document.querySelector("#uploadProgress")
+
+		await uploadTask.on('state_changed', await async function(snapshot) {
+			// Observe state change events such as progress, pause, and resume
+
+			// Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
+			const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+			
+			//Based on the state of uploading, update the upload progress text area.
+			switch (snapshot.state) {
+				case 'paused':
+					uploadProgress.innerHTML = `<strong>UPLOAD PAUSED:</strong> Upload is ${progress}% done!`
+					break;
+				case 'running':
+					uploadProgress.innerHTML = `<strong>UPLOAD RUNNING:</strong> Upload is ${progress}% done!`
+					break;
+			}
+		}, await async function(error) {
+		// Handle unsuccessful uploads
+			//If there was an error in uploading the files, display the error in the upload progress text area.
+			uploadProgress.innerHTML = `<strong>ERROR UPLOADING FILE: ${error}</strong>`
+		}, await async function() {
+		// Handle successful uploads on complete
+			//If the file was successfully uploaded, display the success message in the upload progress text area.
+			uploadProgress.innerHTML = `<strong>FILE SUCCESSFULLY UPLOADED</strong>`
+
+			uploadTask.snapshot.ref.getDownloadURL().then(async function(url){
+				console.log(url)
+				let description = document.getElementById("descriptionText").value; // get text
+				await buildReport(url, description, STANDARD_REPORT_URL)
+			})
+		});
+	} else {
+	//If no image was provided in the standard report, file the report without an image. 
+		//Gets the report description from the report.
+		let description = document.getElementById("descriptionText").value;
+		//Sends a request with the description to the standardReport endpoint.
+		await buildReport(null, description, STANDARD_REPORT_URL)
+	}
+}
+
+// Handles the submission of a standard pothole report for both image and non-image cases.
+async function handleAddImage(event, potholeID, reportID) {
+    event.preventDefault();
+	//Get the single file input
+	const file = document.querySelector('#dashboardPhoto').files[0];
+
+    //Get the upload progress text area.
+	let uploadProgress = document.querySelector("#dashboardUploadProgress")
+    let currentUser = await identifyUser();
+
+	//If a valid file was uploaded, upload it to firebase.
+	if (file != null && "email" in currentUser) {
+		//Determines if the file is not an image.
+		console.log(file.type)
+		if(!(['image/png', 'image/jpeg', 'image/gif', 'image/jpg'].includes(file.type))){
+			alert("This file is not an image!")
+			return;
+		}
+
+		//Sets the name of the file
+		const fileName = "REPORT " + new Date().getTime() + "_" + Math.random().toString(36).replace(/[^a-z]+/g, '').substr(0, 5);
+
+		const uploadTask = firebase.storage().ref("test/" + fileName + ".png").put(file);
+
+		console.log(uploadTask)
+		// Register three observers:
+		// 1. 'state_changed' observer, called any time the state changes
+		// 2. Error observer, called on failure
+		// 3. Completion observer, called on successful completion
+
+		
+
+		await uploadTask.on('state_changed', await async function(snapshot) {
+			// Observe state change events such as progress, pause, and resume
+
+			// Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
+			const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+			
+			//Based on the state of uploading, update the upload progress text area.
+			switch (snapshot.state) {
+				case 'paused':
+					uploadProgress.innerHTML = `<strong>UPLOAD PAUSED:</strong> Upload is ${progress}% done!`
+					break;
+				case 'running':
+					uploadProgress.innerHTML = `<strong>UPLOAD RUNNING:</strong> Upload is ${progress}% done!`
+					break;
+			}
+		}, await async function(error) {
+		// Handle unsuccessful uploads
+			//If there was an error in uploading the files, display the error in the upload progress text area.
+			uploadProgress.innerHTML = `<strong>ERROR UPLOADING FILE: ${error}</strong>`
+		}, await async function() {
+		// Handle successful uploads on complete
+			//If the file was successfully uploaded, display the success message in the upload progress text area.
+			uploadProgress.innerHTML = `<strong>FILE SUCCESSFULLY UPLOADED</strong>`
+
+			uploadTask.snapshot.ref.getDownloadURL().then(async function(url){
+				console.log(url)
+				await addImageToReport(url, potholeID, reportID)
+			})
+		});
+	} else {
+        uploadProgress.innerHTML = `<strong>No image selected!</strong>`
+	}
+}
+
+
 //Facilitates the sending of a 'METHOD' request using the 'DATA', to the 'URL'.
 async function sendRequest(url, method, data){
     //Attempts to send the request and return the response result.
@@ -25,6 +173,14 @@ async function sendRequest(url, method, data){
             request.body = JSON.stringify(data);
         }
 
+        if(method == "POST"){
+            console.log("This is a post request!")
+            let form_data = {
+                "form_data" : request
+            }
+            //navigator.serviceWorker.controller.postMessage(form_data)  // <--- This line right here sends our data to sw.js
+        }
+
         //Carries out the requests and collects the results.
         let response = await fetch(url, request);
         let results = await response.json()
@@ -42,8 +198,12 @@ async function sendRequest(url, method, data){
         //Otherwise, return the parsed results.
         return results;
     } catch (e){
-        //If unable to send the request, return an error.
         console.log(e)
+        //If unable to send the request, return an error.
+        if(e instanceof TypeError && !window.navigator.onLine){
+            return {"error" : "Please go online to use this feature!"};
+        }
+        
         return {"error" : "An unexpected error has occurred!"};
     }
 }
@@ -122,7 +282,7 @@ async function identifyUserContext(){
     //Writes the appropriate menu options to the user context actions for login/register, or logout.
     let userStateArea = document.querySelector("#userContextGroup");
     if("email" in user){
-        userStateArea.innerHTML = `<h6 class="text-center">Logged in as <span class="text-primary">${user.firstName} ${user.lastName}</span></h3>
+        userStateArea.innerHTML = ` <h6 class="text-center "><a data-bs-toggle="modal" data-bs-target="#profileManagementModal" class="text-primary fw-bold text-decoration-underline"><i class="bi bi-person-lines-fill"></i> ${user.firstName} ${user.lastName}</a></h6>
                                     <hr class="my-0">
                                     <a class="list-group-item list-group-item-action list-group-item-light p-3 pr-5 relative-bottom" onclick="logout()"><i class="bi bi-box-arrow-left" style="font-size:1.5rem;color:black"></i>        Logout</a>`
     }
@@ -341,17 +501,35 @@ async function loadReports(potholeID){
 }
 
 //Loads the report page content into the report page based on the device that is being used.
-function loadReportPage(){
+async function loadReportPage(){
     let reportArea = document.querySelector("#reportContent");
-    //If a mobile device is not being used, display that their device is unsupported.
-    if(!isMobileDevice()){
-        // reportArea.innerHTML = `
-        // <div class="col col-sm-12 mt-3 text-center">
-        //    <h5 class="fw-bold">Unsupported Device!</h5>
-        //    <p>Sorry, but you need to use a mobile device in order to make a report.</p>
-        // </div>`
+
+    let user = await identifyUser();
+
+    if("error" in user || "msg" in user){
+        reportArea.innerHTML = `<div class="mt-5 text-center text-black">
+                                        <h2>User is not logged in!</h2>
+                                        <p>${user["error"]}</p>
+                                    </div>`
+    } else {
+        //If a mobile device is not being used, display that their device is unsupported.
+        //if(isMobileDevice()){
+             //reportArea.innerHTML = `
+             //<div class="text-center mt-5 text-center text-black">
+             //   <h2>Unsupported Device!</h2>
+             //   <p>Sorry, but you need to use a mobile device in order to make a report.</p>
+             //</div>`
+        //} else {
+            reportArea.innerHTML = 
+            `<div class="list-group p-3 d-flex flex-column justify-content-evenly align-items-middle" style="min-height: 75vh">
+                <button data-bs-target="#standardReportModal" data-bs-toggle="modal" id="standard-button" onclick="updateLocalCoords()" type="button" class="btn btn-dark py-5">Standard Report</button>                       
+                <button data-bs-target="#driverReportModal" data-bs-toggle="modal" id="driver-button" type="button" class="btn btn-dark py-5">Driver Report</button>
+            </div>`
+        //}
     }
 }
+
+
 
 //Loads the report leaderboard data into the report leaderboard page.
 async function loadReportLeaderboardData(){
@@ -456,8 +634,12 @@ async function displayCouncillorInfo(event, constituencyID){
         </table>
         `
     } catch(e){
-        //If the fields of the councillor data cannot be accessed, display that no constituency councillor information is available.
-        councillorModalInfo.innerHTML = `<div class="d-flex justify-content-center my-3"><strong>No constituency information available!</strong></div>`
+        if(!window.navigator.onLine){
+            councillorModalInfo.innerHTML = `<div class="text-center"><b class="text-danger text-center">Please visit this page when online to save for offline use!</b><div>`
+        } else {
+            //If the fields of the councillor data cannot be accessed, display that no constituency councillor information is available.
+            councillorModalInfo.innerHTML = `<div class="d-flex justify-content-center my-3"><strong>No constituency information available!</strong></div>`
+        }
     }
 }
 
@@ -482,7 +664,11 @@ async function voteOnReport(event, potholeID, reportID, isUpvote){
     
     //If there was an error in voting, display the login error. (The only type of error possible)
     if("error" in result || "msg" in result){
-        messageArea.innerHTML = `<b class="text-danger text-center">Please login to vote!</b>`
+        if(!window.navigator.onLine && "error" in result){
+            messageArea.innerHTML = `<b class="text-danger text-center">Vote will be synced once reconnected!</b>`
+        } else {
+            messageArea.innerHTML = `<b class="text-danger text-center">Please login to vote!</b>`
+        }
     } else {
         //Updates the message area to a success message and attempts to update the colors, text and counter.
         messageArea.innerHTML = `<b class="text-success text-center">${result["message"]}</b>`
@@ -555,8 +741,12 @@ async function loadConstituencyData(constituencyID){
         </table>
         `
     } catch(e){
-    //If there was an error formatting or accessing the data, display an error message saying that no constituency information is available.
-        councillorInformationArea.innerHTML = `<div class="d-flex justify-content-center my-3"><strong>No constituency information available!</strong></div>`
+        if(!window.navigator.onLine){
+            councillorInformationArea.innerHTML = `<div class="text-center"><b class="text-danger text-center">Please visit this page when online to save for offline use!</b><div>`
+        } else {
+            //If there was an error formatting or accessing the data, display an error message saying that no constituency information is available.
+            councillorInformationArea.innerHTML = `<div class="d-flex justify-content-center my-3"><strong>No constituency information available!</strong></div>`
+        }
     }
 }
 
@@ -641,7 +831,7 @@ function displayToast(type, message) {
 		console.log(id)
 		let element = document.getElementById(id);
 		element.className = element.className.replace("show", "hide"); 
-	}, 4000);
+	}, 3000);
 }
 
 //Facilitates the submission of a driver report for processing at the backend.
@@ -650,9 +840,10 @@ async function postDriverReport() {
   	await buildReport(null, null, DRIVER_REPORT_URL);
 }
 
-//Generates the report using the photoURL, description, and endpoint URL.
-async function buildReport(photoURL = null, description, url) {
-	var latitude, longitude;
+async function updateLocalCoords(){
+    var latitude, longitude;
+
+    let coordTextArea = document.querySelector("#coordinatesText");
 	
 	//Checks to see if the device supports geolocation.
 	if (navigator.geolocation) {
@@ -661,41 +852,79 @@ async function buildReport(photoURL = null, description, url) {
 			//If the coordinates are successfully obtained, store them.
 			latitude = position.coords.latitude;
 			longitude = position.coords.longitude;
-			
-			//Sends the report to the endpoint and stores the results.
-			let results = await sendReport(latitude, longitude, photoURL, description, url)
 
-			//Prints the results of sending the report.
-			try {
-				if("msg" in results){
-					displayToast("failed", "You must be logged in to report a pothole!")
-				} else if("error" in results){
-					displayToast("failed", results["error"])
-				} else if("message" in results){
-					displayToast("success", results["message"])
-				}
-			} catch (e) {
-				displayToast("failed", e.message)
-			}
+            console.log(latitude, longitude)
+
+            localStorage.setItem("latitude", latitude)
+            localStorage.setItem("longitude", longitude)
 
 		}, function(){
 		//If the coordinates were not succesfully obtained, display an error.
 			//If the latitude and longitude could not be obtained, display an error message.
-			if(longitude == null || latitude == null){
+			if(longitude == undefined || latitude == undefined){
 				//Displays error message as a toast.
+                localStorage.setItem("latitude", latitude)
+                localStorage.setItem("longitude", longitude)
 				displayToast("failed", "Unfortunately we couldn't find your coordinates!")
 			}
 		})
  	} else {
-	//If the device does not support geolocation, display an error message.
-		displayToast("failed", "unfortunately we couldn't find your coordinates!")
+        localStorage.setItem("latitude", latitude)
+        localStorage.setItem("longitude", longitude)
+	    //If the device does not support geolocation, display an error message.
+		displayToast("failed", "Unfortunately we couldn't find your coordinates!")
+	}
+
+    latitude = localStorage.getItem("latitude")
+    longitude = localStorage.getItem("longitude")
+
+    coordTextArea.placeholder = `Latitude: ${latitude}, Longitude: ${longitude}`
+}
+
+//Generates the report using the photoURL, description, and endpoint URL.
+async function buildReport(photoURL = null, description, url) {
+	var latitude, longitude;
+
+    try {
+        latitude = parseFloat(localStorage.getItem("latitude"))
+        longitude = parseFloat(localStorage.getItem("longitude"))
+    } catch(e){
+        console.log("Unable to retrieve latitude and longitude coordaintes.")
+        latitude = undefined;
+        longitude = undefined;
+    }
+
+
+	console.log(latitude, longitude)
+	//Checks to see if the device supports geolocation.
+	if (longitude != undefined && latitude != undefined) {
+        //Sends the report to the endpoint and stores the results.
+        let results = await sendReport(latitude, longitude, photoURL, description, url)
+        console.log(results)
+        //Prints the results of sending the report.
+        try {
+            if("msg" in results){
+                displayToast("failed", "You must be logged in to report a pothole!")
+            } else if("error" in results && !window.navigator.onLine){
+                displayToast("failed", "Your report will sync once you reconnect to the internet!")
+            } else if("error" in results){
+                displayToast("failed", results["error"])
+            } else if("message" in results){
+                displayToast("success", results["message"])
+            }
+        } catch (e) {
+            displayToast("failed", e.message)
+        }
+ 	} else {
+        console.log("One of them is undefined!")
+	    //If the device does not support geolocation, display an error message.
+		displayToast("failed", "Unfortunately we couldn't find your coordinates!")
 	}
 }
 
 //Sends a generated report to the endpoint URL.
 async function sendReport(latitude, longitude, photoURL, description = null, url){
 	
-
     var inMap = leafletPip.pointInLayer([longitude, latitude], map);
 
     if(inMap.length == 0)
@@ -717,7 +946,7 @@ async function sendReport(latitude, longitude, photoURL, description = null, url
 	if(photoURL != null){
 		data["images"] = [photoURL];
 	}
-	
+
 	//Attempts to send the request to the endpoint with the data, and returns the outcome.
 	try {
 		return await sendRequest(url, "POST", data)
@@ -748,6 +977,16 @@ function main(){
             localStorage.setItem('sb|sidebar-toggle', document.body.classList.contains('sb-sidenav-toggled'));
         });
     }
+
+    document.getElementById('submit-passenger-report').addEventListener('click', handleStandardReport);
+
+    window.addEventListener("offline", (event)=>{
+        displayToast("failed", "Your network connection has been lost!")
+    })
+
+    window.addEventListener("online", (event)=>{
+        displayToast("success", "Network connection established!")
+    })
 }
 
 //Once the DOM has loaded, bootstrap the application.

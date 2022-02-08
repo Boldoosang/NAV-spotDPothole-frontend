@@ -11,15 +11,21 @@ async function initMap(){
         zoom: 9,
         minZoom: 10
     });
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    }).addTo(map);
     
+    /*
     L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
         attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
         maxZoom: 18,
         id: 'mapbox/streets-v11',
         tileSize: 512,
         zoomOffset: -1,
-        accessToken: 'pk.eyJ1IjoidGhlaHVtYW4iLCJhIjoiY2t3YXJoeTdhMm1ocDJxbW4wMXpuc2NhbCJ9.j0jEiwJsxa-Gm2DMb6Fdzw'
+        accessToken: 'pk.eyJ1IjoiYm9sZG9vc2FuZyIsImEiOiJja3dlbzk5NTMwNnBzMnZwd3h5OWhwazJvIn0.FhdBhjtsMsUAge-3EoptiQ'
     }).addTo(map);
+    */
 
     //load the geoJSON data for the constituencies
     await fetch("./ttmap.geojson").then(function(response) {
@@ -31,6 +37,8 @@ async function initMap(){
             }
         }).addTo(map)
     });
+
+    
 }
 
 async function getPotholes(){
@@ -77,7 +85,11 @@ async function displayPotholes(){
                 console.log("PotholeID: " + pothole.potholeID + " may not lie on map!")
             }
         }   
-    }  
+    } 
+    
+    setTimeout(() => {
+        map.invalidateSize();
+    }, 200);
 }
 
 //gets the Report off canvas element
