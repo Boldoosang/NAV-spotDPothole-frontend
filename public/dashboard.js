@@ -429,20 +429,31 @@ async function getIndividualReport(potholeID){
 
 async function loadDashboard(){
     let user = await identifyUser();
-    console.log(user)
     let loginStateArea = document.querySelector("#dashboardMap");
+    let dashboardMessage = document.querySelector("#dashboardMessage")
 
-    if("error" in user || "msg" in user){
-        loginStateArea.innerHTML = `<div class="mt-5 text-center text-black">
-                                        <h2>User is not logged in!</h2>
-                                        <p>${user["error"]}</p>
-                                    </div>`
+
+    if(!window.navigator.onLine){
+        loginStateArea.style.visibility = "hidden"
+        dashboardMessage.innerHTML = `<div class="mt-5 text-center text-black">
+                                            <h2>Unavailable!</h2>
+                                            <p>Sorry, the dashboard is only available in online mode.</p>
+                                        </div>`
     } else {
-        await displayUserPotholes();
-        setTimeout(() => {
-            dashboardMap.invalidateSize();
-        }, 200);
-    }
+        loginStateArea.style.visibility = "visible"
+        dashboardMessage.innerHTML = ``
+        if("error" in user || "msg" in user){
+            loginStateArea.innerHTML = `<div class="mt-5 text-center text-black">
+                                            <h2>User is not logged in!</h2>
+                                            <p>${user["error"]}</p>
+                                        </div>`
+        } else {
+            await displayUserPotholes();
+            setTimeout(() => {
+                dashboardMap.invalidateSize();
+            }, 200);
+        }
+    }   
 }
 
 //Displays the selected image after the user has chosen their upload.
