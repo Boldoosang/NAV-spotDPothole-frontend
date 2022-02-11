@@ -27,6 +27,10 @@
   <!-- Template Main CSS File -->
   <link href="assets/css/style.css" rel="stylesheet">
 
+  <!-- Imports Leaflet Libraries -->
+  <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js" integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA==" crossorigin=""></script>
+  <script src="https://unpkg.com/@mapbox/leaflet-pip@latest/leaflet-pip.js"></script>
+
   <!-- =======================================================
   * Template Name: iPortfolio - v3.7.0
   * Template URL: https://bootstrapmade.com/iportfolio-bootstrap-portfolio-websites-template/
@@ -51,7 +55,7 @@
 
       <nav id="navbar" class="nav-menu navbar">
         <ul>
-          <li><a href="#hero" class="nav-link scrollto active"><i class="bx bx-home"></i> <span>Home</span></a></li>  <!-- map -->
+          <li><a href="#map" class="nav-link scrollto active"><i class="bx bx-home"></i> <span>Home</span></a></li>  <!-- map -->
           <li><a href="#dashboard" class="nav-link scrollto"><i class="bx bx-book-content"></i> <span>Dashboard</span></a></li>
           <li><a href="#leaderboard" class="nav-link scrollto"><i class="bx bx-bar-chart-square"></i> <span>Leaderboard</span></a></li>
           <li><a href="#about" class="nav-link scrollto"><i class="bx bx-user"></i> <span>About</span></a></li>
@@ -63,13 +67,16 @@
     </div>
   </header><!-- End Header -->
 
-  <!-- ======= Hero Section ======= -->
-  <section id="hero" class="d-flex flex-column justify-content-center align-items-center">
-    <div class="hero-container" data-aos="fade-in">
-      <h1>Alex Smith</h1>  <!-- find a way to put the user's name in here-->
-      <p>I'm <span class="typed" data-typed-items="Designer, Developer, Freelancer, Photographer"></span></p>
+  <!-- ======= Map Section ======= -->
+  <section id="map" class="d-flex flex-column justify-content-center align-items-center">
+    <div class="container-fluid">
+      <div class="tab-content" id="mainTabContent">
+        <!-- Displays the home/map content for when the home button is clicked -->
+        <div class="tab-pane active fade show" id="mainTab-map" role="tabpanel">
+            <!-- Map is rendered here -->
+            <div id="mapContent" class="p-0 mx-0"><div id="map"></div></div>
     </div>
-  </section><!-- End Hero -->
+  </section><!-- End Map -->
 
   <main id="main">
 
@@ -424,6 +431,8 @@
 
   <!-- Template Main JS File -->
   <script src="assets/js/main.js"></script>
+
+  <script src="assets/js/map.js"></script>
 
 </body>
 
