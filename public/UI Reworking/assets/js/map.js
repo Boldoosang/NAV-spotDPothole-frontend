@@ -28,7 +28,7 @@ async function initMap(){
     */
 
     //load the geoJSON data for the constituencies
-    await fetch("./ttmap.geojson").then(function(response) {
+    await fetch("./assets/geojson/ttmap.geojson").then(function(response) {
         return response.json();
     }).then(function(data) {
         L.geoJSON(data, {
