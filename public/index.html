@@ -12,6 +12,9 @@
         <!-- Imports leaflet libraries -->
         <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js" integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA==" crossorigin=""></script>
         <script src="https://unpkg.com/@mapbox/leaflet-pip@latest/leaflet-pip.js"></script>
+        <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.css" />
+        <script src="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.js"></script>
+        <script src="leaflet.geometryutil.js"></script>
     </head>
         
     <body>
@@ -81,6 +84,7 @@
                         <div class="tab-pane active fade show" id="mainTab-map" role="tabpanel">
                             <!-- Map is rendered here -->
                             <div id="mapContent" class="p-0 mx-0"><div id="map"></div></div>
+                            
                         </div>
 
                         <!-- Displays the reporting content for when the report button is clicked -->
