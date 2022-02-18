@@ -12,35 +12,6 @@ let map
 let watchid
 let popupLocation
 
-function getInstrGeoJson(instr, coord) {
-    var formatter = new L.Routing.Formatter();
-    var instrPts = {
-        type: "FeatureCollection",
-        features: []
-    };
-    for (var i = 0; i < instr.length; ++i) {
-        var g = {
-            "type": "Point",
-            "coordinates": [coord[instr[i].index].lng, coord[instr[i].index].lat]
-        };
-        var p = {
-            "instruction": formatter.formatInstruction(instr[i])
-        };
-        instrPts.features.push({
-            "geometry": g,
-            "type": "Feature",
-            "properties": p
-        });
-    }
-    return instrPts
-}
-
-function createButton(label, container) {
-    var btn = L.DomUtil.create('button', '', container);
-    btn.setAttribute('type', 'button');
-    btn.innerHTML = label;
-    return btn;
-    }
 
 function isPointOnLine(point, path) {
     for (var i = 0; i < path.length - 1; i++) {
@@ -95,6 +66,8 @@ async function initMap() {
     
 }
 
+let startCircle;
+let endCircle;
 
 function setStart(e){
     let pos = popupLocation
@@ -102,6 +75,29 @@ function setStart(e){
 
     const sp = JSON.stringify(waypoints.startPoint)
     const ep = JSON.stringify(waypoints.endPoint)
+
+    if(startCircle == null){
+        startCircle = L.circleMarker(waypoints.startPoint, {
+            radius: 8,
+            color: 'black',
+            fillColor: 'white',
+            fillOpacity: 1
+        })
+    
+        startCircle.addTo(map)
+    }
+    else{
+        map.removeLayer(startCircle)
+
+        startCircle = L.circleMarker(waypoints.startPoint, {
+            radius: 8,
+            color: 'black',
+            fillColor: 'white',
+            fillOpacity: 1
+        })
+
+        startCircle.addTo(map)
+    }
 
     if(sp != '{"lat":0,"lng":0}' && ep != '{"lat":0,"lng":0}'){
         routingConcept()
@@ -115,6 +111,29 @@ function setEnd(e){
     const sp = JSON.stringify(waypoints.startPoint)
     const ep = JSON.stringify(waypoints.endPoint)
 
+    if(endCircle == null){
+        endCircle = L.circleMarker(waypoints.endPoint, {
+            radius: 8,
+            color: 'black',
+            fillColor: 'white',
+            fillOpacity: 1
+        })
+    
+        endCircle.addTo(map)
+    }
+    else{
+        map.removeLayer(endCircle)
+
+        endCircle = L.circleMarker(waypoints.endPoint, {
+            radius: 8,
+            color: 'black',
+            fillColor: 'white',
+            fillOpacity: 1
+        })
+
+        endCircle.addTo(map)
+    }
+
     if(sp != '{"lat":0,"lng":0}' && ep != '{"lat":0,"lng":0}'){
         routingConcept()
     }
@@ -123,8 +142,56 @@ function setEnd(e){
 function liveRouting(e){
     let pos = popupLocation
     waypoints.endPoint = pos
+
+    if(endCircle == null){
+        endCircle = L.circleMarker(waypoints.endPoint, {
+            radius: 7,
+            color: 'black',
+            fillColor: 'white',
+            fillOpacity: 1
+        })
+    
+        endCircle.addTo(map)
+    }
+    else{
+        map.removeLayer(endCircle)
+
+        endCircle = L.circleMarker(waypoints.endPoint, {
+            radius: 8,
+            color: 'black',
+            fillColor: 'white',
+            fillOpacity: 1
+        })
+
+        endCircle.addTo(map)
+    }
+
     watchid = navigator.geolocation.watchPosition(function (pos){
         waypoints.startPoint = L.latLng(pos.coords.latitude, pos.coords.longitude)
+        
+        if(startCircle == null){
+            startCircle = L.circleMarker(waypoints.startPoint, {
+                radius: 8,
+                color: 'black',
+                fillColor: 'white',
+                fillOpacity: 1
+            })
+        
+            startCircle.addTo(map)
+        }
+        else{
+            map.removeLayer(startCircle)
+    
+            startCircle = L.circleMarker(waypoints.startPoint, {
+                radius: 8,
+                color: 'black',
+                fillColor: 'white',
+                fillOpacity: 1
+            })
+    
+            startCircle.addTo(map)
+        }
+
         routingConcept()
     }, function () {
         console.log("err")
