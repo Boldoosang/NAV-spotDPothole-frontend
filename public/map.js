@@ -140,6 +140,9 @@ function setEnd(e){
 }
 
 function liveRouting(e){
+    if(watchid != null){
+        navigator.geolocation.clearWatch(watchid)
+    }
     let pos = popupLocation
     waypoints.endPoint = pos
 
@@ -359,7 +362,8 @@ async function routingConcept() {
     // var myRoute = L.Routing.osrmv1({
     //     serviceUrl: 'http://server.justinbaldeo.com:5000/route/v1'
     // });
-     var myRoute = L.Routing.osrmv1();
+    
+    var myRoute = L.Routing.osrmv1();
 
     myRoute.route([routingStartPoint, routingEndPoint], async function(err, routes) {
         let numClear = 0;
