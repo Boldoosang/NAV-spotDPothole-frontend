@@ -200,6 +200,15 @@ async function sendRequest(url, method, data){
             }
         }
 
+        if("error" in results){
+            if(results["error"] == "User is banned."){
+                window.localStorage.removeItem('access_token');
+                alert("You have been banned!")
+                window.location = "/"
+                return;
+            }
+        }
+
         //Otherwise, return the parsed results.
         return results;
     } catch (e){
