@@ -359,11 +359,11 @@ async function routingConcept() {
     routingEndPoint = new L.Routing.Waypoint;
     routingEndPoint.latLng = waypoints.endPoint;    
 
-    // var myRoute = L.Routing.osrmv1({
-    //     serviceUrl: 'http://server.justinbaldeo.com:5000/route/v1'
-    // });
+    var myRoute = L.Routing.osrmv1({
+        serviceUrl: 'http://osrm.justinbaldeo.com:5000/route/v1',
+        profile: 'car'
+    });
     
-    var myRoute = L.Routing.osrmv1();
 
     myRoute.route([routingStartPoint, routingEndPoint], async function(err, routes) {
         let numClear = 0;

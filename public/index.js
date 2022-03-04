@@ -253,7 +253,6 @@ async function login(event){
         "password" : form.elements["InputPassword"].value
     }
 
-    form.reset();
 
     //Sends the login request to the server and stores the result.
     let result = await sendRequest(SERVER + "/login", "POST", loginDetails);
@@ -319,7 +318,6 @@ async function register(event){
         "agreeToS" : form.elements["regAgreeToS"].checked
     }
 
-    form.reset();
 
     //Submits the registration request to the server and stores the result.
     let result = await sendRequest(SERVER + "/register", "POST", registrationDetails);
@@ -328,10 +326,146 @@ async function register(event){
     //Prints the outcome of the request to the outcome area of the registration section.
     if("error" in result || "msg" in result){
         console.log("Error")
-        messageArea.innerHTML = `<b class="text-danger text-center">${result["error"]}</b>`
+        messageArea.innerHTML = `<div class="align-middle text-center">
+                                    <b class="align-middle text-danger text-center">${result["error"]}</b>
+                                </div>`
     } else {
         console.log("Success")
-        messageArea.innerHTML = `<b class="text-success text-center">Registration successful!</b>`
+        messageArea.innerHTML = `<div class="align-middle text-center">
+                                    <b class="text-success text-center">Registration successful!</b>
+                                </div>`
+    
+    }
+
+}
+
+
+
+
+//Facilitates the registration of a user when the register form is submitted.
+async function verifyEmail(event){
+    //Prevents the reloading of the page.
+    event.preventDefault();
+
+    //Gets the submitted form details and parses it into the required format for the request. The form is then reset.
+    let form = event.target;
+    let token = form.elements["emailToken"].value;
+
+    let verifyDetails = {
+        "email" : form.elements["emailVerifyActual"].value,
+    }
+
+    //Submits the registration request to the server and stores the result.
+    let result = await sendRequest(SERVER + "/confirm/" + token, "PUT", verifyDetails);
+    let messageArea = document.querySelector("#verificationMessage")
+
+    //Prints the outcome of the request to the outcome area of the registration section.
+    if("error" in result || "msg" in result){
+        messageArea.innerHTML = `<div class="align-middle text-center">
+                                    <b class="align-middle text-danger text-center">${result["error"]}</b>
+                                </div>`
+    } else {
+        console.log("Success")
+        messageArea.innerHTML = `<div class="align-middle text-center">
+                                    <b class="text-success text-center">${result["message"]}</b>
+                                </div>`
+    }
+
+}
+
+
+//Facilitates the registration of a user when the register form is submitted.
+async function resendConfirmationEmail(event){
+    //Prevents the reloading of the page.
+    event.preventDefault();
+
+    //Gets the submitted form details and parses it into the required format for the request. The form is then reset.
+    let form = event.target;
+
+    let resendDetails = {
+        "email" : form.elements["resendConfirmationEmailField"].value,
+    }
+    
+    form.reset();
+
+    //Submits the registration request to the server and stores the result.
+    let result = await sendRequest(SERVER + "/resendConfirmation", "POST", resendDetails);
+    let messageArea = document.querySelector("#resendConfirmationMessage")
+
+    //Prints the outcome of the request to the outcome area of the registration section.
+    if("error" in result || "msg" in result){
+        messageArea.innerHTML = `<div class="align-middle text-center">
+                                    <b class="align-middle text-danger text-center">${result["error"]}</b>
+                                </div>`
+    } else {
+        console.log("Success")
+        messageArea.innerHTML = `<div class="align-middle text-center">
+                                    <b class="text-success text-center">${result["message"]}</b>
+                                </div>`
+    }
+
+}
+
+//Facilitates the registration of a user when the register form is submitted.
+async function resetPassword(event){
+    //Prevents the reloading of the page.
+    event.preventDefault();
+
+    //Gets the submitted form details and parses it into the required format for the request. The form is then reset.
+    let form = event.target;
+    let token = form.elements["resetToken"].value;
+    let resetDetails = {
+        "email" : form.elements["emailResetToken"].value,
+        "password" : form.elements["rPassword"].value,
+        "confirmPassword" : form.elements["rConfirmPassword"].value,
+    }
+
+    //Submits the registration request to the server and stores the result.
+    let result = await sendRequest(SERVER + "/resetPassword/" + token, "POST", resetDetails);
+    let messageArea = document.querySelector("#resetPasswordMessage")
+
+    //Prints the outcome of the request to the outcome area of the registration section.
+    if("error" in result || "msg" in result){
+        console.log("Error")
+        messageArea.innerHTML = `<div class="align-middle text-center">
+                                    <b class="align-middle text-danger text-center">${result["error"]}</b>
+                                </div>`
+    } else {
+        console.log("Success")
+        messageArea.innerHTML = `<div class="align-middle text-center">
+                                    <b class="text-success text-center">${result["message"]}.</b>
+                                </div>`
+    }
+
+}
+
+
+//Facilitates the registration of a user when the register form is submitted.
+async function sendResetPassword(event){
+    //Prevents the reloading of the page.
+    event.preventDefault();
+
+    //Gets the submitted form details and parses it into the required format for the request. The form is then reset.
+    let form = event.target;
+    let resetDetails = {
+        "email" : form.elements["resetPassword-email"].value,
+    }
+
+    form.reset();
+
+    //Submits the registration request to the server and stores the result.
+    let result = await sendRequest(SERVER + "/resetPassword", "POST", resetDetails);
+    let messageArea = document.querySelector("#sendResetPasswordMessage")
+
+    //Prints the outcome of the request to the outcome area of the registration section.
+    if("error" in result || "msg" in result){
+        messageArea.innerHTML = `<div class="align-middle text-center">
+                                    <b class="align-middle text-danger text-center">${result["error"]}</b>
+                                </div>`
+    } else {
+        messageArea.innerHTML = `<div class="align-middle text-center">
+                                    <b class="text-success text-center">${result["message"]} Check your email and use the utility tab above to reset your password.</b>
+                                </div>`
     }
 
 }
