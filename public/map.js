@@ -70,6 +70,9 @@ let startCircle;
 let endCircle;
 
 function setStart(e){
+    if(watchid != null){
+        navigator.geolocation.clearWatch(watchid)
+    }
     let pos = popupLocation
     waypoints.startPoint = pos
 
@@ -105,6 +108,9 @@ function setStart(e){
 }
 
 function setEnd(e){
+    if(watchid != null){
+        navigator.geolocation.clearWatch(watchid)
+    }
     let pos = popupLocation
     waypoints.endPoint = pos
     
@@ -354,16 +360,16 @@ function reportLeaderboardModal(lat, long, potholeID) {
 
 async function routingConcept() {
     routingStartPoint = new L.Routing.Waypoint;
-    routingStartPoint.latLng = waypoints.startPoint; 
+    routingStartPoint.latLng = waypoints.startPoint;
 
     routingEndPoint = new L.Routing.Waypoint;
     routingEndPoint.latLng = waypoints.endPoint;    
 
     var myRoute = L.Routing.osrmv1({
-        serviceUrl: 'http://osrm.justinbaldeo.com:5000/route/v1',
-        profile: 'car'
+        serviceUrl: 'http://osrm.justinbaldeo.com:5000/route/v1'
     });
     
+    //var myRoute = L.Routing.osrmv1();
 
     myRoute.route([routingStartPoint, routingEndPoint], async function(err, routes) {
         let numClear = 0;
