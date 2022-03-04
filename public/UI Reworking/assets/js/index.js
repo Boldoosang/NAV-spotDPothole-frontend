@@ -284,13 +284,13 @@ async function identifyUserContext(){
     //Gets the user context.
     let user = await identifyUser();
     let access_token = window.localStorage.getItem("access_token")
+    console.log("Goteem");
 
     //Writes the appropriate menu options to the user context actions for login/register, or logout.
     let userStateArea = document.querySelector("#userContextGroup");
     if("email" in user && access_token){
-        userStateArea.innerHTML = ` <h6 class="text-center "><a data-bs-toggle="modal" data-bs-target="#profileManagementModal" class="text-primary fw-bold text-decoration-underline"><i class="bi bi-person-lines-fill"></i> ${user.firstName} ${user.lastName}</a></h6>
-                                    <hr class="my-0">
-                                    <a class="list-group-item list-group-item-action list-group-item-light p-3 pr-5 relative-bottom" onclick="logout()"><i class="bi bi-box-arrow-left" style="font-size:1.5rem;color:black"></i>        Logout</a>`
+        console.log("Goteem x2");
+        userStateArea.innerHTML = `<li><a href="#logoutBtn" onclick="logout()"><i class="bx bx-user-x" ></i>  <span>Logout</span></a></li>`
     }
 }
 
@@ -598,7 +598,7 @@ async function loadLeaderboardData(){
             <td>${i}</td>
             <td>${constituency.name}</td>
             <td>${constituency.count}</td>
-            <td><button class="btn btn-primary w-100" data-bs-toggle="modal" data-bs-target="#councillorInfoModal" onclick="displayCouncillorInfo(event, '${constituency.constitID}')">Councillor Info</a><td>
+            <td><button class="btn btn-primary w-100" data-bs-toggle="modal" data-bs-target="#councillorInfoModal" style="background-color : #149ddd; border : none;" onclick="displayCouncillorInfo(event, '${constituency.constitID}')">Councillor Info</a><td>
         </tr>
         `
         i++;
@@ -617,8 +617,7 @@ async function displayCouncillorInfo(event, constituencyID){
         //Sets the modal body to contain the councillor information.
         councillorModalInfo.innerHTML = 
         `
-        <div class="text-center"><strong>COUNCILLOR INFORMATION<strong></div>
-        <table class="table my-2 table-borderless">
+        <table class="table my-2 table-borderless text-light">
             <tbody>
                 <tr>
                     <th scope="row">Name</th>

@@ -129,6 +129,7 @@ h1, h2, h3, h4, h5, h6 {
 # Navigation Menu
 --------------------------------------------------------------*/
 /* Desktop Navigation */
+
 .nav-menu {
   padding: 30px 0 0 0;
 }
@@ -190,6 +191,63 @@ h1, h2, h3, h4, h5, h6 {
 }
 .mobile-nav-active #header {
   left: 0;
+}
+
+/*--------------------------------------------------------------
+# Leaderboard Section
+--------------------------------------------------------------*/
+#leaderboard{
+  
+}
+
+.nav-pills > .nav-item > .active{
+  background-color : #149ddd;
+}
+
+.nav-pills > .nav-item > .nav-link{
+  color : #149ddd;
+}
+
+.nav-pills > .nav-item > .nav-link.active{
+  color : white;
+}
+
+#councillorInfoModalLabel{
+  color : #149ddd;
+}
+
+/*--------------------------------------------------------------
+# Login/Register Section
+--------------------------------------------------------------*/
+.modal-header{
+  background : #050d18;
+  color : white;
+}
+
+.modal-body{
+  background : #050d18;
+  color : white;
+}
+
+.modal-footer{
+  background : #050d18;
+  color : white;
+}
+
+.nav-pills >.nav-link.active{
+  background-color : #149ddd;
+}
+
+.nav-pills >.nav-link{
+  color : #149ddd;
+}
+
+#loginButton{
+  background: #149ddd;
+}
+
+#signUpButton{
+  background: #149ddd;
 }
 
 /*--------------------------------------------------------------

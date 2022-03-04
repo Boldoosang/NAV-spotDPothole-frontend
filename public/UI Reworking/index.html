@@ -53,24 +53,27 @@
 
       <div class="profile">
         <img src="assets/img/profile-img.jpg" alt="" class="img-fluid rounded-circle">
-        <h1 class="text-light"><a href="index.html">User</a></h1>
+        <h1 class="text-light"><a href="index.html">Guest</a></h1>
       </div>
 
       <nav id="navbar" class="nav-menu navbar">
         <ul class="list-group list-group-flush">
-          <li><a href="#map" onclick="displayPotholes()" data-bs-toggle="pill" data-bs-target="#mainTab-map"><i class="bx bx-home"></i> <span>Home</span></a></li>  <!-- map -->
+          <li><a href="#map" onclick="displayPotholes()" data-bs-toggle="pill" data-bs-target="#mainTab-map"><i class="bx bx-home"></i> <span>Home</span></a></li>
+          <li><a href="#report" onclick="loadReportPage(event)" data-bs-toggle="pill" data-bs-target="#mainTab-report"><i class="bx bxs-megaphone"></i> <span>Make Report</span></a></li> 
           <li><a href="#dashboard" data-bs-toggle="pill" data-bs-target="#mainTab-dashboard"><i class="bx bx-book-content"></i> <span>Dashboard</span></a></li>
           <li><a href="#leaderboard" onclick="loadLeaderboardData()" data-bs-toggle="pill" data-bs-target="#mainTab-leaderboard"><i class="bx bx-bar-chart-square"></i> <span>Leaderboard</span></a></li>
-          <li><a href="#about" class="nav-link scrollto"><i class="bx bx-user"></i> <span>About</span></a></li>
-          <li><a href="#contact" class="nav-link scrollto"><i class="bx bx-envelope"></i> <span>Contact</span></a></li>
-          <li><a href="#" class="nav-link"><i class="bx bx-user-x"></i><span>Logout</span></a></li>
+          <li><a href="#about" data-bs-toggle="pill" data-bs-target="#mainTab-about"><i class="bx bx-user"></i> <span>About</span></a></li>
+          
+          <div id="userContextGroup" class="list-group list-group-flush">
+            <li><a href="#loginBtn" data-bs-toggle="modal" data-bs-target="#loginModal"><i class="bx bx-user-check"></i> <span>Login / Register</span></a></li>
+          </div>
           
         </ul>
       </nav><!-- .nav-menu -->
     </div>
   </header><!-- End Header -->
 
-  <!-- ======= Map Section ======= -->
+  <!-- ======= Main Content Section ======= -->
 
   <main id="main">
     <div class="d-flex flex-column justify-content-center align-items-center" style="padding:0px">
@@ -83,6 +86,14 @@
           
               </div>
 
+              <!-- ======= Make Report Section ======= -->
+
+              <!-- Displays the reporting content for when the report button is clicked -->
+              <div class="mt-3 tab-pane fade" id="mainTab-report" role="tabpanel" style="min-height: 75vh">
+                <!-- Reporting actions; driver report button and standard report button -->
+                <div id="reportContent" style="min-height: 75vh">
+                </div>
+            </div>
 
               <!-- ======= Dashboard Section ======= -->
 
@@ -96,7 +107,7 @@
                 </div> 
               </div>
                  
-              
+
            <!-- ======= Leaderboard Section ======= -->
 
             <!-- Displays the leaderboard content for when the leaderboard button is clicked -->
@@ -130,7 +141,6 @@
                                   <!-- Constituency Leaderboard data is dynamically loaded via AJAX -->
                                   <table id="constLeaderboard" class="table table-hover table-responsive"></table>
                               </div>
-                              <h5 class="fw-bold text-center mt-3">END OF LEADERBOARD</h5>
                           </div>
                       </div>
 
@@ -141,7 +151,6 @@
                                   <!-- Most reported pothole data is dynamically loaded via AJAX -->
                                   <table id="reportLeaderboard" class="table table-hover table-responsive"></table>
                               </div>
-                              <h5 class="fw-bold text-center mt-3">END OF LEADERBOARD</h5>
                           </div>
                       </div>
                     </div>
@@ -150,13 +159,250 @@
             </div>
 
             
+            <!-- ======= About Section ======= -->
+            <div class="tab-pane fade" id="mainTab-about" role="tabpanel">
+              <div id="about">
+                <div class="section-title p-5">
+                  <h2>About</h2>
+                </div>
+
+                <!-- About content displayed here-->
+                <div class="ms-5">
+                  <p>The SpotDPothole web app was developed by the NAV development team, consisting of Justin Baldeosingh, Brandon Bharath and Tevon Thatcher.</p>
+                </div>
+              </div> 
+            </div>
+            
 
           </div>
 
         </div>
 
       </section>
-      <!-- End Map -->
+      <!-- End Main Content -->
+
+       <!-- Modal used for reporting in standard mode -->
+       <div class="modal fade" id="standardReportModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <!-- Modal header; with modal title and close button -->
+                <div class="modal-header">
+                    <h5 class="modal-title fw-bold" id="exampleModalLabel">Standard Report</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <!-- Modal body; contains report form for filing a standard report-->
+                <div class="modal-body">
+                    <div id="standardReport" class="px-3 d-flex flex-column flex-no-wrap">
+                        <!-- Description Text Area-->
+                        <div class="d-flex flex-column " id="description">
+                            <label class="fw-bold mb-3">Pothole Description</label>
+                            <textarea class="form-control" rows="3" id="descriptionText" placeholder="Enter description of pothole" required></textarea>
+                        </div>
+
+                        <!-- Coordinates Preview Area -->
+                        <div class="d-flex flex-column mt-3" id="coordinates">
+                            <label class="fw-bold mb-3">Pothole Coordinates</label>
+                            <input type="text" class="form-control" id="coordinatesText" placeholder="lat, long" disabled>
+                        </div>
+                        
+                        <!-- Image Preview Area -->
+                        <div id ="img-container" class="d-flex justify-content-around">
+                            <img id="pothole-img" class="w-100" src="" hidden/>
+                        </div>
+                        
+                        <!-- Image Upload Area --> <!-- Refactor again -->
+                        <div class="input-group justify-content-center mt-5 mb-5">
+                            <button onclick="" class="btn btn-outline-transparent" > 
+                                <label class="input-group-text " for="photo"><i class="bi bi-images"></i> <div class="ms-2">Select Image </div></label>
+                            </button>
+                            <button onclick="removeImage()" class="btn btn-danger rounded">x</button>
+                            <div id="photoContainer">
+                                <input id="photo" class="form-control-file" type="file" accept="image/*" onchange="showImage()" hidden> 
+                            </div>
+                        </div>
+                        <div class="text-center" id="uploadProgress"></div>
+                    </div>
+                </div>
+
+                <!-- Displays the submit button for the standard report -->
+                <div class="modal-footer">
+                    <button class="btn btn-dark w-100" data-bs-target="#standardReportModal" data-bs-dismiss="modal" id="submit-passenger-report">Submit</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal used for reporting in driver mode -->
+    <div class="modal fade" id="driverReportModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <!-- Modal header; with modal title and close button -->
+                <div class="modal-header">
+                    <h5 class="modal-title fw-bold" id="exampleModalLabel">Driver Report</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <!-- Modal body; contains buttons for reporting as a driver -->
+                <div class="modal-body">
+                    <div id="driverSubmitReport" class="p-3 accordion accordion-flush">
+                        <!-- Displays the submit button as an accordion for confirmation -->
+                        <div class="accordion-item">
+                            <!-- Submit button for driver mode -->
+                            <button class="btn btn-dark p-5 w-100" onclick="updateLocalCoords()" id="submit-driver-prereport" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseOne" aria-expanded="false" aria-controls="flush-collapseOne">
+                                Submit Pothole Report
+                            </button>
+
+                            <!-- Confirmation and Cancel options for deciding whether to submit the report -->
+                            <div id="flush-collapseOne" class="mx-1 accordion-collapse collapse row justify-content-around" aria-labelledby="flush-headingOne" data-bs-parent="#driverSubmitReport">
+                                <button class="btn btn-success py-5 mt-3"  id="submit-driver-report" type="button" data-bs-dismiss="modal" data-bs-target="#driverReportModal" aria-expanded="false" aria-controls="flush-collapseOne">
+                                    Confirm Submission
+                                </button>
+                                <button class="btn btn-danger py-5 mt-3"  type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseOne" aria-expanded="false" aria-controls="flush-collapseOne">
+                                    Cancel
+                                </button>
+                            </div>
+                        </div>                        
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Login Modal -->
+    <div class="modal fade" id="loginModal" tabindex="-1">
+      <div class="modal-dialog">
+          <div class="modal-content">
+              <!-- Enables menu options for login/registration, and a close button. -->
+              <div class="modal-header">
+                  <!-- Enables the user to select between login and registration at the top of the form. -->
+                  <nav class="col col-11">
+                      <div class="nav nav-pills nav-fill" id="nav-tab" role="tablist">
+                          <button class="nav-link active" id="nav-login-tab" data-bs-toggle="tab" data-bs-target="#nav-login" type="button" role="tab" >Login</button>
+                          <button class="nav-link" id="nav-register-tab" data-bs-toggle="tab" data-bs-target="#nav-register" type="button" role="tab" >Register</button>
+                      </div>
+                  </nav>
+                  <button type="button" class="btn-close btn-close-white col-1" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+
+              <!-- Holds the registration and login tab content forms -->
+              <div class="modal-body">
+                  <div class="tab-content" id="nav-tabContent">
+                      <!-- Login tab of the modal -->
+                      <div class="tab-pane fade show active" id="nav-login" role="tabpanel">
+                          <div class="row align-items-start">
+                              <!-- Displays application logo -->
+                              <div class="col col-12 mb-5 d-flex justify-content-center">
+                                  <img id="logo" src="assets\img\icons-512.png" style="max-height: 200px" class="rounded float-start img-fluid">
+                              </div>
+                              
+                              <!-- Displays login form -->
+                              <div class="col col-12 px-5">
+                                  <form id="loginForm" onsubmit="login(event)">
+                                      <div id="welcome" class="d-flex justify-content-center">
+                                          <h4 class="text-center">Welcome to the Pothole Spotter</h4>
+                                      </div>
+                                      <div class="mb-3 pt-3">
+                                          <label for="InputEmail" class="form-label fw-bold">Email Address</label>
+                                          <input type="email" class="form-control" id="InputEmail" placeholder="Enter your email" required>
+                                      </div>
+                                      <div class="mb-3 pt-2" >
+                                          <label for="InputPassword" class="form-label fw-bold">Password</label>
+                                          <input type="password" class="form-control" id="InputPassword" placeholder="Enter your password" required>
+                                      </div>
+
+                                      <!-- Login Outcome Message -->
+                                      <div class="d-flex justify-content-center" id="userLoginMessage"></div>
+
+                                      <!-- Login button -->
+                                      <div class="d-flex justify-content-center pt-3">
+                                          <button id="loginButton" class="btn btn-dark btn-lg px-3">Login</button>
+                                      </div>
+                                  </form>
+                              </div>
+                          </div>
+                      </div>
+
+                      <!-- Registration tab of the modal -->
+                      <div class="tab-pane fade" id="nav-register" role="tabpanel">
+                          <!-- Displays registration form -->
+                          <form class="pt-1" onsubmit="register(event)">
+                              <div class="row container">
+                                  <!-- First Name Input -->
+                                  <div class="col col-12 mb-3">
+                                      <label for="InputFirstName" class="form-label fw-bold">First Name</label>
+                                      <input type="name" class="form-control" id="regInputFirstName" placeholder="Enter your First Name" required>
+                                  </div>
+
+                                  <!-- Last Name Input -->
+                                  <div class="col col-12 mb-3">
+                                      <label for="InputLastName" class="form-label fw-bold">Last Name</label>
+                                      <input type="name" class="form-control" id="regInputLastName" placeholder="Enter your Last Name" required>
+                                  </div>
+
+                                  <!-- Email Input -->
+                                  <div class="col col-12 mb-3">
+                                      <label for="InputEmail" class="form-label fw-bold">Email</label>
+                                      <input type="email" class="form-control" id="regInputEmail" placeholder="Enter your Email" required>
+                                  </div>
+
+                                  <!-- Password Input -->
+                                  <div class="col col-12 mb-3">
+                                      <label for="InputPassword" class="form-label fw-bold">Password</label>
+                                      <input type="password" class="form-control" id="regInputPassword" placeholder="Enter a password" required>
+                                  </div>
+
+                                  <!-- Confirm Password Input -->
+                                  <div class="col-12 mb-3">
+                                      <label for="InputConfirm" class="form-label fw-bold">Confirm Password</label>
+                                      <input type="password" class="form-control" id="regInputConfirm" placeholder="Confirm your password" required>
+                                  </div>
+
+                                  <!-- Agree to Terms of Service Input -->
+                                  <div class="form-row d-flex justify-content-center mt-3">
+                                      <div class="col col-12">
+                                          <input type="checkbox" class="form-check-input" id="regAgreeToS" required>
+                                          <label for="agreeToS" class="form-label ml-5">I agree to consent personal information to platform.</label>
+                                      </div>
+                                  </div>
+                              </div>
+
+                              <!-- Register Outcome Message -->
+                              <div class="d-flex justify-content-center" id="userRegisterMessage"></div>
+
+                              <!-- Register button -->
+                              <div class="d-flex justify-content-center pt-3">
+                                  <button id="signUpButton" class="btn btn-dark btn-lg px-3">Sign Up</button>
+                              </div>
+                          </form>
+                      </div>
+                  </div>
+              </div>
+              <div class="modal-footer"></div>
+
+          </div>
+      </div>
+  </div>
+
+  <!-- Councillor Information Modal -->
+  <div class="modal fade" id="councillorInfoModal" tabindex="-1" aria-labelledby="councillorInfoModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <!-- Displays modal header and close button -->
+            <div class="modal-header">
+                <h5 class="modal-title" id="councillorInfoModalLabel">Councillor Information</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            
+            <!-- Councillor information is displayed here and is dynamically loaded by AJAXing into this section -->
+            <div class="modal-body" id="councillorModalInfo"></div>
+
+            <!-- Close button for modal -->
+            <div class="modal-footer" id="councillorModalFooter">
+            </div>
+        </div>
+    </div>
+  </div>
 
       <noscript class="text-center text-primary"><h3>Please enable javascript to use this application.</h3></noscript>
         <!-- Offcanvas used to display constituency information, reports, and votes for whenever a pothole is clicked on the map -->
@@ -182,57 +428,15 @@
         </div>
 
 
-        
-        <!---
-        <div class="row no-gutters">
-
-          <div class="col-lg-3 col-md-6 d-md-flex align-items-md-stretch" data-aos="fade-up">
-            <div class="count-box">
-              <i class="bi bi-emoji-smile"></i>
-              <span data-purecounter-start="0" data-purecounter-end="232" data-purecounter-duration="1" class="purecounter"></span>
-              <p><strong>Happy Clients</strong> consequuntur quae</p>
-            </div>
-          </div>
-
-          <div class="col-lg-3 col-md-6 d-md-flex align-items-md-stretch" data-aos="fade-up" data-aos-delay="100">
-            <div class="count-box">
-              <i class="bi bi-journal-richtext"></i>
-              <span data-purecounter-start="0" data-purecounter-end="521" data-purecounter-duration="1" class="purecounter"></span>
-              <p><strong>Projects</strong> adipisci atque cum quia aut</p>
-            </div>
-          </div>
-
-          <div class="col-lg-3 col-md-6 d-md-flex align-items-md-stretch" data-aos="fade-up" data-aos-delay="200">
-            <div class="count-box">
-              <i class="bi bi-headset"></i>
-              <span data-purecounter-start="0" data-purecounter-end="1453" data-purecounter-duration="1" class="purecounter"></span>
-              <p><strong>Hours Of Support</strong> aut commodi quaerat</p>
-            </div>
-          </div>
-
-          <div class="col-lg-3 col-md-6 d-md-flex align-items-md-stretch" data-aos="fade-up" data-aos-delay="300">
-            <div class="count-box">
-              <i class="bi bi-people"></i>
-              <span data-purecounter-start="0" data-purecounter-end="32" data-purecounter-duration="1" class="purecounter"></span>
-              <p><strong>Hard Workers</strong> rerum asperiores dolor</p>
-            </div>
-          </div>
-
-        </div>
-
-      </div>
-    </section>
-  -->
-
-
 
 
 
     <!-- ======= About Section ======= -->
+    <!--
     <section id="about" class="portfolio section-bg">
-      <div class="container">
+      <div class="container"> 
 
-        <div class="section-title">
+        <div class="section-title"> 
           <h2>Portfolio</h2>
           <p>Magnam dolores commodi suscipit. Necessitatibus eius consequatur ex aliquid fuga eum quidem. Sit sint consectetur velit. Quisquam quos quisquam cupiditate. Et nemo qui impedit suscipit alias ea. Quia fugiat sit in iste officiis commodi quidem hic quas.</p>
         </div>
@@ -343,10 +547,12 @@
         </div>
 
       </div>
-    </section><!-- End Portfolio Section -->
+    </section><!-- End Portfolio Section --> 
 
-    <!-- ======= Leaderboard Section ======= -->
-    <section id="leaderboard" class="services">
+    
+    <!-- ======= Services Section ======= -->
+    <!--
+    <section id="services" class="services">
       <div class="container">
 
         <div class="section-title">
@@ -391,6 +597,7 @@
     </section><!-- End Services Section -->
 
     <!-- ======= Contact Section ======= -->
+    <!--
     <section id="contact" class="contact">
       <div class="container">
 
