@@ -119,7 +119,7 @@ self.addEventListener('fetch', function(event) {
   if (event.request.method === 'GET') {
 
     //figure out if these are the main files to be cached
-    if(event.request.url.includes("/api/") || event.request.url.includes("identify") || event.request.url.includes("osrm")){
+    if(event.request.url.includes("/api/") || event.request.url.includes("osrm")){
       console.log(event.request.url + " will get the latest version!")
       
       event.respondWith(
@@ -141,7 +141,9 @@ self.addEventListener('fetch', function(event) {
     console.log('form_data', form_data)
     event.respondWith(fetch(event.request.clone()).catch(function (error) {
       // only save post requests in browser, if an error occurs
-      savePostRequests(event.request.clone().url, form_data)
+      if(event.request.url.includes('/api/reports/standard') || event.request.url.includes('/api/reports/driver') || event.request.url.includes('vote')){
+        savePostRequests(event.request.clone().url, form_data)
+      }
     }))
   }
 });
@@ -178,6 +180,7 @@ function savePostRequests(url, request) {
   request.onerror = function (error) {
     console.error(error)
   }
+  
 }
 
 
