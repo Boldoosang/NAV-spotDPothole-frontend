@@ -10,6 +10,15 @@ const firebaseConfig = {
 
 // Initialize Firebase
 const app = firebase.initializeApp(firebaseConfig);
+const channel = new BroadcastChannel('sw-messages');
+
+const toBase64 = file => new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = error => reject(error);
+});
+
 
 // Handles the submission of a standard pothole report for both image and non-image cases.
 async function handleStandardReport() {
@@ -17,8 +26,9 @@ async function handleStandardReport() {
 	const file = document.querySelector('#photo').files[0];
     let currentUser = await identifyUser();
 
+    let photoB64 = ""
 	//If a valid file was uploaded, upload it to firebase.
-	if (file != null && "email" in currentUser) {
+	if (file != null) {
 		//Determines if the file is not an image.
 		console.log(file.type)
 		if(!(['image/png', 'image/jpeg', 'image/gif', 'image/jpg'].includes(file.type))){
@@ -26,57 +36,13 @@ async function handleStandardReport() {
 			return;
 		}
 
-		//Sets the name of the file
-		const fileName = "REPORT IMG - " + new Date().getTime();
-
-		const uploadTask = firebase.storage().ref("test/" + fileName + ".png").put(file);
-
-		console.log(uploadTask)
-		// Register three observers:
-		// 1. 'state_changed' observer, called any time the state changes
-		// 2. Error observer, called on failure
-		// 3. Completion observer, called on successful completion
-
-		//Get the upload progress text area.
-		let uploadProgress = document.querySelector("#uploadProgress")
-
-		await uploadTask.on('state_changed', await async function(snapshot) {
-			// Observe state change events such as progress, pause, and resume
-
-			// Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
-			const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-			
-			//Based on the state of uploading, update the upload progress text area.
-			switch (snapshot.state) {
-				case 'paused':
-					uploadProgress.innerHTML = `<strong>UPLOAD PAUSED:</strong> Upload is ${progress}% done!`
-					break;
-				case 'running':
-					uploadProgress.innerHTML = `<strong>UPLOAD RUNNING:</strong> Upload is ${progress}% done!`
-					break;
-			}
-		}, await async function(error) {
-		// Handle unsuccessful uploads
-			//If there was an error in uploading the files, display the error in the upload progress text area.
-			uploadProgress.innerHTML = `<strong>ERROR UPLOADING FILE: ${error}</strong>`
-		}, await async function() {
-		// Handle successful uploads on complete
-			//If the file was successfully uploaded, display the success message in the upload progress text area.
-			uploadProgress.innerHTML = `<strong>FILE SUCCESSFULLY UPLOADED</strong>`
-
-			uploadTask.snapshot.ref.getDownloadURL().then(async function(url){
-				console.log(url)
-				let description = document.getElementById("descriptionText").value; // get text
-				await buildReport(url, description, STANDARD_REPORT_URL)
-			})
-		});
+        photoB64 = await toBase64(file)
 	} else {
-	//If no image was provided in the standard report, file the report without an image. 
-		//Gets the report description from the report.
-		let description = document.getElementById("descriptionText").value;
-		//Sends a request with the description to the standardReport endpoint.
-		await buildReport(null, description, STANDARD_REPORT_URL)
+		photoB64 = null;
 	}
+
+    let description = document.getElementById("descriptionText").value;
+	await buildReport(photoB64, description, STANDARD_REPORT_URL)
 }
 
 // Handles the submission of a standard pothole report for both image and non-image cases.
@@ -98,48 +64,8 @@ async function handleAddImage(event, potholeID, reportID) {
 			return;
 		}
 
-		//Sets the name of the file
-		const fileName = "REPORT " + new Date().getTime() + "_" + Math.random().toString(36).replace(/[^a-z]+/g, '').substr(0, 5);
-
-		const uploadTask = firebase.storage().ref("test/" + fileName + ".png").put(file);
-
-		console.log(uploadTask)
-		// Register three observers:
-		// 1. 'state_changed' observer, called any time the state changes
-		// 2. Error observer, called on failure
-		// 3. Completion observer, called on successful completion
-
-		
-
-		await uploadTask.on('state_changed', await async function(snapshot) {
-			// Observe state change events such as progress, pause, and resume
-
-			// Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
-			const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-			
-			//Based on the state of uploading, update the upload progress text area.
-			switch (snapshot.state) {
-				case 'paused':
-					uploadProgress.innerHTML = `<strong>UPLOAD PAUSED:</strong> Upload is ${progress}% done!`
-					break;
-				case 'running':
-					uploadProgress.innerHTML = `<strong>UPLOAD RUNNING:</strong> Upload is ${progress}% done!`
-					break;
-			}
-		}, await async function(error) {
-		// Handle unsuccessful uploads
-			//If there was an error in uploading the files, display the error in the upload progress text area.
-			uploadProgress.innerHTML = `<strong>ERROR UPLOADING FILE: ${error}</strong>`
-		}, await async function() {
-		// Handle successful uploads on complete
-			//If the file was successfully uploaded, display the success message in the upload progress text area.
-			uploadProgress.innerHTML = `<strong>FILE SUCCESSFULLY UPLOADED</strong>`
-
-			uploadTask.snapshot.ref.getDownloadURL().then(async function(url){
-				console.log(url)
-				await addImageToReport(url, potholeID, reportID)
-			})
-		});
+        photoB64 = await toBase64(file)
+		await addImageToReport(photoB64, potholeID, reportID)
 	} else {
         uploadProgress.innerHTML = `<strong>No image selected!</strong>`
 	}
@@ -956,7 +882,7 @@ function disableBackButton(){
 //Used to display a toast with a message.
 function displayToast(type, message) {
     //Creates the id for the notification using the date.
-	var id= new Date() + '-' + "notification"
+	var id = Date.now() + ' - ' + "notification_" + (Math.random() + 1).toString(36).substring(5);
     //Creates a new div and sets the meassge content.
 	var div = document.createElement('div');
 	div.textContent = message;
@@ -968,7 +894,9 @@ function displayToast(type, message) {
     //Sets the color of the div based on the message type.
 	if( type=='success'){
 		div.setAttribute('class', "message success show");    
-	} else {
+	} else if (type=='sync'){
+        div.setAttribute('class', "message sync show");  
+    } else {
 		div.setAttribute('class', "message failed show");
 	}
   
@@ -1031,7 +959,7 @@ async function updateLocalCoords(){
 }
 
 //Generates the report using the photoURL, description, and endpoint URL.
-async function buildReport(photoURL = null, description, url) {
+async function buildReport(photoB64, description, url) {
 	var latitude, longitude;
 
     try {
@@ -1048,7 +976,7 @@ async function buildReport(photoURL = null, description, url) {
 	//Checks to see if the device supports geolocation.
 	if (longitude != undefined && latitude != undefined) {
         //Sends the report to the endpoint and stores the results.
-        let results = await sendReport(latitude, longitude, photoURL, description, url)
+        let results = await sendReport(latitude, longitude, photoB64, description, url)
         console.log(results)
         //Prints the results of sending the report.
         try {
@@ -1072,7 +1000,7 @@ async function buildReport(photoURL = null, description, url) {
 }
 
 //Sends a generated report to the endpoint URL.
-async function sendReport(latitude, longitude, photoURL, description = null, url){
+async function sendReport(latitude, longitude, photoB64, description = null, url){
 	
     var inMap = leafletPip.pointInLayer([longitude, latitude], map);
 
@@ -1092,15 +1020,15 @@ async function sendReport(latitude, longitude, photoURL, description = null, url
 	}
 
     //Adds images if there are images.
-	if(photoURL != null){
-		data["images"] = [photoURL];
+	if(photoB64 != null){
+		data["images"] = [photoB64];
 	}
 
 	//Attempts to send the request to the endpoint with the data, and returns the outcome.
 	try {
+        console.log(data)
 		return await sendRequest(url, "POST", data)
 	} catch (error) {
-		console.log(`Error: ` + error)
 		return error;
 	}
 }
@@ -1136,7 +1064,21 @@ function main(){
     window.addEventListener("online", (event)=>{
         displayToast("success", "Network connection established!")
     })
+
+    
+    channel.addEventListener('message', event => {
+        if("message" in event.data){
+            displayToast("sync", event.data["message"])
+        } else {
+            displayToast("failed", event.data["error"])
+        }
+        displayPotholes();
+    });
+
 }
+
+
+
 
 //Once the DOM has loaded, bootstrap the application.
 window.addEventListener('DOMContentLoaded', main);

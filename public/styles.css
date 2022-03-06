@@ -11400,6 +11400,10 @@ footer > button{
   background-color: #55a70e;
 }
 
+.message.sync{
+  background-color: #2c3e99;
+}
+
 .message.failed{
   background-color: #d72013;
 }

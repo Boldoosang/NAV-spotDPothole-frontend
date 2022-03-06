@@ -19,20 +19,22 @@
 
 
         <script>
-            if ('serviceWorker' in navigator) {
-            // we are checking here to see if the browser supports the service worker api
-            window.addEventListener('load', function() {
-                navigator.serviceWorker.register('sw.js');
+            
 
-                navigator.serviceWorker.ready.then(function(registration) {
-                    console.log('Service Worker Ready!')
-                    return registration.sync.register('sendFormData')
-                }).then(function () {
-                    console.log('Sync event registered!')
-                }).catch(function() {
-                    console.log('Sync registration failed!')
-                });
-            }); 
+            if ('serviceWorker' in navigator) {
+                // we are checking here to see if the browser supports the service worker api
+                window.addEventListener('load', function() {
+                    navigator.serviceWorker.register('sw.js');
+
+                    navigator.serviceWorker.ready.then(function(registration) {
+                        console.log('Service Worker Ready!')
+                        return registration.sync.register('sendFormData')
+                    }).then(function () {
+                        console.log('Sync event registered!')
+                    }).catch(function() {
+                        console.log('Sync registration failed!')
+                    });
+                }); 
             }
         </script>
     </head>
