@@ -284,12 +284,12 @@ async function identifyUserContext(){
     //Gets the user context.
     let user = await identifyUser();
     let access_token = window.localStorage.getItem("access_token")
-    console.log("Goteem");
 
     //Writes the appropriate menu options to the user context actions for login/register, or logout.
     let userStateArea = document.querySelector("#userContextGroup");
+    let userNameArea = document.querySelector("#userNameArea");
     if("email" in user && access_token){
-        console.log("Goteem x2");
+        userNameArea.innerHTML =  `<h1 class="text-light">${user.firstName} ${user.lastName}</h1>`
         userStateArea.innerHTML = `<li><a href="#logoutBtn" onclick="logout()"><i class="bx bx-user-x" ></i>  <span>Logout</span></a></li>`
     }
 }
@@ -518,6 +518,7 @@ async function loadReportPage(){
                                         <p>${user["error"]}</p>
                                     </div>`
     } else {
+
         //If a mobile device is not being used, display that their device is unsupported.
         //if(isMobileDevice()){
              //reportArea.innerHTML = `
@@ -528,7 +529,7 @@ async function loadReportPage(){
         //} else {
             reportArea.innerHTML = 
             `<div class="list-group p-3 d-flex flex-column justify-content-evenly align-items-middle" style="min-height: 75vh">
-                <button data-bs-target="#standardReportModal" data-bs-toggle="modal" id="standard-button" onclick="updateLocalCoords()" type="button" class="btn btn-dark py-5">Standard Report</button>                       
+                <button data-bs-target="#standardReportModal" data-bs-toggle="modal" id="standard-button" onclick="updateLocalCoords()" type="button" class="btn btn-dark py-5">Standard Report</button>                  
                 <button data-bs-target="#driverReportModal" data-bs-toggle="modal" id="driver-button" type="button" class="btn btn-dark py-5">Driver Report</button>
             </div>`
         //}

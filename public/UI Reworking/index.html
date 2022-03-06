@@ -52,8 +52,11 @@
     <div class="d-flex flex-column">
 
       <div class="profile">
-        <img src="assets/img/profile-img.jpg" alt="" class="img-fluid rounded-circle">
-        <h1 class="text-light"><a href="index.html">Guest</a></h1>
+        <img src="assets\img\icons-512.png" >
+        <div id="userNameArea">
+          <h1 class="text-light">Guest</h1>
+        </div>
+        
       </div>
 
       <nav id="navbar" class="nav-menu navbar">
@@ -86,7 +89,7 @@
           
               </div>
 
-              <!-- ======= Make Report Section ======= -->
+              <!-- ======= Report Section ======= -->
 
               <!-- Displays the reporting content for when the report button is clicked -->
               <div class="mt-3 tab-pane fade" id="mainTab-report" role="tabpanel" style="min-height: 75vh">
@@ -168,7 +171,10 @@
 
                 <!-- About content displayed here-->
                 <div class="ms-5">
-                  <p>The SpotDPothole web app was developed by the NAV development team, consisting of Justin Baldeosingh, Brandon Bharath and Tevon Thatcher.</p>
+                  <p>SpotDPothole is a pothole mapping web app that was developed by the NAV development team, consisting of Justin Baldeosingh, Brandon Bharath and Tevon Thatcher.
+                    The purpose behind the app was to create a platform for citizens of Trinidad and Tobago to share their knowledge and frustration about the current state of the
+                    nation's roadways.
+                  </p>
                 </div>
               </div> 
             </div>
@@ -182,13 +188,13 @@
       <!-- End Main Content -->
 
        <!-- Modal used for reporting in standard mode -->
-       <div class="modal fade" id="standardReportModal" tabindex="-1">
+      <div class="modal fade" id="standardReportModal" tabindex="-1">
         <div class="modal-dialog">
             <div class="modal-content">
                 <!-- Modal header; with modal title and close button -->
                 <div class="modal-header">
                     <h5 class="modal-title fw-bold" id="exampleModalLabel">Standard Report</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
 
                 <!-- Modal body; contains report form for filing a standard report-->
@@ -227,11 +233,12 @@
 
                 <!-- Displays the submit button for the standard report -->
                 <div class="modal-footer">
-                    <button class="btn btn-dark w-100" data-bs-target="#standardReportModal" data-bs-dismiss="modal" id="submit-passenger-report">Submit</button>
+                    <button class="btn w-100" data-bs-target="#standardReportModal" data-bs-dismiss="modal" id="submit-passenger-report">Submit</button>
                 </div>
             </div>
         </div>
-    </div>
+      </div>
+
 
     <!-- Modal used for reporting in driver mode -->
     <div class="modal fade" id="driverReportModal" tabindex="-1">
@@ -695,7 +702,7 @@
   <!-- Main constants file -->
   <script src="assets/js/constants.js"></script>
 
-  <!-- Map javascript -->
+  <!-- Map javascript file -->
   <script src="assets/js/map.js"></script>
 
   <!-- Main web javascript file -->
