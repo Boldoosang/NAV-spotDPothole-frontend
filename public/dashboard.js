@@ -280,6 +280,7 @@ async function deletePotholeReport(event, potholeID, reportID){
                                         </div>`;
 
         loadDashboard();
+        displayPotholes();
     }
 
 }

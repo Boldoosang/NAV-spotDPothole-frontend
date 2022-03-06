@@ -121,7 +121,7 @@ self.addEventListener('fetch', function(event) {
     //figure out if these are the main files to be cached
     if(event.request.url.includes("/api/") || event.request.url.includes("osrm")){
       console.log(event.request.url + " will get the latest version!")
-      
+
       event.respondWith(
         fromNetwork(event.request, 10000).catch(() => fromCache(event.request))
       );
@@ -234,8 +234,11 @@ function sendPostToServer () {
           console.log('saved request', savedRequest)
           var requestUrl = savedRequest.url
           var request = savedRequest.request
-          fetch(requestUrl, request).then(function (response) {
+          fetch(requestUrl, request).then(async function (response) {
             console.log('server response', response)
+            const channel = new BroadcastChannel('sw-messages');
+            responseJson = await response.json()
+            channel.postMessage(responseJson);
             //if (response.status < 400) {
               // If sending the POST request was successful, then remove it from the IndexedDB.
               getObjectStore(FOLDER_NAME, 'readwrite').delete(savedRequest.id)
@@ -243,7 +246,7 @@ function sendPostToServer () {
           }).catch(function (error) {
             // This will be triggered if the network is still down. The request will be replayed again
             // the next time the service worker starts up.
-            console.error('Send to Server failed:', error)
+            console.error('Send to Server failed: ', error)
             // since we are in a catch, it is important an error is thrown,
             // so the background sync knows to keep retrying sendto server
             throw error
@@ -252,6 +255,9 @@ function sendPostToServer () {
     }
   }
 }
+
+
+
 
 
 self.addEventListener('sync', function (event) {

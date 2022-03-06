@@ -10,7 +10,7 @@ const firebaseConfig = {
 
 // Initialize Firebase
 const app = firebase.initializeApp(firebaseConfig);
-
+const channel = new BroadcastChannel('sw-messages');
 
 const toBase64 = file => new Promise((resolve, reject) => {
     const reader = new FileReader();
@@ -882,7 +882,7 @@ function disableBackButton(){
 //Used to display a toast with a message.
 function displayToast(type, message) {
     //Creates the id for the notification using the date.
-	var id= new Date() + '-' + "notification"
+	var id = Date.now() + ' - ' + "notification_" + (Math.random() + 1).toString(36).substring(5);
     //Creates a new div and sets the meassge content.
 	var div = document.createElement('div');
 	div.textContent = message;
@@ -894,7 +894,9 @@ function displayToast(type, message) {
     //Sets the color of the div based on the message type.
 	if( type=='success'){
 		div.setAttribute('class', "message success show");    
-	} else {
+	} else if (type=='sync'){
+        div.setAttribute('class', "message sync show");  
+    } else {
 		div.setAttribute('class', "message failed show");
 	}
   
@@ -1062,7 +1064,21 @@ function main(){
     window.addEventListener("online", (event)=>{
         displayToast("success", "Network connection established!")
     })
+
+    
+    channel.addEventListener('message', event => {
+        if("message" in event.data){
+            displayToast("sync", event.data["message"])
+        } else {
+            displayToast("failed", event.data["error"])
+        }
+        displayPotholes();
+    });
+
 }
+
+
+
 
 //Once the DOM has loaded, bootstrap the application.
 window.addEventListener('DOMContentLoaded', main);
