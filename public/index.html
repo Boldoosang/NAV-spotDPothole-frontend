@@ -13,23 +13,28 @@
         <!-- Imports leaflet libraries -->
         <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js" integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA==" crossorigin=""></script>
         <script src="https://unpkg.com/@mapbox/leaflet-pip@latest/leaflet-pip.js"></script>
+        <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.css" />
+        <script src="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.js"></script>
+        <script src="leaflet.geometryutil.js"></script>
 
 
         <script>
-            if ('serviceWorker' in navigator) {
-            // we are checking here to see if the browser supports the service worker api
-            window.addEventListener('load', function() {
-                navigator.serviceWorker.register('sw.js');
+            
 
-                navigator.serviceWorker.ready.then(function(registration) {
-                    console.log('Service Worker Ready!')
-                    return registration.sync.register('sendFormData')
-                }).then(function () {
-                    console.log('Sync event registered!')
-                }).catch(function() {
-                    console.log('Sync registration failed!')
-                });
-            }); 
+            if ('serviceWorker' in navigator) {
+                // we are checking here to see if the browser supports the service worker api
+                window.addEventListener('load', function() {
+                    navigator.serviceWorker.register('sw.js');
+
+                    navigator.serviceWorker.ready.then(function(registration) {
+                        console.log('Service Worker Ready!')
+                        return registration.sync.register('sendFormData')
+                    }).then(function () {
+                        console.log('Sync event registered!')
+                    }).catch(function() {
+                        console.log('Sync registration failed!')
+                    });
+                }); 
             }
         </script>
     </head>
@@ -103,6 +108,7 @@
                         <div class="tab-pane active fade show" id="mainTab-map" role="tabpanel">
                             <!-- Map is rendered here -->
                             <div id="mapContent" class="p-0 mx-0"><div id="map"></div></div>
+                            
                         </div>
 
                         <!-- Displays the reporting content for when the report button is clicked -->
@@ -266,6 +272,7 @@
                                     <div class="nav nav-pills nav-fill" id="nav-tab" role="tablist">
                                         <button class="nav-link active" id="nav-login-tab" data-bs-toggle="tab" data-bs-target="#nav-login" type="button" role="tab">Login</button>
                                         <button class="nav-link" id="nav-register-tab" data-bs-toggle="tab" data-bs-target="#nav-register" type="button" role="tab">Register</button>
+                                        <button class="nav-link" id="nav-utility-tab" data-bs-toggle="tab" data-bs-target="#nav-utility" type="button" role="tab">Utility</button>
                                     </div>
                                 </nav>
                                 <button type="button" class="btn-close col-1" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -305,6 +312,26 @@
                                                         <button id="loginButton" class="btn btn-dark btn-lg px-3">Login</button>
                                                     </div>
                                                 </form>
+
+                                                <!-- Send Password Reset button -->
+
+                                                <p>
+                                                    <a class="ms-auto" data-bs-toggle="collapse" href="#sendResetPassword" role="button" aria-expanded="false" aria-controls="collapseExample">
+                                                        Forgot your password?
+                                                    </a>
+                                                </p>
+                                        
+                                                <div class="collapse" id="sendResetPassword">
+                                                    <div class="card card-body bg-dark text-white mb-2">
+                                                        <form class="form-group mb-1" onsubmit="sendResetPassword(event)">
+                                                            <label for="resetPassword-email">Email</label>
+                                                            <input type="email" id="resetPassword-email" class="form-control mt-2" name="email" required>
+                                                            <br>
+                                                            <button type="submit" class="btn btn-success">Send Reset Token</button>
+                                                            <div class="mt-3" id="sendResetPasswordMessage"></div>
+                                                        </form>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -361,6 +388,147 @@
                                                 <button id="signUpButton" class="btn btn-dark btn-lg px-3">Sign Up</button>
                                             </div>
                                         </form>
+                                    </div>
+
+
+                                    <!-- Utility tab of the modal -->
+                                    <div class="tab-pane fade" id="nav-utility" role="tabpanel">
+
+                                        <div class="accordion" id="utilityAccordion">
+
+                                            <div class="accordion-item">
+                                                <h2 class="accordion-header" id="resendConfirmation">
+                                                  <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseResendConfirmation">
+                                                    Resend Confirmation Email
+                                                  </button>
+                                                </h2>
+                                                <div id="collapseResendConfirmation" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#utilityAccordion">
+                                                  <div class="accordion-body">
+  
+                                                      <!-- Displays Verification form -->
+                                                      <form class="pt-1" onsubmit="resendConfirmationEmail(event)">
+                                                          <div class="row container">
+                                                              <!-- Email Token -->
+                                                              <div class="col col-12 mb-3">
+                                                                  <label for="resendConfirmationEmailField" class="form-label fw-bold">Email</label>
+                                                                  <input type="email" class="form-control" id="resendConfirmationEmailField" placeholder="Email" required>
+                                                              </div>
+                                                          </div>
+
+
+                                                            <!-- Verification Outcome Message -->
+                                                            <div class="d-flex justify-content-center my-2" id="resendConfirmationMessage"></div>
+
+                                                            <!-- Verification button -->
+                                                            <div class="d-flex justify-content-center pt-3">
+                                                                <button id="resendConfirmationButton" class="btn btn-dark px-3">Resend Confirmation Email</button>
+                                                            </div>
+                                                      </form>
+                                                  </div>
+                                                </div>
+                                              </div>
+
+                                            <div class="accordion-item">
+                                              <h2 class="accordion-header" id="emailVerification">
+                                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseEmailVerification">
+                                                  Email Verification
+                                                </button>
+                                              </h2>
+                                              <div id="collapseEmailVerification" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#utilityAccordion">
+                                                <div class="accordion-body">
+
+                                                    <!-- Displays Verification form -->
+                                                    <form class="pt-1" onsubmit="verifyEmail(event)">
+                                                        <div class="row container">
+                                                            <!-- Email Token -->
+                                                            <div class="col col-12 mb-3">
+                                                                <label for="emailVerifyActual" class="form-label fw-bold">Email</label>
+                                                                <input type="email" class="form-control" id="emailVerifyActual" placeholder="Confirm Email" required>
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="row container">
+                                                            <!-- Confirmation Token -->
+                                                            <div class="col col-12 mb-3">
+                                                                <label for="emailToken" class="form-label fw-bold">Verification Token</label>
+                                                                <input type="text" class="form-control" id="emailToken" placeholder="Email Verification Token" required>
+                                                            </div>
+                                                        </div>
+
+                                                        <!-- Verification Outcome Message -->
+                                                        <div class="d-flex justify-content-center my-2" id="verificationMessage"></div>
+
+                                                        <!-- Verification button -->
+                                                        <div class="d-flex justify-content-center pt-3">
+                                                            <button id="verificationButton" class="btn btn-dark px-3">Verify Email Address</button>
+                                                        </div>
+                                                    </form>
+                                                
+                                                
+                                                
+                                                </div>
+                                              </div>
+                                            </div>
+
+
+                                            <div class="accordion-item">
+                                              <h2 class="accordion-header" id="resetPassword">
+                                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseResetPassword">
+                                                  Reset Password
+                                                </button>
+                                              </h2>
+                                              <div id="collapseResetPassword" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#utilityAccordion">
+                                                <div class="accordion-body">
+
+                                                    <!-- Displays Reset Password form -->
+                                                    <form class="pt-1" onsubmit="resetPassword(event)">
+                                                        <div class="row container">
+                                                            <!-- Email Token -->
+                                                            <div class="col col-12 mb-3">
+                                                                <label for="emailResetToken" class="form-label fw-bold">Email</label>
+                                                                <input type="email" class="form-control" id="emailResetToken" placeholder="Confirm Email" required>
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="row container">
+                                                            <!-- Confirmation Token -->
+                                                            <div class="col col-12 mb-3">
+                                                                <label for="resetToken" class="form-label fw-bold">Reset Token</label>
+                                                                <input type="text" class="form-control" id="resetToken" placeholder="Reset Verification Token" required>
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="row container">
+                                                            <!-- Password -->
+                                                            <div class="col col-12 mb-3">
+                                                                <label for="rPassword" class="form-label fw-bold">Password</label>
+                                                                <input type="password" class="form-control" id="rPassword" placeholder="Password" required>
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="row container">
+                                                            <!-- Confirm Password -->
+                                                            <div class="col col-12 mb-3">
+                                                                <label for="rConfirmPassword" class="form-label fw-bold">Confirm Password</label>
+                                                                <input type="password" class="form-control" id="rConfirmPassword" placeholder="Confirm Password" required>
+                                                            </div>
+                                                        </div>
+
+                                                        <!-- Verification Outcome Message -->
+                                                        <div class="d-flex justify-content-center" id="resetPasswordMessage"></div>
+
+                                                        <!-- Verification button -->
+                                                        <div class="d-flex justify-content-center pt-3">
+                                                            <button id="resetPasswordButton" class="btn btn-dark px-3">Reset Password</button>
+                                                        </div>
+                                                    </form>
+                                                
+                                                
+                                                </div>
+                                              </div>
+                                            </div>
+
+                                          </div>
                                     </div>
                                 </div>
                             </div>

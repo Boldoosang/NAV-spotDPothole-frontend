@@ -280,6 +280,7 @@ async function deletePotholeReport(event, potholeID, reportID){
                                         </div>`;
 
         loadDashboard();
+        displayPotholes();
     }
 
 }
@@ -376,12 +377,12 @@ async function loadProfileData(){
     }
 }
 
-async function addImageToReport(url, potholeID, reportID){
-    let imageURL = {
-        "images" : [url]
+async function addImageToReport(photoB64, potholeID, reportID){
+    let B64Image = {
+        "images" : [photoB64]
     }
 
-    let result = await sendRequest(SERVER + `/api/reports/pothole/${potholeID}/report/${reportID}/images`, "POST", imageURL);
+    let result = await sendRequest(SERVER + `/api/reports/pothole/${potholeID}/report/${reportID}/images`, "POST", B64Image);
     let messageOutcomeArea  = document.querySelector("#imageUpdateMessage");
     if("error" in result || "msg" in result){
         messageOutcomeArea.innerHTML = `<div class="align-middle text-center">
