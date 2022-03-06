@@ -15,7 +15,7 @@ let popupLocation
 
 function isPointOnLine(point, path) {
     for (var i = 0; i < path.length - 1; i++) {
-        if (L.GeometryUtil.belongsSegment(point, path[i], path[i + 1], 2)) {
+        if (L.GeometryUtil.belongsSegment(point, path[i], path[i + 1], 0.2)) {
             return true;
         }
     }
@@ -366,10 +366,9 @@ async function routingConcept() {
     routingEndPoint.latLng = waypoints.endPoint;    
 
     var myRoute = L.Routing.osrmv1({
-        serviceUrl: 'http://osrm.justinbaldeo.com:5000/route/v1'
+        serviceUrl: 'http://osrm.justinbaldeo.com:5000/route/v1',
+        profile: 'pothole'
     });
-    
-    //var myRoute = L.Routing.osrmv1();
 
     myRoute.route([routingStartPoint, routingEndPoint], async function(err, routes) {
         let numClear = 0;
@@ -391,6 +390,7 @@ async function routingConcept() {
                     line = L.Routing.line(route)
                     line.addTo(map)
                     numClear++
+                    console.log(numClear)
                 }
             }
             if(numClear == 0){
@@ -404,37 +404,6 @@ async function routingConcept() {
             alert("No Routes Exist between these points")
         }
     });
-
-    // L.Routing.control({
-    //     waypoints: [
-    //         L.latLng(10.511294171489462, -61.3840538263321),
-    //         L.latLng(10.639577437885391, -61.40234471065924)
-    //     ],
-    //     lineOptions: {
-    //         styles: [{ color: 'green', opacity: 0.5, weight: 5 }]
-    //     },
-    //     showAlternatives: true,
-    //     routeWhileDragging: true,
-    //     altLineOptions: {
-    //         styles: [{ color: 'red', opacity: 0.5, weight: 5 }]
-    //     }
-    // }).on('routesfound', async function (e) {
-    //     routes = e.routes
-
-    //     let potholes = await getPotholes()
-
-    //     for(let route of routes){
-    //         for (let pothole of potholes) {
-    //             let point = L.latLng(pothole.latitude, pothole.longitude)
-
-    //             if(isPointOnLine(point, route.coordinates)) {
-    //                 console.log("PotholeID: " + pothole.potholeID + " lies on route: " + route.name)
-    //                 clearRoute=false
-    //             }
-    //         }
-    //         console.log(route)
-    //     }
-    // }).addTo(map);
 }
 
 
