@@ -119,7 +119,7 @@ self.addEventListener('fetch', function(event) {
   if (event.request.method === 'GET') {
 
     //figure out if these are the main files to be cached
-    if(event.request.url.includes("/api/") || event.request.url.includes("osrm")){
+    if(event.request.url.includes("/api/") || event.request.url.includes("osrm") || event.request.url.includes("identify")){
       console.log(event.request.url + " will get the latest version!")
 
       event.respondWith(
