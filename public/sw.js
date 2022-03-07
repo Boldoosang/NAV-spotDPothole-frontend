@@ -115,37 +115,40 @@ var isExistInCache = function(request){
 self.addEventListener('fetch', function(event) {
   // every request from our site, passes through the fetch handler
   //console.log('I am a request with url: ', event.request.clone().url)
+  
+  if(!event.request.url.includes("api.mapbox.com")){
+    if (event.request.method === 'GET') {
 
-  if (event.request.method === 'GET') {
-
-    //figure out if these are the main files to be cached
-    if(event.request.url.includes("/api/") || event.request.url.includes("osrm") || event.request.url.includes("identify")){
-      console.log(event.request.url + " will get the latest version!")
-
-      event.respondWith(
-        fromNetwork(event.request, 10000).catch(() => fromCache(event.request))
-      );
-
-      
-    } else {
-      console.log(event.request.url + " will be retrieved from cache first, then network!")
-      event.respondWith(
-        caches.match(event.request).then(function(response) {
-          return response || fetch(event.request);
-        })
-      );
-    }
-    event.waitUntil(update(event.request));
-  } else if (event.request.clone().method === 'POST') {
-    // attempt to send request normally
-    console.log('form_data', form_data)
-    event.respondWith(fetch(event.request.clone()).catch(function (error) {
-      // only save post requests in browser, if an error occurs
-      if(event.request.url.includes('/api/reports/standard') || event.request.url.includes('/api/reports/driver') || event.request.url.includes('vote')){
-        savePostRequests(event.request.clone().url, form_data)
+      //figure out if these are the main files to be cached
+      if(event.request.url.includes("/api/") || event.request.url.includes("osrm") || event.request.url.includes("identify")){
+        console.log(event.request.url + " will get the latest version!")
+  
+        event.respondWith(
+          fromNetwork(event.request, 10000).catch(() => fromCache(event.request))
+        );
+  
+        
+      } else {
+        console.log(event.request.url + " will be retrieved from cache first, then network!")
+        event.respondWith(
+          caches.match(event.request).then(function(response) {
+            return response || fetch(event.request);
+          })
+        );
       }
-    }))
+      event.waitUntil(update(event.request));
+    } else if (event.request.clone().method === 'POST') {
+      // attempt to send request normally
+      console.log('form_data', form_data)
+      event.respondWith(fetch(event.request.clone()).catch(function (error) {
+        // only save post requests in browser, if an error occurs
+        if(event.request.url.includes('/api/reports/standard') || event.request.url.includes('/api/reports/driver') || event.request.url.includes('vote')){
+          savePostRequests(event.request.clone().url, form_data)
+        }
+      }))
+    }
   }
+  
 });
 
 //end bg sync fetch

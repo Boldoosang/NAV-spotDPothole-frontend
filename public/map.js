@@ -11,6 +11,7 @@ let route
 let map
 let watchid
 let popupLocation
+let layer   
 
 
 function isPointOnLine(point, path) {
@@ -24,26 +25,44 @@ function isPointOnLine(point, path) {
 
 //fuction to load the map and the geoJSON data for the constituencies
 async function initMap() {
+    var bbox = L.latLngBounds(L.latLng(11.715818, -62.118828), L.latLng(9.866544, -60.094122))
+
     map = L.map('map', {
         center: [10.69, -61.23],
         zoom: 9,
         minZoom: 10
     });
 
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-    }).addTo(map);
-    
-    /*
-    L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
+    // layer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    //     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+    //     useCache: true,
+    //     crossOrigin: true,
+    //     useOnlyCache: true
+    // }).addTo(map);
+
+    layer = L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
         attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
         maxZoom: 18,
+        accessToken: 'pk.eyJ1IjoiYm9sZG9vc2FuZyIsImEiOiJja3dlbzk5NTMwNnBzMnZwd3h5OWhwazJvIn0.FhdBhjtsMsUAge-3EoptiQ',
         id: 'mapbox/streets-v11',
         tileSize: 512,
         zoomOffset: -1,
-        accessToken: 'pk.eyJ1IjoiYm9sZG9vc2FuZyIsImEiOiJja3dlbzk5NTMwNnBzMnZwd3h5OWhwazJvIn0.FhdBhjtsMsUAge-3EoptiQ'
+        useCache: true,
+        crossOrigin: true
     }).addTo(map);
-    */
+
+    layer.on('seedprogress', function(seedData){
+        var percent = 100 - Math.floor(seedData.remainingLength / seedData.queueLength * 100);
+        console.log('Seeding ' + percent + '% done');
+    })
+
+    layer.on('seedend', function(seedData){
+        console.log('Cache seeding complete');
+    });
+    
+    map.on('zoomend', function(e){
+        console.log(e)
+    })
 
     //load the geoJSON data for the constituencies
     await fetch("./ttmap.geojson").then(function (response) {

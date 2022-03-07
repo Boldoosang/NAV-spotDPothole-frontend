@@ -1063,6 +1063,13 @@ function main(){
 
     window.addEventListener("online", (event)=>{
         displayToast("success", "Network connection established!")
+
+        console.log(layer)
+
+        var bbox = L.latLngBounds(L.latLng(11.715818, -62.118828), L.latLng(9.866544, -60.094122))
+        
+        layer.seed(bbox, 10, 16);
+        
     })
 
     
