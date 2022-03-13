@@ -45,7 +45,12 @@
 
   <!-- ======= Mobile nav toggle button ======= -->
   <i class="bi bi-list mobile-nav-toggle d-xl-none"></i>
-  <button><i class="bi bi-plus d-xl-none" id="driverReportButton"></i></button>
+
+  <!-- ======= Mobile report button ======= -->
+  <div id="driverReportButtonArea">
+    <!-- <button data-bs-toggle="modal" data-bs-target="#driverReportModal"><i class="bi bi-plus d-xl-none" id="driverReportButton"></i></button> -->
+  </div>
+  
   
   
   
@@ -89,6 +94,7 @@
             <!-- Displays the home/map content for when the home button is clicked -->
               <div class="tab-pane active fade show" id="mainTab-map" role="tabpanel">
                 <!-- Map is rendered here -->
+                
                 <div id="map" style="width:100%; height:1000px"></div>
           
               </div>
@@ -250,7 +256,7 @@
                 <!-- Modal header; with modal title and close button -->
                 <div class="modal-header">
                     <h5 class="modal-title fw-bold" id="exampleModalLabel">Driver Report</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
 
                 <!-- Modal body; contains buttons for reporting as a driver -->
@@ -259,13 +265,13 @@
                         <!-- Displays the submit button as an accordion for confirmation -->
                         <div class="accordion-item">
                             <!-- Submit button for driver mode -->
-                            <button class="btn btn-dark p-5 w-100" onclick="updateLocalCoords()" id="submit-driver-prereport" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseOne" aria-expanded="false" aria-controls="flush-collapseOne">
+                            <button class="btn btn-primary p-5 w-100" onclick="updateLocalCoords()" id="submit-driver-prereport" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseOne" aria-expanded="false" aria-controls="flush-collapseOne">
                                 Submit Pothole Report
                             </button>
 
                             <!-- Confirmation and Cancel options for deciding whether to submit the report -->
                             <div id="flush-collapseOne" class="mx-1 accordion-collapse collapse row justify-content-around" aria-labelledby="flush-headingOne" data-bs-parent="#driverSubmitReport">
-                                <button class="btn btn-success py-5 mt-3"  id="submit-driver-report" type="button" data-bs-dismiss="modal" data-bs-target="#driverReportModal" aria-expanded="false" aria-controls="flush-collapseOne">
+                                <button class="btn btn-primary py-5 mt-3"  id="submit-driver-report" type="button" data-bs-dismiss="modal" data-bs-target="#driverReportModal" aria-expanded="false" aria-controls="flush-collapseOne">
                                     Confirm Submission
                                 </button>
                                 <button class="btn btn-danger py-5 mt-3"  type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseOne" aria-expanded="false" aria-controls="flush-collapseOne">

@@ -253,6 +253,14 @@ h1, h2, h3, h4, h5, h6 {
 /*--------------------------------------------------------------
 # Login/Register/Utility & Profile Management Modal
 --------------------------------------------------------------*/
+#profileManagementModal{
+  z-index: 9999;
+}
+
+#loginModal{
+  z-index: 9999;
+}
+
 .modal-header{
   background : #050d18;
   color : white;
@@ -298,14 +306,48 @@ h1, h2, h3, h4, h5, h6 {
 /*--------------------------------------------------------------
 # Report Modal
 --------------------------------------------------------------*/
+#driverReportModal{
+  z-index: 9999;
+}
+
+#standardReportModal{
+  z-index: 9999;
+}
+
 #reportContent{
   background-color: white;
+}
+
+#reportAccordion > .accordion-item > .accordion-collapse > .accordion-body{
+  background-color : white;
+  color: black;
+}
+
+#reportAccordion > .accordion-item > .accordion-header > .accordion-button.collapsed{
+  background-color: white;
+  color : black;
+}
+
+#reportAccordion > .accordion-item > .accordion-header > .accordion-button{
+  background-color :#050d18;
+  color : white;
 }
 
 #submit-passenger-report{
   background: #149ddd;
 }
 
+#driverSubmitReport > .accordion-item{
+  background-color :#050d18;
+}
+
+
+/*--------------------------------------------------------------
+# Dashboard Modal
+--------------------------------------------------------------*/
+#dashboardModal{
+  z-index: 9999;
+}
 
 /*--------------------------------------------------------------
 # Hero Section

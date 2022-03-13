@@ -184,7 +184,7 @@ async function loadUserReport(potholeID){
         </p>
 
         <div class="collapse" id="addReportImage-${report.reportID}">
-            <div class="card card-body bg-dark text-white mb-2">
+            <div class="text-white mb-2">
 
                 <!-- Image Preview Area -->
                 <div id ="dashboard-img-container" class="d-flex justify-content-around">
@@ -200,10 +200,12 @@ async function loadUserReport(potholeID){
                     <div id="dashboardPhotoContainer">
                         <input id="dashboardPhoto" class="form-control-file" type="file" accept="image/*" onchange="showDashboardImage()" hidden> 
                     </div>
+                    
                 </div>
                 <div class="text-center mb-3" id="dashboardUploadProgress"></div>
-
-                <button type="submit" onclick="handleAddImage(event, ${report.potholeID}, ${report.reportID})" class="btn btn-success">Add Image</button> 
+                <div class="d-flex justify-content-center">
+                    <button onclick="handleAddImage(event, ${report.potholeID}, ${report.reportID})" class="btn btn-primary"><i class='bx bxs-camera-plus'></i> Add</button> 
+                </div>
             </div>
         </div>
 
@@ -211,7 +213,7 @@ async function loadUserReport(potholeID){
 
         <div class="form-group mb-2">
             <label class="fw-bold" for="editDescription-${report.reportID}">Pothole Description</label>
-            <input type="text" class="form-control mt-2" id="editDescription-${report.reportID}" readonly disabled placeholder="${report.description}">
+            <p class="ms-3 mt-2">${report.description}</p>
         </div>
 
         <p>
@@ -223,9 +225,9 @@ async function loadUserReport(potholeID){
         </p>
 
         <div class="collapse" id="editPotholeDescription-${report.reportID}">
-            <div class="card card-body bg-dark text-white mb-2">
+            <div class="text-white mb-2">
                 <form class="form-group mb-1" onsubmit="updatePotholeDescription(event, ${report.potholeID}, ${report.reportID})">
-                    <label for="updatePotholeDescription-${report.reportID}">Pothole Description</label>
+                    
                     <input type="text" id="updatePotholeDescription-${report.reportID}" class="text-muted form-control mt-2" name="description" value="${report.description}" required>
                     <br>
                     <div class="d-flex justify-content-center">
@@ -238,17 +240,17 @@ async function loadUserReport(potholeID){
 
 
         <p>
-            <div class="d-flex justify-content-center">
+            <div class="d-flex justify-content-center mt-5">
                 <a class="btn btn-secondary" data-bs-toggle="collapse" href="#deletePotholeReport-${report.reportID}" role="button" aria-expanded="false" aria-controls="collapseExample"><i class='bx bx-trash'></i>
                     Delete Report
                 </a>
             </div>
         </p>
-        <div class="collapse" id="deletePotholeReport-${report.reportID}">
-            <div class="card card-body bg-dark text-white">
+        <div class="mt-4 collapse" id="deletePotholeReport-${report.reportID}">
+            <div class="text-white">
                 <b>Are you sure you want to delete this report?</b><br>
-                <div class="mt-0 text-center">
-                    <button onclick="deletePotholeReport(event, ${report.potholeID}, ${report.reportID})" class="btn btn-danger">Confirm</button>
+                <div class="mt-4 text-center">
+                    <button onclick="deletePotholeReport(event, ${report.potholeID}, ${report.reportID})" class="btn btn-danger me-3">Confirm</button>
                     <button class="btn btn-secondary" type="button" data-bs-toggle="collapse" data-bs-target="#deletePotholeReport-${report.reportID}" aria-expanded="false" aria-controls="collapseExample">
                         Close
                     </button>
