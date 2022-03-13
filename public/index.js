@@ -589,21 +589,21 @@ async function loadReportPage(){
     let user = await identifyUser();
 
     if("error" in user || "msg" in user){
-        //reportArea.innerHTML = `<div class="mt-5 text-center text-black">
-                                        //<h2>User is not logged in!</h2>
-                                        //<p>${user["error"]}</p>
-                                    //</div>`
-        reportModal.innerHTML = `<div class="modal-dialog">
-                                    <div class="modal-content">
-                                        <div class="modal-header justify-content-center">
-                                            <h2>User is not logged in!</h2>
-                                        </div>
-                                        <div class="modal-body text-center">
-                                            <p>${user["error"]}</p>
-                                        </div>
-                                        <div class="modal-footer"></div>
-                                    </div>
-                                </div>`
+        reportArea.innerHTML = `<div class="mt-5 text-center text-black">
+                                        <h2>User is not logged in!</h2>
+                                        <p>${user["error"]}</p>
+                                    </div>`
+        //reportModal.innerHTML = `<div class="modal-dialog">
+        //                            <div class="modal-content">
+        //                                <div class="modal-header justify-content-center">
+        //                                    <h2>User is not logged in!</h2>
+        //                                </div>
+        //                                <div class="modal-body text-center">
+        //                                    <p>${user["error"]}</p>
+        //                                </div>
+        //                               <div class="modal-footer"></div>
+        //                            </div>
+        //                        </div>`
     } else {
         //If a mobile device is not being used, display that their device is unsupported.
         //if(isMobileDevice()){
@@ -613,11 +613,11 @@ async function loadReportPage(){
              //   <p>Sorry, but you need to use a mobile device in order to make a report.</p>
              //</div>`
         //} else {
-            //reportArea.innerHTML = 
-            //`<div class="list-group p-3 d-flex flex-column justify-content-evenly align-items-middle" style="min-height: 75vh">
-            //    <button data-bs-target="#standardReportModal" data-bs-toggle="modal" id="standard-button" onclick="updateLocalCoords()" type="button" class="btn btn-dark py-5">Standard Report</button>                       
-            //    <button data-bs-target="#driverReportModal" data-bs-toggle="modal" id="driver-button" type="button" class="btn btn-dark py-5">Driver Report</button>
-           // </div>`
+            reportArea.innerHTML = 
+            `<div class="list-group p-3 d-flex flex-column justify-content-evenly align-items-middle" style="min-height: 75vh">
+                <button data-bs-target="#standardReportModal" data-bs-toggle="modal" id="standard-button" onclick="updateLocalCoords()" type="button" class="btn btn-primary py-5">Standard Report</button>                       
+                <button data-bs-target="#driverReportModal" data-bs-toggle="modal" id="driver-button" type="button" class="btn btn-dark py-5">Driver Report</button>
+            </div>`
         //}
     }
 }
@@ -704,7 +704,6 @@ async function displayCouncillorInfo(event, constituencyID){
         //Sets the modal body to contain the councillor information.
         councillorModalInfo.innerHTML = 
         `
-        <div class="text-center"><strong>COUNCILLOR INFORMATION<strong></div>
         <table class="table my-2 table-borderless">
             <tbody>
                 <tr>
