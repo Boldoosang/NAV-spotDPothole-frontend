@@ -10,6 +10,15 @@ const firebaseConfig = {
 
 // Initialize Firebase
 const app = firebase.initializeApp(firebaseConfig);
+const channel = new BroadcastChannel('sw-messages');
+
+const toBase64 = file => new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = error => reject(error);
+});
+
 
 // Handles the submission of a standard pothole report for both image and non-image cases.
 async function handleStandardReport() {
@@ -17,8 +26,9 @@ async function handleStandardReport() {
 	const file = document.querySelector('#photo').files[0];
     let currentUser = await identifyUser();
 
+    let photoB64 = ""
 	//If a valid file was uploaded, upload it to firebase.
-	if (file != null && "email" in currentUser) {
+	if (file != null) {
 		//Determines if the file is not an image.
 		console.log(file.type)
 		if(!(['image/png', 'image/jpeg', 'image/gif', 'image/jpg'].includes(file.type))){
@@ -26,57 +36,13 @@ async function handleStandardReport() {
 			return;
 		}
 
-		//Sets the name of the file
-		const fileName = "REPORT IMG - " + new Date().getTime();
-
-		const uploadTask = firebase.storage().ref("test/" + fileName + ".png").put(file);
-
-		console.log(uploadTask)
-		// Register three observers:
-		// 1. 'state_changed' observer, called any time the state changes
-		// 2. Error observer, called on failure
-		// 3. Completion observer, called on successful completion
-
-		//Get the upload progress text area.
-		let uploadProgress = document.querySelector("#uploadProgress")
-
-		await uploadTask.on('state_changed', await async function(snapshot) {
-			// Observe state change events such as progress, pause, and resume
-
-			// Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
-			const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-			
-			//Based on the state of uploading, update the upload progress text area.
-			switch (snapshot.state) {
-				case 'paused':
-					uploadProgress.innerHTML = `<strong>UPLOAD PAUSED:</strong> Upload is ${progress}% done!`
-					break;
-				case 'running':
-					uploadProgress.innerHTML = `<strong>UPLOAD RUNNING:</strong> Upload is ${progress}% done!`
-					break;
-			}
-		}, await async function(error) {
-		// Handle unsuccessful uploads
-			//If there was an error in uploading the files, display the error in the upload progress text area.
-			uploadProgress.innerHTML = `<strong>ERROR UPLOADING FILE: ${error}</strong>`
-		}, await async function() {
-		// Handle successful uploads on complete
-			//If the file was successfully uploaded, display the success message in the upload progress text area.
-			uploadProgress.innerHTML = `<strong>FILE SUCCESSFULLY UPLOADED</strong>`
-
-			uploadTask.snapshot.ref.getDownloadURL().then(async function(url){
-				console.log(url)
-				let description = document.getElementById("descriptionText").value; // get text
-				await buildReport(url, description, STANDARD_REPORT_URL)
-			})
-		});
+        photoB64 = await toBase64(file)
 	} else {
-	//If no image was provided in the standard report, file the report without an image. 
-		//Gets the report description from the report.
-		let description = document.getElementById("descriptionText").value;
-		//Sends a request with the description to the standardReport endpoint.
-		await buildReport(null, description, STANDARD_REPORT_URL)
+		photoB64 = null;
 	}
+
+    let description = document.getElementById("descriptionText").value;
+	await buildReport(photoB64, description, STANDARD_REPORT_URL)
 }
 
 // Handles the submission of a standard pothole report for both image and non-image cases.
@@ -98,48 +64,8 @@ async function handleAddImage(event, potholeID, reportID) {
 			return;
 		}
 
-		//Sets the name of the file
-		const fileName = "REPORT " + new Date().getTime() + "_" + Math.random().toString(36).replace(/[^a-z]+/g, '').substr(0, 5);
-
-		const uploadTask = firebase.storage().ref("test/" + fileName + ".png").put(file);
-
-		console.log(uploadTask)
-		// Register three observers:
-		// 1. 'state_changed' observer, called any time the state changes
-		// 2. Error observer, called on failure
-		// 3. Completion observer, called on successful completion
-
-		
-
-		await uploadTask.on('state_changed', await async function(snapshot) {
-			// Observe state change events such as progress, pause, and resume
-
-			// Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
-			const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-			
-			//Based on the state of uploading, update the upload progress text area.
-			switch (snapshot.state) {
-				case 'paused':
-					uploadProgress.innerHTML = `<strong>UPLOAD PAUSED:</strong> Upload is ${progress}% done!`
-					break;
-				case 'running':
-					uploadProgress.innerHTML = `<strong>UPLOAD RUNNING:</strong> Upload is ${progress}% done!`
-					break;
-			}
-		}, await async function(error) {
-		// Handle unsuccessful uploads
-			//If there was an error in uploading the files, display the error in the upload progress text area.
-			uploadProgress.innerHTML = `<strong>ERROR UPLOADING FILE: ${error}</strong>`
-		}, await async function() {
-		// Handle successful uploads on complete
-			//If the file was successfully uploaded, display the success message in the upload progress text area.
-			uploadProgress.innerHTML = `<strong>FILE SUCCESSFULLY UPLOADED</strong>`
-
-			uploadTask.snapshot.ref.getDownloadURL().then(async function(url){
-				console.log(url)
-				await addImageToReport(url, potholeID, reportID)
-			})
-		});
+        photoB64 = await toBase64(file)
+		await addImageToReport(photoB64, potholeID, reportID)
 	} else {
         uploadProgress.innerHTML = `<strong>No image selected!</strong>`
 	}
@@ -200,6 +126,15 @@ async function sendRequest(url, method, data){
             }
         }
 
+        if("error" in results){
+            if(results["error"] == "User is banned."){
+                window.localStorage.removeItem('access_token');
+                alert("You have been banned!")
+                window.location = "/"
+                return;
+            }
+        }
+
         //Otherwise, return the parsed results.
         return results;
     } catch (e){
@@ -244,7 +179,6 @@ async function login(event){
         "password" : form.elements["InputPassword"].value
     }
 
-    form.reset();
 
     //Sends the login request to the server and stores the result.
     let result = await sendRequest(SERVER + "/login", "POST", loginDetails);
@@ -287,10 +221,10 @@ async function identifyUserContext(){
 
     //Writes the appropriate menu options to the user context actions for login/register, or logout.
     let userStateArea = document.querySelector("#userContextGroup");
-    let userNameArea = document.querySelector("#userNameArea");
     if("email" in user && access_token){
-        userNameArea.innerHTML =  `<h1 class="text-light">${user.firstName} ${user.lastName}</h1>`
-        userStateArea.innerHTML = `<li><a href="#logoutBtn" onclick="logout()"><i class="bx bx-user-x" ></i>  <span>Logout</span></a></li>`
+        userStateArea.innerHTML = ` <h6 class="text-center "><a data-bs-toggle="modal" data-bs-target="#profileManagementModal" class="text-primary fw-bold text-decoration-underline"><i class="bi bi-person-lines-fill"></i> ${user.firstName} ${user.lastName}</a></h6>
+                                    <hr class="my-0">
+                                    <a class="list-group-item list-group-item-action list-group-item-light p-3 pr-5 relative-bottom" onclick="logout()"><i class="bi bi-box-arrow-left" style="font-size:1.5rem;color:black"></i>        Logout</a>`
     }
 }
 
@@ -310,7 +244,6 @@ async function register(event){
         "agreeToS" : form.elements["regAgreeToS"].checked
     }
 
-    form.reset();
 
     //Submits the registration request to the server and stores the result.
     let result = await sendRequest(SERVER + "/register", "POST", registrationDetails);
@@ -319,10 +252,146 @@ async function register(event){
     //Prints the outcome of the request to the outcome area of the registration section.
     if("error" in result || "msg" in result){
         console.log("Error")
-        messageArea.innerHTML = `<b class="text-danger text-center">${result["error"]}</b>`
+        messageArea.innerHTML = `<div class="align-middle text-center">
+                                    <b class="align-middle text-danger text-center">${result["error"]}</b>
+                                </div>`
     } else {
         console.log("Success")
-        messageArea.innerHTML = `<b class="text-success text-center">Registration successful!</b>`
+        messageArea.innerHTML = `<div class="align-middle text-center">
+                                    <b class="text-success text-center">Registration successful!</b>
+                                </div>`
+    
+    }
+
+}
+
+
+
+
+//Facilitates the registration of a user when the register form is submitted.
+async function verifyEmail(event){
+    //Prevents the reloading of the page.
+    event.preventDefault();
+
+    //Gets the submitted form details and parses it into the required format for the request. The form is then reset.
+    let form = event.target;
+    let token = form.elements["emailToken"].value;
+
+    let verifyDetails = {
+        "email" : form.elements["emailVerifyActual"].value,
+    }
+
+    //Submits the registration request to the server and stores the result.
+    let result = await sendRequest(SERVER + "/confirm/" + token, "PUT", verifyDetails);
+    let messageArea = document.querySelector("#verificationMessage")
+
+    //Prints the outcome of the request to the outcome area of the registration section.
+    if("error" in result || "msg" in result){
+        messageArea.innerHTML = `<div class="align-middle text-center">
+                                    <b class="align-middle text-danger text-center">${result["error"]}</b>
+                                </div>`
+    } else {
+        console.log("Success")
+        messageArea.innerHTML = `<div class="align-middle text-center">
+                                    <b class="text-success text-center">${result["message"]}</b>
+                                </div>`
+    }
+
+}
+
+
+//Facilitates the registration of a user when the register form is submitted.
+async function resendConfirmationEmail(event){
+    //Prevents the reloading of the page.
+    event.preventDefault();
+
+    //Gets the submitted form details and parses it into the required format for the request. The form is then reset.
+    let form = event.target;
+
+    let resendDetails = {
+        "email" : form.elements["resendConfirmationEmailField"].value,
+    }
+    
+    form.reset();
+
+    //Submits the registration request to the server and stores the result.
+    let result = await sendRequest(SERVER + "/resendConfirmation", "POST", resendDetails);
+    let messageArea = document.querySelector("#resendConfirmationMessage")
+
+    //Prints the outcome of the request to the outcome area of the registration section.
+    if("error" in result || "msg" in result){
+        messageArea.innerHTML = `<div class="align-middle text-center">
+                                    <b class="align-middle text-danger text-center">${result["error"]}</b>
+                                </div>`
+    } else {
+        console.log("Success")
+        messageArea.innerHTML = `<div class="align-middle text-center">
+                                    <b class="text-success text-center">${result["message"]}</b>
+                                </div>`
+    }
+
+}
+
+//Facilitates the registration of a user when the register form is submitted.
+async function resetPassword(event){
+    //Prevents the reloading of the page.
+    event.preventDefault();
+
+    //Gets the submitted form details and parses it into the required format for the request. The form is then reset.
+    let form = event.target;
+    let token = form.elements["resetToken"].value;
+    let resetDetails = {
+        "email" : form.elements["emailResetToken"].value,
+        "password" : form.elements["rPassword"].value,
+        "confirmPassword" : form.elements["rConfirmPassword"].value,
+    }
+
+    //Submits the registration request to the server and stores the result.
+    let result = await sendRequest(SERVER + "/resetPassword/" + token, "POST", resetDetails);
+    let messageArea = document.querySelector("#resetPasswordMessage")
+
+    //Prints the outcome of the request to the outcome area of the registration section.
+    if("error" in result || "msg" in result){
+        console.log("Error")
+        messageArea.innerHTML = `<div class="align-middle text-center">
+                                    <b class="align-middle text-danger text-center">${result["error"]}</b>
+                                </div>`
+    } else {
+        console.log("Success")
+        messageArea.innerHTML = `<div class="align-middle text-center">
+                                    <b class="text-success text-center">${result["message"]}.</b>
+                                </div>`
+    }
+
+}
+
+
+//Facilitates the registration of a user when the register form is submitted.
+async function sendResetPassword(event){
+    //Prevents the reloading of the page.
+    event.preventDefault();
+
+    //Gets the submitted form details and parses it into the required format for the request. The form is then reset.
+    let form = event.target;
+    let resetDetails = {
+        "email" : form.elements["resetPassword-email"].value,
+    }
+
+    form.reset();
+
+    //Submits the registration request to the server and stores the result.
+    let result = await sendRequest(SERVER + "/resetPassword", "POST", resetDetails);
+    let messageArea = document.querySelector("#sendResetPasswordMessage")
+
+    //Prints the outcome of the request to the outcome area of the registration section.
+    if("error" in result || "msg" in result){
+        messageArea.innerHTML = `<div class="align-middle text-center">
+                                    <b class="align-middle text-danger text-center">${result["error"]}</b>
+                                </div>`
+    } else {
+        messageArea.innerHTML = `<div class="align-middle text-center">
+                                    <b class="text-success text-center">${result["message"]} Check your email and use the utility tab above to reset your password.</b>
+                                </div>`
     }
 
 }
@@ -509,16 +578,27 @@ async function loadReports(potholeID){
 //Loads the report page content into the report page based on the device that is being used.
 async function loadReportPage(){
     let reportArea = document.querySelector("#reportContent");
+    let reportModal = document.querySelector("#standardReportModal");
 
     let user = await identifyUser();
 
     if("error" in user || "msg" in user){
-        reportArea.innerHTML = `<div class="mt-5 text-center text-black">
-                                        <h2>User is not logged in!</h2>
-                                        <p>${user["error"]}</p>
-                                    </div>`
+        //reportArea.innerHTML = `<div class="mt-5 text-center text-black">
+                                        //<h2>User is not logged in!</h2>
+                                        //<p>${user["error"]}</p>
+                                    //</div>`
+        reportModal.innerHTML = `<div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header justify-content-center">
+                                            <h2>User is not logged in!</h2>
+                                        </div>
+                                        <div class="modal-body text-center">
+                                            <p>${user["error"]}</p>
+                                        </div>
+                                        <div class="modal-footer"></div>
+                                    </div>
+                                </div>`
     } else {
-
         //If a mobile device is not being used, display that their device is unsupported.
         //if(isMobileDevice()){
              //reportArea.innerHTML = `
@@ -527,11 +607,11 @@ async function loadReportPage(){
              //   <p>Sorry, but you need to use a mobile device in order to make a report.</p>
              //</div>`
         //} else {
-            reportArea.innerHTML = 
-            `<div class="list-group p-3 d-flex flex-column justify-content-evenly align-items-middle" style="min-height: 75vh">
-                <button data-bs-target="#standardReportModal" data-bs-toggle="modal" id="standard-button" onclick="updateLocalCoords()" type="button" class="btn btn-dark py-5">Standard Report</button>                  
-                <button data-bs-target="#driverReportModal" data-bs-toggle="modal" id="driver-button" type="button" class="btn btn-dark py-5">Driver Report</button>
-            </div>`
+            //reportArea.innerHTML = 
+            //`<div class="list-group p-3 d-flex flex-column justify-content-evenly align-items-middle" style="min-height: 75vh">
+            //    <button data-bs-target="#standardReportModal" data-bs-toggle="modal" id="standard-button" onclick="updateLocalCoords()" type="button" class="btn btn-dark py-5">Standard Report</button>                       
+            //    <button data-bs-target="#driverReportModal" data-bs-toggle="modal" id="driver-button" type="button" class="btn btn-dark py-5">Driver Report</button>
+           // </div>`
         //}
     }
 }
@@ -599,7 +679,7 @@ async function loadLeaderboardData(){
             <td>${i}</td>
             <td>${constituency.name}</td>
             <td>${constituency.count}</td>
-            <td><button class="btn btn-primary w-100" data-bs-toggle="modal" data-bs-target="#councillorInfoModal" style="background-color : #149ddd; border : none;" onclick="displayCouncillorInfo(event, '${constituency.constitID}')">Councillor Info</a><td>
+            <td><button class="btn btn-primary w-100" data-bs-toggle="modal" data-bs-target="#councillorInfoModal" onclick="displayCouncillorInfo(event, '${constituency.constitID}')">Councillor Info</a><td>
         </tr>
         `
         i++;
@@ -618,7 +698,8 @@ async function displayCouncillorInfo(event, constituencyID){
         //Sets the modal body to contain the councillor information.
         councillorModalInfo.innerHTML = 
         `
-        <table class="table my-2 table-borderless text-light">
+        <div class="text-center"><strong>COUNCILLOR INFORMATION<strong></div>
+        <table class="table my-2 table-borderless">
             <tbody>
                 <tr>
                     <th scope="row">Name</th>
@@ -813,7 +894,7 @@ function disableBackButton(){
 //Used to display a toast with a message.
 function displayToast(type, message) {
     //Creates the id for the notification using the date.
-	var id= new Date() + '-' + "notification"
+	var id = Date.now() + ' - ' + "notification_" + (Math.random() + 1).toString(36).substring(5);
     //Creates a new div and sets the meassge content.
 	var div = document.createElement('div');
 	div.textContent = message;
@@ -825,7 +906,9 @@ function displayToast(type, message) {
     //Sets the color of the div based on the message type.
 	if( type=='success'){
 		div.setAttribute('class', "message success show");    
-	} else {
+	} else if (type=='sync'){
+        div.setAttribute('class', "message sync show");  
+    } else {
 		div.setAttribute('class', "message failed show");
 	}
   
@@ -888,7 +971,7 @@ async function updateLocalCoords(){
 }
 
 //Generates the report using the photoURL, description, and endpoint URL.
-async function buildReport(photoURL = null, description, url) {
+async function buildReport(photoB64, description, url) {
 	var latitude, longitude;
 
     try {
@@ -905,7 +988,7 @@ async function buildReport(photoURL = null, description, url) {
 	//Checks to see if the device supports geolocation.
 	if (longitude != undefined && latitude != undefined) {
         //Sends the report to the endpoint and stores the results.
-        let results = await sendReport(latitude, longitude, photoURL, description, url)
+        let results = await sendReport(latitude, longitude, photoB64, description, url)
         console.log(results)
         //Prints the results of sending the report.
         try {
@@ -929,7 +1012,7 @@ async function buildReport(photoURL = null, description, url) {
 }
 
 //Sends a generated report to the endpoint URL.
-async function sendReport(latitude, longitude, photoURL, description = null, url){
+async function sendReport(latitude, longitude, photoB64, description = null, url){
 	
     var inMap = leafletPip.pointInLayer([longitude, latitude], map);
 
@@ -949,15 +1032,15 @@ async function sendReport(latitude, longitude, photoURL, description = null, url
 	}
 
     //Adds images if there are images.
-	if(photoURL != null){
-		data["images"] = [photoURL];
+	if(photoB64 != null){
+		data["images"] = [photoB64];
 	}
 
 	//Attempts to send the request to the endpoint with the data, and returns the outcome.
 	try {
+        console.log(data)
 		return await sendRequest(url, "POST", data)
 	} catch (error) {
-		console.log(`Error: ` + error)
 		return error;
 	}
 }
@@ -993,7 +1076,21 @@ function main(){
     window.addEventListener("online", (event)=>{
         displayToast("success", "Network connection established!")
     })
+
+    
+    channel.addEventListener('message', event => {
+        if("message" in event.data){
+            displayToast("sync", event.data["message"])
+        } else {
+            displayToast("failed", event.data["error"])
+        }
+        displayPotholes();
+    });
+
 }
+
+
+
 
 //Once the DOM has loaded, bootstrap the application.
 window.addEventListener('DOMContentLoaded', main);

@@ -119,6 +119,7 @@ h1, h2, h3, h4, h5, h6 {
 @media (max-width: 1199px) {
   #header {
     left: -300px;
+    z-index: 9999;
   }
 
   #main {
@@ -150,6 +151,7 @@ h1, h2, h3, h4, h5, h6 {
   margin-bottom: 8px;
   transition: 0.3s;
   font-size: 15px;
+  
 }
 .nav-menu a i, .nav-menu a:focus i {
   font-size: 24px;
@@ -240,7 +242,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 /*--------------------------------------------------------------
-# Login/Register/Utility Modal
+# Login/Register/Utility & Profile Management Modal
 --------------------------------------------------------------*/
 .modal-header{
   background : #050d18;
@@ -305,6 +307,14 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 #signUpButton{
+  background: #149ddd;
+}
+
+#updatePasswordButton{
+  background: #149ddd;
+}
+
+#updateProfileButton{
   background: #149ddd;
 }
 
