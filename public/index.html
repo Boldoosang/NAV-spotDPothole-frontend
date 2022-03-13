@@ -67,7 +67,7 @@
           <li><a href="#map" onclick="displayPotholes()" data-bs-toggle="pill" data-bs-target="#mainTab-map"><i class="bx bx-home"></i> <span>Home</span></a></li>
           <li><a href="#report" onclick="loadReportPage(event)" data-bs-toggle="modal" data-bs-target="#standardReportModal"><i class="bx bxs-megaphone"></i> <span>Make Report</span></a></li> 
             <div id="profileArea"></div>
-          <li><a href="#dashboard" data-bs-toggle="pill" data-bs-target="#mainTab-dashboard"><i class="bx bx-book-content"></i> <span>Dashboard</span></a></li>
+          <li><a href="#dashboard" onclick="loadDashboard()" data-bs-toggle="pill" data-bs-target="#mainTab-dashboard"><i class="bx bx-book-content"></i> <span>Dashboard</span></a></li>
           <li><a href="#leaderboard" onclick="loadLeaderboardData()" data-bs-toggle="pill" data-bs-target="#mainTab-leaderboard"><i class="bx bx-bar-chart-square"></i> <span>Leaderboard</span></a></li>
           <li><a href="#about" data-bs-toggle="pill" data-bs-target="#mainTab-about"><i class='bx bx-question-mark'></i> <span>About</span></a></li>
           
@@ -105,12 +105,11 @@
               <!-- ======= Dashboard Section ======= -->
 
               <div class="tab-pane fade" id="mainTab-dashboard" role="tabpanel">
-                <div id="dashboard">
-                  <div class="section-title p-5">
-                    <h2>Dashboard</h2>
-                  </div>
-
-                  <!-- Dashboard content displayed here-->
+                <!-- Leaderboard content is displayed here -->
+                <div id="dashboardContent" class="p-0 mx-0" role="tabpanel">
+                  <div id="dashboardMessage"></div>
+                  <!-- Dashboard Map is rendered here -->
+                  <div id="dashboardMap" style="width:100%; height:1000px"></div>
                 </div> 
               </div>
                  
@@ -315,7 +314,7 @@
                               <input type="password" id="updatePassword-confirmPassword" class="form-control mt-2" name="confirmPassword" required>
                               <br>
                               <div class="d-flex justify-content-center">
-                                <button type="submit" class="btn btn-dark" id="updatePasswordButton">Update Password</button>
+                                <button type="submit" class="btn btn-primary" id="updatePasswordButton">Update Password</button>
                               </div>
                               <div class="mt-3" id="updatePasswordMessage"></div>
                           </form>
@@ -341,7 +340,7 @@
                                 <input type="text" id="updateProfile-lastName" class="form-control mt-2" name="lastName" required>
                                 <br>
                                 <div class="d-flex justify-content-center">
-                                  <button type="submit" class="btn btn-dark" id="updateProfileButton">Update Profile</button>
+                                  <button type="submit" class="btn btn-primary" id="updateProfileButton">Update Profile</button>
                                 </div>
                                 <div class="mt-3" id="updateProfileMessage"></div>
                             </form>
@@ -458,7 +457,7 @@
 
                                       <!-- Login button -->
                                       <div class="d-flex justify-content-center pt-3">
-                                          <button id="loginButton" class="btn btn-dark btn-lg px-3">Login</button>
+                                          <button id="loginButton" class="btn btn-primary btn-lg px-3">Login</button>
                                       </div>
                                   </form>
 
@@ -535,7 +534,7 @@
 
                               <!-- Register button -->
                               <div class="d-flex justify-content-center pt-3">
-                                  <button id="signUpButton" class="btn btn-dark btn-lg px-3">Sign Up</button>
+                                  <button id="signUpButton" class="btn btn-primary btn-lg px-3">Sign Up</button>
                               </div>
                           </form>
                       </div>
@@ -570,7 +569,7 @@
 
                                             <!-- Verification button -->
                                             <div class="d-flex justify-content-center pt-3">
-                                                <button id="resendConfirmationButton" class="btn btn-dark px-3">Resend Confirmation Email</button>
+                                                <button id="resendConfirmationButton" class="btn btn-primary px-3">Resend Confirmation Email</button>
                                             </div>
                                       </form>
                                   </div>
@@ -609,7 +608,7 @@
 
                                         <!-- Verification button -->
                                         <div class="d-flex justify-content-center pt-3">
-                                            <button id="verificationButton" class="btn btn-dark px-3">Verify Email Address</button>
+                                            <button id="verificationButton" class="btn btn-primary px-3">Verify Email Address</button>
                                         </div>
                                     </form>
                                 
@@ -668,7 +667,7 @@
 
                                         <!-- Verification button -->
                                         <div class="d-flex justify-content-center pt-3">
-                                            <button id="resetPasswordButton" class="btn btn-dark px-3">Reset Password</button>
+                                            <button id="resetPasswordButton" class="btn btn-primary px-3">Reset Password</button>
                                         </div>
                                     </form>
                                 
@@ -708,28 +707,47 @@
       </div>
     </div>
 
-      <noscript class="text-center text-primary"><h3>Please enable javascript to use this application.</h3></noscript>
-        <!-- Offcanvas used to display constituency information, reports, and votes for whenever a pothole is clicked on the map -->
-        <div class="offcanvas offcanvas-end" data-bs-scroll="true" tabindex="-1" id="offcanvasReport" aria-labelledby="offcanvasWithBothOptionsLabel">
-            <div class="offcanvas-header">
-                <h5 class="offcanvas-title" id="offcanvasWithBothOptionsLabel">Pothole Information</h5>
-                <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    <!-- Dashboard Modal -->
+    <div class="dashboardModal modal fade" id="dashboardModal" tabindex="-1">
+      <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="dashboard-title">Modal title</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="offcanvas-body p-0">
-                <!-- Constituency Information is dynamically loaded into this div via AJAX-->
-                <div id="constituencyName" class="text-center fw-bold display-6"></div>
-
-                <!-- Councillor information is dynamically loaded into this div via AJAX-->
-                <div id="councillorInformation" class="p-3"></div>
-
-                <hr class="my-0">
-
-                <div>
-                    <!-- Reports are dynamically loaded into this div as accordion lists via AJAX-->
-                    <div class="accordion m-0" id="reportAccordion"></div>
+            <div id="dashboard-body" class="modal-body">
+                <div class="text-center">
+                    <b class="text-danger text-center">Loading...</b>
                 </div>
             </div>
+            <div id="dashboard-footer" class="modal-footer">
+            </div>
         </div>
+      </div>
+    </div>
+
+    <noscript class="text-center text-primary"><h3>Please enable javascript to use this application.</h3></noscript>
+      <!-- Offcanvas used to display constituency information, reports, and votes for whenever a pothole is clicked on the map -->
+      <div class="offcanvas offcanvas-end" data-bs-scroll="true" tabindex="-1" id="offcanvasReport" aria-labelledby="offcanvasWithBothOptionsLabel">
+          <div class="offcanvas-header">
+              <h5 class="offcanvas-title" id="offcanvasWithBothOptionsLabel">Pothole Information</h5>
+              <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+          </div>
+          <div class="offcanvas-body p-0">
+              <!-- Constituency Information is dynamically loaded into this div via AJAX-->
+              <div id="constituencyName" class="text-center fw-bold display-6"></div>
+
+              <!-- Councillor information is dynamically loaded into this div via AJAX-->
+              <div id="councillorInformation" class="p-3"></div>
+
+              <hr class="my-0">
+
+              <div>
+                  <!-- Reports are dynamically loaded into this div as accordion lists via AJAX-->
+                  <div class="accordion m-0" id="reportAccordion"></div>
+              </div>
+          </div>
+      </div>
 
 
 

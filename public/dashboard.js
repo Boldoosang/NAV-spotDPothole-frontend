@@ -175,10 +175,12 @@ async function loadUserReport(potholeID){
         </div>
         
 
-        <p>
-            <a class="w-100 mt-1 ms-auto btn btn-primary" data-bs-toggle="collapse" href="#addReportImage-${report.reportID}" role="button" aria-expanded="false" aria-controls="collapseExample">
-                Add Image
-            </a>
+        <p> 
+            <div class="d-flex justify-content-center">
+                <a class="btn btn-primary" data-bs-toggle="collapse" href="#addReportImage-${report.reportID}" role="button" aria-expanded="false" aria-controls="collapseExample">
+                    Add Image
+                </a>
+            </div>
         </p>
 
         <div class="collapse" id="addReportImage-${report.reportID}">
@@ -213,9 +215,11 @@ async function loadUserReport(potholeID){
         </div>
 
         <p>
-            <a class="w-100 mt-1 ms-auto btn btn-primary" data-bs-toggle="collapse" href="#editPotholeDescription-${report.reportID}" role="button" aria-expanded="false" aria-controls="collapseExample">
-                Update Description
-            </a>
+            <div class="d-flex justify-content-center">
+                <a class=" btn btn-primary" data-bs-toggle="collapse" href="#editPotholeDescription-${report.reportID}" role="button" aria-expanded="false" aria-controls="collapseExample"><i class='bx bx-edit-alt' ></i>
+                    Edit Description
+                </a>
+            </div>
         </p>
 
         <div class="collapse" id="editPotholeDescription-${report.reportID}">
@@ -224,7 +228,9 @@ async function loadUserReport(potholeID){
                     <label for="updatePotholeDescription-${report.reportID}">Pothole Description</label>
                     <input type="text" id="updatePotholeDescription-${report.reportID}" class="text-muted form-control mt-2" name="description" value="${report.description}" required>
                     <br>
-                    <button type="submit" class="btn btn-success">Update Description</button>
+                    <div class="d-flex justify-content-center">
+                        <button type="submit" class="btn btn-primary">Update</button>
+                    </div>
                     <div class="mt-3" id="updateDescriptionMessage"></div>
                 </form>
             </div>
@@ -232,9 +238,11 @@ async function loadUserReport(potholeID){
 
 
         <p>
-            <a class="btn btn-danger w-100" data-bs-toggle="collapse" href="#deletePotholeReport-${report.reportID}" role="button" aria-expanded="false" aria-controls="collapseExample">
-                Delete Report
-            </a>
+            <div class="d-flex justify-content-center">
+                <a class="btn btn-secondary" data-bs-toggle="collapse" href="#deletePotholeReport-${report.reportID}" role="button" aria-expanded="false" aria-controls="collapseExample"><i class='bx bx-trash'></i>
+                    Delete Report
+                </a>
+            </div>
         </p>
         <div class="collapse" id="deletePotholeReport-${report.reportID}">
             <div class="card card-body bg-dark text-white">

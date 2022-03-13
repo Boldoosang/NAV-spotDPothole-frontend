@@ -27,6 +27,10 @@ h1, h2, h3, h4, h5, h6 {
   font-family: "Raleway", sans-serif;
 }
 
+.offcanvas{
+  z-index: 9996;
+}
+
 /*--------------------------------------------------------------
 # Back to top button
 --------------------------------------------------------------*/
@@ -201,7 +205,7 @@ h1, h2, h3, h4, h5, h6 {
   bottom: 10px;
   transform: translate(-50%, -50%);
   margin: 0 auto;
-  z-index: 9998;
+  z-index: 9990;
   border: 0;
   font-size: 24px;
   transition: all 0.4s;
@@ -223,6 +227,11 @@ h1, h2, h3, h4, h5, h6 {
 --------------------------------------------------------------*/
 #leaderboard{
   
+}
+
+.btn-primary{
+  background-color : #149ddd;
+  border : none;
 }
 
 .nav-pills > .nav-item > .active{
@@ -285,38 +294,6 @@ h1, h2, h3, h4, h5, h6 {
   background : #050d18;
 }
 
-#sendResetButton{
-  background: #149ddd;
-  color : white;
-}
-
-#resendConfirmationButton{
-  background: #149ddd;
-}
-
-#verificationButton{
-  background: #149ddd;
-}
-
-#resetPasswordButton{
-  background: #149ddd;
-}
-
-#loginButton{
-  background: #149ddd;
-}
-
-#signUpButton{
-  background: #149ddd;
-}
-
-#updatePasswordButton{
-  background: #149ddd;
-}
-
-#updateProfileButton{
-  background: #149ddd;
-}
 
 /*--------------------------------------------------------------
 # Report Modal
