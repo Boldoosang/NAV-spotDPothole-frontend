@@ -501,6 +501,10 @@ body.modal-open #mainTabContent{
   color : #149ddd;
 }
 
+.nav-pills > .nav-item > .button{
+  border : 1px;
+}
+
 .nav-pills > .nav-item > .nav-link.active{
   color : white;
 }
@@ -616,6 +620,7 @@ body.modal-open #mainTabContent{
 #dashboardModal{
   z-index: 9999;
 }
+
 
 /*--------------------------------------------------------------
 # Sections General

@@ -173,9 +173,9 @@ async function loadUserReport(potholeID){
 
         <div class="tab-content" id="pills-dashboardContent">
 
-            <div class="tab-pane fade show active" id="pills-imageTab" role="tabpanel" aria-labelledby="pills-home-tab">
+            <div class="tab-pane fade show active mt-4" id="pills-imageTab" role="tabpanel" aria-labelledby="pills-home-tab">
         
-                <p class="fw-bold" for="editImages-${report.reportID}">Pothole Images</p>
+                <p class="fw-bold " for="editImages-${report.reportID}">Pothole Images</p>
                 <div id="dashCarouselReport-${potholeReport.reportID}" class="carousel slide my-2" data-bs-ride="carousel">
                     <div id="dashReportImages-${potholeReport.reportID}" class="carousel-inner">
                         ${allReportImages}
@@ -226,7 +226,7 @@ async function loadUserReport(potholeID){
                 <div class="mt-3" id="imageUpdateMessage"></div>
             </div>
 
-            <div class="tab-pane fade show" id="pills-descriptionTab" role="tabpanel" aria-labelledby="pills-home-tab">
+            <div class="tab-pane fade show mt-4" id="pills-descriptionTab" role="tabpanel" aria-labelledby="pills-home-tab">
                 <div class="form-group mb-2">
                     <label class="fw-bold" for="editDescription-${report.reportID}">Pothole Description</label>
                     <p class="ms-3 mt-2">${report.description}</p>
@@ -234,7 +234,7 @@ async function loadUserReport(potholeID){
 
                 <p>
                     <div class="d-flex justify-content-center">
-                        <a class=" btn btn-primary" data-bs-toggle="collapse" href="#editPotholeDescription-${report.reportID}" role="button" aria-expanded="false" aria-controls="collapseExample"><i class='bx bx-edit-alt' ></i>
+                        <a class=" btn btn-primary mt-4" data-bs-toggle="collapse" href="#editPotholeDescription-${report.reportID}" role="button" aria-expanded="false" aria-controls="collapseExample"><i class='bx bx-edit-alt' ></i>
                             Edit Description
                         </a>
                     </div>
