@@ -37,13 +37,12 @@ async function initMap() {
     //     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
     //     useCache: true,
     //     crossOrigin: true,
-    //     useOnlyCache: true
     // }).addTo(map);
 
     layer = L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
         attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
         maxZoom: 18,
-        accessToken: 'pk.eyJ1IjoiYm9sZG9vc2FuZyIsImEiOiJja3dlbzk5NTMwNnBzMnZwd3h5OWhwazJvIn0.FhdBhjtsMsUAge-3EoptiQ',
+        accessToken: 'pk.eyJ1IjoidGhlaHVtYW4iLCJhIjoiY2t3YXJnY2V3MjVhMTJxbGp3MnNhbTlybyJ9.n6LJKR5DQJtLTSdL0oSJmA',
         id: 'mapbox/streets-v11',
         tileSize: 512,
         zoomOffset: -1,
@@ -460,6 +459,9 @@ async function routingConcept() {
 async function main() {
     await initMap();
     displayPotholes();
+
+    var bbox = L.latLngBounds(L.latLng(11.715818, -62.118828), L.latLng(9.866544, -60.094122))
+    layer.seed(bbox, 10, 14);
 }
 
 window.addEventListener('DOMContentLoaded', main);
