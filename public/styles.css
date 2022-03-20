@@ -89,6 +89,19 @@ body {
   -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
 }
 
+.leaflet-popup-content-wrapper {
+  border-radius: 5px;
+}
+
+.leaflet-popup-content-wrapper .leaflet-popup-content {
+}
+
+.leaflet-popup-tip-container {
+  visibility: hidden;
+  height: 0px;
+
+}
+
 hr {
   margin: 1rem 0;
   color: inherit;
