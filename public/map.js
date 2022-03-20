@@ -389,26 +389,41 @@ async function routingConcept() {
 
             for(let route of routes){
                 let clearRoute = true
+                let numPotholes = 0
                 for (let pothole of potholes) {
                     let point = L.latLng(pothole.latitude, pothole.longitude)
 
                     if(isPointOnLine(point, route.coordinates)) {
                         console.log("PotholeID: " + pothole.potholeID + " lies on route: " + route.name)
                         clearRoute=false
+                        numPotholes++;
                     }
                 } 
+
+                route.numPotholes = numPotholes;
+
                 if(clearRoute){
                     if(line) map.removeLayer(line)
                     line = L.Routing.line(route)
                     line.addTo(map)
                     numClear++
-                    console.log(numClear)
                 }
             }
+
             if(numClear == 0){
                 displayToast("error", "No pothole free route exists!")
+
+                let lowestNumPotholes = routes[0].numPotholes
+                let lowestRoute = routes[0]
+                for(let route of routes){
+                    if(route.numPotholes < lowestNumPotholes){
+                        lowestNumPotholes = route.numPotholes
+                        lowestRoute = route
+                    }
+                }
+
                 if(line) map.removeLayer(line)
-                line = L.Routing.line(routes[0])
+                line = L.Routing.line(lowestRoute)
                 line.addTo(map)
             }
         }

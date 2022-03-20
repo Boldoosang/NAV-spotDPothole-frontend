@@ -93,9 +93,6 @@ body {
   border-radius: 5px;
 }
 
-.leaflet-popup-content-wrapper .leaflet-popup-content {
-}
-
 .leaflet-popup-tip-container {
   visibility: hidden;
   height: 0px;
