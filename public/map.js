@@ -379,8 +379,7 @@ async function routingConcept() {
     routingEndPoint.latLng = waypoints.endPoint;    
 
     var myRoute = L.Routing.osrmv1({
-        serviceUrl: 'http://osrm.justinbaldeo.com:5000/route/v1',
-        profile: 'pothole'
+        serviceUrl: 'https://osrm.justinbaldeo.com/route/v1'
     });
 
     myRoute.route([routingStartPoint, routingEndPoint], async function(err, routes) {
@@ -407,14 +406,14 @@ async function routingConcept() {
                 }
             }
             if(numClear == 0){
-                alert("No pothole free routes exist.")
+                displayToast("error", "No pothole free route exists!")
                 if(line) map.removeLayer(line)
                 line = L.Routing.line(routes[0])
                 line.addTo(map)
             }
         }
         else{
-            alert("No Routes Exist between these points")
+            displayToast("error", "No route exists between these points!")
         }
     });
 }
