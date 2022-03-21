@@ -70,12 +70,12 @@ body.modal-open #mainTabContent{
   border-radius: 0;
   overflow-anchor: none;
   transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out, border-radius 0.15s ease;
-}
+}/*
 @media (prefers-reduced-motion: reduce) {
   .accordion-button {
     transition: none;
   }
-}
+}*/
 .accordion-button:not(.collapsed) {
   color: #0c63e4;
   background-color: #e7f1ff;
@@ -570,7 +570,7 @@ body.modal-open #mainTabContent{
   background-color: #050d18;
 }
 
-#sendResetCard{
+#sendResetButton{
   background : #050d18;
 }
 
@@ -619,6 +619,10 @@ body.modal-open #mainTabContent{
 --------------------------------------------------------------*/
 #dashboardModal{
   z-index: 9999;
+}
+
+#deleteImageButton{
+  z-index: 9997;
 }
 
 

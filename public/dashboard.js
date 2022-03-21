@@ -136,11 +136,11 @@ async function loadUserReport(potholeID){
                     tag = ""
                 allReportImages +=
                 `<div class="carousel-item ${tag}">
-                    <img src="${reportImage.imageURL}" style="height: 300px; background-position: center center; object-fit: cover; background-repeat: no-repeat;" class="d-block w-100">
-                    <div class="carousel-caption d-none d-md-block">
-                        <button type="button" dashDeleteReportImage()" data-bs-toggle="collapse" data-bs-target="#dashDeleteImage-${potholeReport.reportID}-${reportImage.imageID}" aria-expanded="false" aria-controls="collapseExample" class="btn btn-danger"><i class="bi bi-trash-fill"></i> Delete Image</button>
+                    <img src="${reportImage.imageURL}" style="height: 300px; background-position: center center; object-fit: cover; background-repeat: no-repeat; z-index: 9995" class="d-block w-100">
+                    <div class="carousel-caption d-none d-md-block mt-5 pt-5">
+                        <button type="button" id="deleteImageButton" dashDeleteReportImage()" data-bs-toggle="collapse" data-bs-target="#dashDeleteImage-${potholeReport.reportID}-${reportImage.imageID}" aria-expanded="false" aria-controls="collapseExample" class="btn btn-danger"><i class="bx bx-trash"></i> Delete Image</button>
                         <div class="collapse" id="dashDeleteImage-${potholeReport.reportID}-${reportImage.imageID}">
-                            <div class="card card-body bg-dark text-white mt-3">
+                            <div class="card card-body text-white mt-3" style="background: #050d18;">
                                 <b>Confirm image deletion?</b>
                                 <button type="button" data-bs-toggle="collapse" onclick="deleteImageFromReport(event, ${potholeReport.potholeID}, ${potholeReport.reportID}, ${reportImage.imageID})" data-bs-target="#dashDeleteImage-${potholeReport.reportID}-${reportImage.imageID}" aria-expanded="false" aria-controls="collapseExample" class="btn btn-danger my-2">Delete Image</button>
                                 <button type="button" data-bs-toggle="collapse" data-bs-target="#dashDeleteImage-${potholeReport.reportID}-${reportImage.imageID}" aria-expanded="false" aria-controls="collapseExample" class="btn btn-secondary my-2">Close</button>
@@ -168,6 +168,10 @@ async function loadUserReport(potholeID){
 
             <li class="nav-item" role="presentation">
                 <button class="btn btn-dark nav-link" id="pills-description-tab"  data-bs-toggle="pill" data-bs-target="#pills-descriptionTab" type="button" role="tab" aria-controls="pills-profile" aria-selected="false">Description</button>
+            </li>
+
+            <li class="nav-item" role="presentation">
+                <button class="btn btn-dark nav-link" id="pills-delete-tab"  data-bs-toggle="pill" data-bs-target="#pills-deleteTab" type="button" role="tab" aria-controls="pills-delete" aria-selected="false">Delete</button>
             </li>
         </ul>
 
@@ -251,33 +255,37 @@ async function loadUserReport(potholeID){
                             </div>
                             <div class="mt-3" id="updateDescriptionMessage"></div>
                         </form>
-                        </div>
+                        
                     </div>
 
                 </div>
             </div>
-        </div>
 
-        <p>
-            <div class="d-flex justify-content-center mt-5">
-                <a class="btn btn-secondary" data-bs-toggle="collapse" href="#deletePotholeReport-${report.reportID}" role="button" aria-expanded="false" aria-controls="collapseExample"><i class='bx bx-trash'></i>
-                    Delete
-                </a>
-            </div>
-        </p>
-        <div class="mt-4 collapse" id="deletePotholeReport-${report.reportID}">
-            <div class="text-white">
-                <b>Are you sure you want to delete this report?</b><br>
-                <div class="mt-4 text-center">
-                    <button onclick="deletePotholeReport(event, ${report.potholeID}, ${report.reportID})" class="btn btn-danger me-3">Confirm</button>
-                    <button class="btn btn-secondary" type="button" data-bs-toggle="collapse" data-bs-target="#deletePotholeReport-${report.reportID}" aria-expanded="false" aria-controls="collapseExample">
-                        Close
-                    </button>
+            <div class="tab-pane fade show mt-4" id="pills-deleteTab" role="tabpanel" aria-labelledby="pills-home-tab">
+                <p>
+                    <div class="d-flex justify-content-center mt-5">
+                        <button class="btn btn-secondary w-100 py-5" data-bs-toggle="collapse" href="#deletePotholeReport-${report.reportID}" role="button" aria-expanded="false" aria-controls="collapseExample"><i class='bx bx-trash'></i>
+                            Delete
+                        </button>
+                    </div>
+                </p>
+                <div class="mt-4 collapse" id="deletePotholeReport-${report.reportID}">
+                    <div class="text-white text-center">
+                        <b>Are you sure you want to delete this report?</b><br>
+                        <div class="mt-4 text-center">
+                            <button onclick="deletePotholeReport(event, ${report.potholeID}, ${report.reportID})" class="btn btn-danger me-3">Confirm</button>
+                            <button class="btn btn-secondary" type="button" data-bs-toggle="collapse" data-bs-target="#deletePotholeReport-${report.reportID}" aria-expanded="false" aria-controls="collapseExample">
+                                Close
+                            </button>
+                        </div>
+                        <div class="mt-3" id="deletePotholeMessage"></div>
+                    </div>
                 </div>
-                <div class="mt-3" id="deletePotholeMessage"></div>
             </div>
-        </div>
+        </div>  
         `
+        
+      
         /*
         `<p>${report.dateReported}</p>
         <p>${report.description}</p>

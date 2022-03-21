@@ -426,12 +426,12 @@
                                 </p>
 
                                 <div class="collapse" id="sendResetPassword">
-                                  <div class="card card-body text-white mb-2" id="sendResetCard">
+                                  <div class="card card-body bg-light text-dark mb-2" id="sendResetCard">
                                       <form class="form-group mb-1" onsubmit="sendResetPassword(event)">
-                                          <label for="resetPassword-email">Email</label>
+                                          <label for="resetPassword-email"><b>Email</b></label>
                                           <input type="email" id="resetPassword-email" class="form-control mt-2" name="email" required placeholder="Enter your email">
                                           <br>
-                                          <button type="submit" class="btn" id="sendResetButton">Send Reset Token</button>
+                                          <button type="submit" class="btn btn-dark" id="sendResetButton">Send Reset Token</button>
                                           <div class="mt-3" id="sendResetPasswordMessage"></div>
                                       </form>
                                   </div>
@@ -478,10 +478,10 @@
 
                                   <!-- Agree to Terms of Service Input -->
                                   <div class="form-row d-flex justify-content-center mt-3">
-                                      <div class="col col-12">
-                                          <input type="checkbox" class="form-check-input" id="regAgreeToS" required>
-                                          <label for="agreeToS" class="form-label ml-5">I agree to consent personal information to platform.</label>
-                                      </div>
+                                    <div class="col col-12">
+                                      <input type="checkbox" class="form-check-input" id="regAgreeToS" required>
+                                      <label for="regAgreeToS" class="form-label ms-3">I agree to give personal data to the platform.</label>
+                                    </div>
                                   </div>
                               </div>
 
