@@ -470,16 +470,25 @@ body.modal-open #mainTabContent{
 /* Modal */
 .modal-header{
   border-color :#050d18;
+  background-color: #050d18;
+  color : white;
 }
 
 .modal-body{
   border-color :#050d18;
+  background-color: #050d18;
+  color : white;
 }
 
 .modal-footer{
   border-color :#050d18;
+  background-color: #050d18;
+  color : white;
 }
 
+.modal-content{
+  background-color: #050d18;
+}
 
 /*--------------------------------------------------------------
 # Leaderboard Section
@@ -533,20 +542,7 @@ body.modal-open #mainTabContent{
   z-index: 9999;
 }
 
-.modal-header{
-  background : #050d18;
-  color : white;
-}
 
-.modal-body{
-  background : #050d18;
-  color : white;
-}
-
-.modal-footer{
-  background : #050d18;
-  color : white;
-}
 
 .nav-pills >.nav-link.active{
   background-color : #149ddd;

@@ -195,7 +195,7 @@ async function loadUserReport(potholeID){
 
                 <p> 
                     <div class="d-flex justify-content-center">
-                        <a class="btn btn-primary" data-bs-toggle="collapse" href="#addReportImage-${report.reportID}" role="button" aria-expanded="false" aria-controls="collapseExample">
+                        <a class="btn btn-primary" data-bs-toggle="collapse" href="#addReportImage-${report.reportID}" role="button" aria-expanded="false" aria-controls="collapseExample"><i class="bx bx-plus-medical"></i>
                             Add Image
                         </a>
                     </div>
@@ -263,8 +263,10 @@ async function loadUserReport(potholeID){
 
             <div class="tab-pane fade show mt-4" id="pills-deleteTab" role="tabpanel" aria-labelledby="pills-home-tab">
                 <p>
-                    <div class="d-flex justify-content-center mt-5">
-                        <button class="btn btn-secondary w-100 py-5" data-bs-toggle="collapse" href="#deletePotholeReport-${report.reportID}" role="button" aria-expanded="false" aria-controls="collapseExample"><i class='bx bx-trash'></i>
+
+                    <label class="fw-bold" for="editDescription-${report.reportID}">Delete Pothole</label>
+                    <div class="d-flex justify-content-center mt-3">
+                        <button class="btn btn-danger w-100 py-5" data-bs-toggle="collapse" href="#deletePotholeReport-${report.reportID}" role="button" aria-expanded="false" aria-controls="collapseExample"><i class='bx bx-trash'></i>
                             Delete
                         </button>
                     </div>
