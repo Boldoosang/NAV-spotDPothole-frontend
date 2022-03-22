@@ -103,7 +103,7 @@ async function loadUserReport(potholeID){
     let dashboardBody = document.querySelector("#dashboard-body");
     let dashboardFooter = document.querySelector("#dashboard-footer");
 
-    dashboardTitle.innerText = "Manage Report";
+    dashboardTitle.innerText = "Your Report";
 
     try {
         var potholeReport = await getIndividualReport(potholeID);
@@ -136,11 +136,11 @@ async function loadUserReport(potholeID){
                     tag = ""
                 allReportImages +=
                 `<div class="carousel-item ${tag}">
-                    <img src="${reportImage.imageURL}" style="height: 300px; background-position: center center; object-fit: cover; background-repeat: no-repeat;" class="d-block w-100">
-                    <div class="carousel-caption d-none d-md-block">
-                        <button type="button" dashDeleteReportImage()" data-bs-toggle="collapse" data-bs-target="#dashDeleteImage-${potholeReport.reportID}-${reportImage.imageID}" aria-expanded="false" aria-controls="collapseExample" class="btn btn-danger"><i class="bi bi-trash-fill"></i> Delete Image</button>
+                    <img src="${reportImage.imageURL}" style="height: 300px; background-position: center center; object-fit: cover; background-repeat: no-repeat; z-index: 9995" class="d-block w-100">
+                    <div class="carousel-caption d-none d-md-block mt-5 pt-5">
+                        <button type="button" id="deleteImageButton" dashDeleteReportImage()" data-bs-toggle="collapse" data-bs-target="#dashDeleteImage-${potholeReport.reportID}-${reportImage.imageID}" aria-expanded="false" aria-controls="collapseExample" class="btn btn-danger"><i class="bx bx-trash"></i> Delete Image</button>
                         <div class="collapse" id="dashDeleteImage-${potholeReport.reportID}-${reportImage.imageID}">
-                            <div class="card card-body bg-dark text-white mt-3">
+                            <div class="card card-body text-white mt-3" style="background: #050d18;">
                                 <b>Confirm image deletion?</b>
                                 <button type="button" data-bs-toggle="collapse" onclick="deleteImageFromReport(event, ${potholeReport.potholeID}, ${potholeReport.reportID}, ${reportImage.imageID})" data-bs-target="#dashDeleteImage-${potholeReport.reportID}-${reportImage.imageID}" aria-expanded="false" aria-controls="collapseExample" class="btn btn-danger my-2">Delete Image</button>
                                 <button type="button" data-bs-toggle="collapse" data-bs-target="#dashDeleteImage-${potholeReport.reportID}-${reportImage.imageID}" aria-expanded="false" aria-controls="collapseExample" class="btn btn-secondary my-2">Close</button>
@@ -161,95 +161,133 @@ async function loadUserReport(potholeID){
         console.log(report)
         dashboardBody.innerHTML = 
         `
-        <p class="fw-bold" for="editImages-${report.reportID}">Pothole Images</p>
-        <div id="dashCarouselReport-${potholeReport.reportID}" class="carousel slide my-2" data-bs-ride="carousel">
-            <div id="dashReportImages-${potholeReport.reportID}" class="carousel-inner">
-                ${allReportImages}
-            </div>
-            <button class="carousel-control-prev" type="button" data-bs-target="#dashCarouselReport-${potholeReport.reportID}" data-bs-slide="prev">
-                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-            </button>
-            <button class="carousel-control-next" type="button" data-bs-target="#dashCarouselReport-${potholeReport.reportID}" data-bs-slide="next">
-                <span class="carousel-control-next-icon" aria-hidden="true"></span>
-            </button>
-        </div>
+        <ul class="nav nav-pills nav-justified mb-3 w-100" id="pills-tab-dashboard" role="tablist" style="background: #040b14">
+            <li class="nav-item" role="presentation">
+                <button class="btn btn-dark nav-link active" id="pills-image-tab"  data-bs-toggle="pill" data-bs-target="#pills-imageTab" type="button" role="tab" aria-controls="pills-home" aria-selected="true">Images</button>
+            </li>
+
+            <li class="nav-item" role="presentation">
+                <button class="btn btn-dark nav-link" id="pills-description-tab"  data-bs-toggle="pill" data-bs-target="#pills-descriptionTab" type="button" role="tab" aria-controls="pills-profile" aria-selected="false">Description</button>
+            </li>
+
+            <li class="nav-item" role="presentation">
+                <button class="btn btn-dark nav-link" id="pills-delete-tab"  data-bs-toggle="pill" data-bs-target="#pills-deleteTab" type="button" role="tab" aria-controls="pills-delete" aria-selected="false">Delete</button>
+            </li>
+        </ul>
+
+        <div class="tab-content" id="pills-dashboardContent">
+
+            <div class="tab-pane fade show active mt-4" id="pills-imageTab" role="tabpanel" aria-labelledby="pills-home-tab">
         
-
-        <p>
-            <a class="w-100 mt-1 ms-auto btn btn-primary" data-bs-toggle="collapse" href="#addReportImage-${report.reportID}" role="button" aria-expanded="false" aria-controls="collapseExample">
-                Add Image
-            </a>
-        </p>
-
-        <div class="collapse" id="addReportImage-${report.reportID}">
-            <div class="card card-body bg-dark text-white mb-2">
-
-                <!-- Image Preview Area -->
-                <div id ="dashboard-img-container" class="d-flex justify-content-around">
-                    <img id="dashboard-pothole-img" class="w-100" src="" hidden/>
+                <p class="fw-bold " for="editImages-${report.reportID}">Pothole Images</p>
+                <div id="dashCarouselReport-${potholeReport.reportID}" class="carousel slide my-2" data-bs-ride="carousel">
+                    <div id="dashReportImages-${potholeReport.reportID}" class="carousel-inner">
+                        ${allReportImages}
+                    </div>
+                    <button class="carousel-control-prev" type="button" data-bs-target="#dashCarouselReport-${potholeReport.reportID}" data-bs-slide="prev">
+                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    </button>
+                    <button class="carousel-control-next" type="button" data-bs-target="#dashCarouselReport-${potholeReport.reportID}" data-bs-slide="next">
+                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    </button>
                 </div>
                 
-                <!-- Image Upload Area --> <!-- Refactor again -->
-                <div class="input-group justify-content-center mt-5 mb-5">
-                    <button class="btn btn-outline-transparent" > 
-                        <label class="input-group-text " for="dashboardPhoto"><i class="bi bi-images"></i> <div class="ms-2">Select Image </div></label>
-                    </button>
-                    <button onclick="removeDashboardImage()" class="btn btn-danger rounded">x</button>
-                    <div id="dashboardPhotoContainer">
-                        <input id="dashboardPhoto" class="form-control-file" type="file" accept="image/*" onchange="showDashboardImage()" hidden> 
+
+                <p> 
+                    <div class="d-flex justify-content-center">
+                        <a class="btn btn-primary" data-bs-toggle="collapse" href="#addReportImage-${report.reportID}" role="button" aria-expanded="false" aria-controls="collapseExample"><i class="bx bx-plus-medical"></i>
+                            Add Image
+                        </a>
+                    </div>
+                </p>
+
+                <div class="collapse" id="addReportImage-${report.reportID}">
+                    <div class="text-white mb-2">
+
+                        <!-- Image Preview Area -->
+                        <div id ="dashboard-img-container" class="d-flex justify-content-around">
+                            <img id="dashboard-pothole-img" class="w-100" src="" hidden/>
+                        </div>
+                        
+                        <!-- Image Upload Area --> <!-- Refactor again -->
+                        <div class="input-group justify-content-center mt-5 mb-5">
+                            <button class="btn btn-outline-transparent" > 
+                                <label class="input-group-text " for="dashboardPhoto"><i class="bi bi-images"></i> <div class="ms-2">Select Image </div></label>
+                            </button>
+                            <button onclick="removeDashboardImage()" class="btn btn-danger rounded">x</button>
+                            <div id="dashboardPhotoContainer">
+                                <input id="dashboardPhoto" class="form-control-file" type="file" accept="image/*" onchange="showDashboardImage()" hidden> 
+                            </div>
+                            
+                        </div>
+                        <div class="text-center mb-3" id="dashboardUploadProgress"></div>
+                        <div class="d-flex justify-content-center">
+                            <button onclick="handleAddImage(event, ${report.potholeID}, ${report.reportID})" class="btn btn-primary"><i class='bx bxs-camera-plus'></i> Add</button> 
+                        </div>
                     </div>
                 </div>
-                <div class="text-center mb-3" id="dashboardUploadProgress"></div>
 
-                <button type="submit" onclick="handleAddImage(event, ${report.potholeID}, ${report.reportID})" class="btn btn-success">Add Image</button> 
+                <div class="mt-3" id="imageUpdateMessage"></div>
             </div>
-        </div>
 
-        <div class="mt-3" id="imageUpdateMessage"></div>
-
-        <div class="form-group mb-2">
-            <label class="fw-bold" for="editDescription-${report.reportID}">Pothole Description</label>
-            <input type="text" class="form-control mt-2" id="editDescription-${report.reportID}" readonly disabled placeholder="${report.description}">
-        </div>
-
-        <p>
-            <a class="w-100 mt-1 ms-auto btn btn-primary" data-bs-toggle="collapse" href="#editPotholeDescription-${report.reportID}" role="button" aria-expanded="false" aria-controls="collapseExample">
-                Update Description
-            </a>
-        </p>
-
-        <div class="collapse" id="editPotholeDescription-${report.reportID}">
-            <div class="card card-body bg-dark text-white mb-2">
-                <form class="form-group mb-1" onsubmit="updatePotholeDescription(event, ${report.potholeID}, ${report.reportID})">
-                    <label for="updatePotholeDescription-${report.reportID}">Pothole Description</label>
-                    <input type="text" id="updatePotholeDescription-${report.reportID}" class="text-muted form-control mt-2" name="description" value="${report.description}" required>
-                    <br>
-                    <button type="submit" class="btn btn-success">Update Description</button>
-                    <div class="mt-3" id="updateDescriptionMessage"></div>
-                </form>
-            </div>
-        </div>
-
-
-        <p>
-            <a class="btn btn-danger w-100" data-bs-toggle="collapse" href="#deletePotholeReport-${report.reportID}" role="button" aria-expanded="false" aria-controls="collapseExample">
-                Delete Report
-            </a>
-        </p>
-        <div class="collapse" id="deletePotholeReport-${report.reportID}">
-            <div class="card card-body bg-dark text-white">
-                <b>Are you sure you want to delete this report?</b><br>
-                <div class="mt-0 text-center">
-                    <button onclick="deletePotholeReport(event, ${report.potholeID}, ${report.reportID})" class="btn btn-danger">Confirm</button>
-                    <button class="btn btn-secondary" type="button" data-bs-toggle="collapse" data-bs-target="#deletePotholeReport-${report.reportID}" aria-expanded="false" aria-controls="collapseExample">
-                        Close
-                    </button>
+            <div class="tab-pane fade show mt-4" id="pills-descriptionTab" role="tabpanel" aria-labelledby="pills-home-tab">
+                <div class="form-group mb-2">
+                    <label class="fw-bold" for="editDescription-${report.reportID}">Pothole Description</label>
+                    <p class="ms-3 mt-2">${report.description}</p>
                 </div>
-                <div class="mt-3" id="deletePotholeMessage"></div>
-            </div>
-        </div>
-        `
 
+                <p>
+                    <div class="d-flex justify-content-center">
+                        <a class=" btn btn-primary mt-4" data-bs-toggle="collapse" href="#editPotholeDescription-${report.reportID}" role="button" aria-expanded="false" aria-controls="collapseExample"><i class='bx bx-edit-alt' ></i>
+                            Edit Description
+                        </a>
+                    </div>
+                </p>
+
+                <div class="collapse" id="editPotholeDescription-${report.reportID}">
+                    <div class="text-white mb-2">
+                        <form class="form-group mb-1" onsubmit="updatePotholeDescription(event, ${report.potholeID}, ${report.reportID})">
+                            
+                            <input type="text" id="updatePotholeDescription-${report.reportID}" class="text-muted form-control mt-2" name="description" value="${report.description}" required>
+                            <br>
+                            <div class="d-flex justify-content-center">
+                                <button type="submit" class="btn btn-primary">Update</button>
+                            </div>
+                            <div class="mt-3" id="updateDescriptionMessage"></div>
+                        </form>
+                        
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="tab-pane fade show mt-4" id="pills-deleteTab" role="tabpanel" aria-labelledby="pills-home-tab">
+                <p>
+
+                    <label class="fw-bold" for="editDescription-${report.reportID}">Delete Pothole</label>
+                    <div class="d-flex justify-content-center mt-3">
+                        <button class="btn btn-danger w-100 py-5" data-bs-toggle="collapse" href="#deletePotholeReport-${report.reportID}" role="button" aria-expanded="false" aria-controls="collapseExample"><i class='bx bx-trash'></i>
+                            Delete
+                        </button>
+                    </div>
+                </p>
+                <div class="mt-4 collapse" id="deletePotholeReport-${report.reportID}">
+                    <div class="text-white text-center">
+                        <b>Are you sure you want to delete this report?</b><br>
+                        <div class="mt-4 text-center">
+                            <button onclick="deletePotholeReport(event, ${report.potholeID}, ${report.reportID})" class="btn btn-danger me-3">Confirm</button>
+                            <button class="btn btn-secondary" type="button" data-bs-toggle="collapse" data-bs-target="#deletePotholeReport-${report.reportID}" aria-expanded="false" aria-controls="collapseExample">
+                                Close
+                            </button>
+                        </div>
+                        <div class="mt-3" id="deletePotholeMessage"></div>
+                    </div>
+                </div>
+            </div>
+        </div>  
+        `
+        
+      
         /*
         `<p>${report.dateReported}</p>
         <p>${report.description}</p>

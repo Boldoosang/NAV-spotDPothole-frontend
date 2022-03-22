@@ -221,17 +221,10 @@ async function identifyUserContext(){
 
     //Writes the appropriate menu options to the user context actions for login/register, or logout.
     let userStateArea = document.querySelector("#userContextGroup");
-    let userNameArea = document.querySelector("#userNameArea");
-    let menuArea = document.querySelector("#profileArea");
-    let reportButtonArea = document.querySelector("#driverReportButtonArea");
     if("email" in user && access_token){
-        userStateArea.innerHTML = `<li><a class="" onclick="logout()"><i class='bx bx-log-out'></i> <span>Logout</span></a></li>`
-                                    //` <h6 class="text-center "><a data-bs-toggle="modal" data-bs-target="#profileManagementModal" class="text-primary fw-bold text-decoration-underline"><i class="bi bi-person-lines-fill"></i> ${user.firstName} ${user.lastName}</a></h6>
-                                  //  <hr class="my-0">
-        userNameArea.innerHTML = `<h1 class="text-light">${user.firstName} ${user.lastName}</h1>`
-        menuArea.innerHTML = `<li><a href="#profile" data-bs-toggle="modal" data-bs-target="#profileManagementModal"><i class="bx bx-user"></i> <span>Profile</span></a></li>
-                            <li><a href="#dashboard" onclick="loadDashboard()" data-bs-toggle="pill" data-bs-target="#mainTab-dashboard"><i class="bx bx-book-content"></i> <span>Dashboard</span></a></li>`
-        reportButtonArea.innerHTML = `<i class="bi bi-plus d-xl-none" data-bs-toggle="modal" data-bs-target="#driverReportModal" id="driverReportButton"></i></button>`
+        userStateArea.innerHTML = ` <h6 class="text-center "><a data-bs-toggle="modal" data-bs-target="#profileManagementModal" class="text-primary fw-bold text-decoration-underline"><i class="bi bi-person-lines-fill"></i> ${user.firstName} ${user.lastName}</a></h6>
+                                    <hr class="my-0">
+                                    <a class="list-group-item list-group-item-action list-group-item-light p-3 pr-5 relative-bottom" onclick="logout()"><i class="bi bi-box-arrow-left" style="font-size:1.5rem;color:black"></i>        Logout</a>`
     }
 }
 
@@ -484,7 +477,6 @@ async function loadReports(potholeID){
     let allReportsContainer = document.querySelector("#reportAccordion")
     allReportsContainer.innerHTML = "";
 
-
     //Attempts to load the reports into the pane.
     try {
         //Sorts the pothole by ID; most recent to least recent.
@@ -498,8 +490,6 @@ async function loadReports(potholeID){
         //If there are reports for the pothole, populate the pane.
         if(potholeReports.length > 0){
             //Iterates over the reports and generates the accordion list for the potholes.
-
-
             for(report of potholeReports){
                 allReportImages = ""
                 //Determines if there are pothole images to be added. If not, display a message.
@@ -593,21 +583,21 @@ async function loadReportPage(){
     let user = await identifyUser();
 
     if("error" in user || "msg" in user){
-        reportArea.innerHTML = `<div class="mt-5 text-center text-black">
-                                        <h2>User is not logged in!</h2>
-                                        <p>${user["error"]}</p>
-                                    </div>`
-        //reportModal.innerHTML = `<div class="modal-dialog">
-        //                            <div class="modal-content">
-        //                                <div class="modal-header justify-content-center">
-        //                                    <h2>User is not logged in!</h2>
-        //                                </div>
-        //                                <div class="modal-body text-center">
-        //                                    <p>${user["error"]}</p>
-        //                                </div>
-        //                               <div class="modal-footer"></div>
-        //                            </div>
-        //                        </div>`
+        //reportArea.innerHTML = `<div class="mt-5 text-center text-black">
+                                        //<h2>User is not logged in!</h2>
+                                        //<p>${user["error"]}</p>
+                                    //</div>`
+        reportModal.innerHTML = `<div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header justify-content-center">
+                                            <h2>User is not logged in!</h2>
+                                        </div>
+                                        <div class="modal-body text-center">
+                                            <p>${user["error"]}</p>
+                                        </div>
+                                        <div class="modal-footer"></div>
+                                    </div>
+                                </div>`
     } else {
         //If a mobile device is not being used, display that their device is unsupported.
         //if(isMobileDevice()){
@@ -617,11 +607,11 @@ async function loadReportPage(){
              //   <p>Sorry, but you need to use a mobile device in order to make a report.</p>
              //</div>`
         //} else {
-            reportArea.innerHTML = 
-            `<div class="list-group p-3 d-flex flex-column justify-content-evenly align-items-middle" style="min-height: 75vh">
-                <button data-bs-target="#standardReportModal" data-bs-toggle="modal" id="standard-button" onclick="updateLocalCoords()" type="button" class="btn btn-primary py-5">Standard Report</button>                       
-                <button data-bs-target="#driverReportModal" data-bs-toggle="modal" id="driver-button" type="button" class="btn btn-dark py-5">Driver Report</button>
-            </div>`
+            //reportArea.innerHTML = 
+            //`<div class="list-group p-3 d-flex flex-column justify-content-evenly align-items-middle" style="min-height: 75vh">
+            //    <button data-bs-target="#standardReportModal" data-bs-toggle="modal" id="standard-button" onclick="updateLocalCoords()" type="button" class="btn btn-dark py-5">Standard Report</button>                       
+            //    <button data-bs-target="#driverReportModal" data-bs-toggle="modal" id="driver-button" type="button" class="btn btn-dark py-5">Driver Report</button>
+           // </div>`
         //}
     }
 }
@@ -708,6 +698,7 @@ async function displayCouncillorInfo(event, constituencyID){
         //Sets the modal body to contain the councillor information.
         councillorModalInfo.innerHTML = 
         `
+        <div class="text-center"><strong>COUNCILLOR INFORMATION<strong></div>
         <table class="table my-2 table-borderless">
             <tbody>
                 <tr>
@@ -812,7 +803,7 @@ async function loadConstituencyData(constituencyID){
 
     //Attempts to populate the councillor information area with the formatted information.
     try {
-        councillorInformationArea.innerHTML =
+        councillorInformationArea.innerHTML = 
         `
         <div class="text-center"><strong>COUNCILLOR INFORMATION<strong></div>
         <table class="table my-2 table-borderless">
