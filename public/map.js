@@ -15,7 +15,7 @@ let popupLocation
 
 function isPointOnLine(point, path) {
     for (var i = 0; i < path.length - 1; i++) {
-        if (L.GeometryUtil.belongsSegment(point, path[i], path[i + 1], 2)) {
+        if (L.GeometryUtil.belongsSegment(point, path[i], path[i + 1], 0.2)) {
             return true;
         }
     }
@@ -44,20 +44,32 @@ async function initMap() {
         accessToken: 'pk.eyJ1IjoiYm9sZG9vc2FuZyIsImEiOiJja3dlbzk5NTMwNnBzMnZwd3h5OWhwazJvIn0.FhdBhjtsMsUAge-3EoptiQ'
     }).addTo(map);
     */
-
+    
     //load the geoJSON data for the constituencies
     await fetch("./ttmap.geojson").then(function (response) {
         return response.json();
     }).then(function (data) {
         L.geoJSON(data, {
             onEachFeature: function (feature, layer) {
-                layer.bindPopup(feature.properties.Constituency + 
-                    '<br>' + `<button onClick="setStart()">Start Route Here</button>`
-                    + '<br>' + `<button onClick="setEnd()">End Route Here</button>`
-                    + '<br>' + `<button onClick="liveRouting()">My Location To Here</button>`);
-                
-                layer.on('popupopen', function (e) {
-                    popupLocation = e.popup._latlng
+                layer.bindPopup(feature.properties.Constituency);
+
+                // layer.bindPopup(feature.properties.Constituency + 
+                //     '<br>' + `<button class="btn btn-link" onClick="setStart()">Start Route Here</button>`
+                //     + '<br>' + `<button onClick="setEnd()">End Route Here</button>`
+                //     + '<br>' + `<button onClick="liveRouting()">My Location To Here</button>`);
+
+
+                layer.on('contextmenu', function (e) {
+                    menu = `<ul style="display: block; position: relative; border: none; margin: -20;" class="dropdown-menu">
+                            <li><h6 class="dropdown-header">Routing Menu</h6></li>
+                            <li><a class="dropdown-item" href="#" onClick="setStart(event)">Start Route Here</a></li>
+                            <li><a class="dropdown-item" href="#"  onClick="setEnd()">End Route Here</a></li>
+                            <li><a class="dropdown-item" href="#"  onClick="liveRouting()">My Location To Here</a></li>
+                        </ul>`
+
+                    var popup = L.popup().setContent(menu).setLatLng(e.latlng).openOn(map);
+
+                    popupLocation = e.latlng
                 })
             }
         }).addTo(map)
@@ -73,6 +85,7 @@ function setStart(e){
     if(watchid != null){
         navigator.geolocation.clearWatch(watchid)
     }
+    
     let pos = popupLocation
     waypoints.startPoint = pos
 
@@ -368,8 +381,6 @@ async function routingConcept() {
     var myRoute = L.Routing.osrmv1({
         serviceUrl: 'https://osrm.justinbaldeo.com/route/v1'
     });
-    
-    //var myRoute = L.Routing.osrmv1();
 
     myRoute.route([routingStartPoint, routingEndPoint], async function(err, routes) {
         let numClear = 0;
@@ -378,14 +389,19 @@ async function routingConcept() {
 
             for(let route of routes){
                 let clearRoute = true
+                let numPotholes = 0
                 for (let pothole of potholes) {
                     let point = L.latLng(pothole.latitude, pothole.longitude)
 
                     if(isPointOnLine(point, route.coordinates)) {
                         console.log("PotholeID: " + pothole.potholeID + " lies on route: " + route.name)
                         clearRoute=false
+                        numPotholes++;
                     }
                 } 
+
+                route.numPotholes = numPotholes;
+
                 if(clearRoute){
                     if(line) map.removeLayer(line)
                     line = L.Routing.line(route)
@@ -393,10 +409,21 @@ async function routingConcept() {
                     numClear++
                 }
             }
+
             if(numClear == 0){
                 displayToast("error", "No pothole free route exists!")
+
+                let lowestNumPotholes = routes[0].numPotholes
+                let lowestRoute = routes[0]
+                for(let route of routes){
+                    if(route.numPotholes < lowestNumPotholes){
+                        lowestNumPotholes = route.numPotholes
+                        lowestRoute = route
+                    }
+                }
+
                 if(line) map.removeLayer(line)
-                line = L.Routing.line(routes[0])
+                line = L.Routing.line(lowestRoute)
                 line.addTo(map)
             }
         }
@@ -404,37 +431,6 @@ async function routingConcept() {
             displayToast("error", "No route exists between these points!")
         }
     });
-
-    // L.Routing.control({
-    //     waypoints: [
-    //         L.latLng(10.511294171489462, -61.3840538263321),
-    //         L.latLng(10.639577437885391, -61.40234471065924)
-    //     ],
-    //     lineOptions: {
-    //         styles: [{ color: 'green', opacity: 0.5, weight: 5 }]
-    //     },
-    //     showAlternatives: true,
-    //     routeWhileDragging: true,
-    //     altLineOptions: {
-    //         styles: [{ color: 'red', opacity: 0.5, weight: 5 }]
-    //     }
-    // }).on('routesfound', async function (e) {
-    //     routes = e.routes
-
-    //     let potholes = await getPotholes()
-
-    //     for(let route of routes){
-    //         for (let pothole of potholes) {
-    //             let point = L.latLng(pothole.latitude, pothole.longitude)
-
-    //             if(isPointOnLine(point, route.coordinates)) {
-    //                 console.log("PotholeID: " + pothole.potholeID + " lies on route: " + route.name)
-    //                 clearRoute=false
-    //             }
-    //         }
-    //         console.log(route)
-    //     }
-    // }).addTo(map);
 }
 
 
