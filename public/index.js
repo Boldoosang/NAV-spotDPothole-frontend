@@ -229,8 +229,7 @@ async function identifyUserContext(){
                                     //` <h6 class="text-center "><a data-bs-toggle="modal" data-bs-target="#profileManagementModal" class="text-primary fw-bold text-decoration-underline"><i class="bi bi-person-lines-fill"></i> ${user.firstName} ${user.lastName}</a></h6>
                                   //  <hr class="my-0">
         userNameArea.innerHTML = `<h1 class="text-light">${user.firstName} ${user.lastName}</h1>`
-        menuArea.innerHTML = `<li><a href="#profile" data-bs-toggle="modal" data-bs-target="#profileManagementModal"><i class="bx bx-user"></i> <span>Profile</span></a></li>
-                                <li><a href="#dashboard" onclick="loadDashboard()" data-bs-toggle="pill" data-bs-target="#mainTab-dashboard"><i class="bx bx-book-content"></i> <span>Dashboard</span></a></li>`
+        menuArea.innerHTML = `<li><a href="#profile" data-bs-toggle="modal" data-bs-target="#profileManagementModal"><i class="bx bx-user"></i> <span>Profile</span></a></li>`
         reportButtonArea.innerHTML = `<i class="bi bi-plus d-xl-none" data-bs-toggle="modal" data-bs-target="#driverReportModal" id="driverReportButton"></i></button>`
     }
 }
@@ -812,7 +811,7 @@ async function loadConstituencyData(constituencyID){
 
     //Attempts to populate the councillor information area with the formatted information.
     try {
-        councillorInformationArea.innerHTML =
+        councillorInformationArea.innerHTML = 
         `
         <div class="text-center"><strong>COUNCILLOR INFORMATION<strong></div>
         <table class="table my-2 table-borderless">
