@@ -9,19 +9,28 @@ const CURRENT_CACHE = `main-${CACHE_VERSION}`;
 const cacheFiles = [
   'dashboard.js',
   'ttmap.geojson',
-  'styles.css',
+  'style.css',
   'manifest.json',
   'map.js',
+  'main.js',
   'index.js',
   'index.html',
   'constants.js',
+  'leaflet.geometryutil.js',
+  'leaflet-routing-machine.js',
   'images/favicon-16x16.png',
   'images/favicon-32x32.png',
   'images/icons-192.png',
   'images/icons-512.png',
   'images/SpotDPothole-Logo.png',
+
+
+  'vendor/',
   'https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.1/font/bootstrap-icons.css',
+
+
   'https://unpkg.com/leaflet@1.7.1/dist/leaflet.css',
+  'https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Raleway:300,300i,400,400i,500,500i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i',
   'https://unpkg.com/@mapbox/leaflet-pip@latest/leaflet-pip.js',
   'https://unpkg.com/leaflet@1.7.1/dist/leaflet.js',
   'https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/js/bootstrap.bundle.min.js',
