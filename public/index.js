@@ -225,11 +225,11 @@ async function identifyUserContext(){
     let menuArea = document.querySelector("#profileArea");
     let reportButtonArea = document.querySelector("#driverReportButtonArea");
     if("email" in user && access_token){
-        userStateArea.innerHTML = `<li><a class="" onclick="logout()"><i class='bx bx-log-out'></i> <span>Logout</span></a></li>`
+        userStateArea.innerHTML = `<li><a class="" onclick="logout()"><i class='bi bi-box-arrow-left'></i> <span>Logout</span></a></li>`
                                     //` <h6 class="text-center "><a data-bs-toggle="modal" data-bs-target="#profileManagementModal" class="text-primary fw-bold text-decoration-underline"><i class="bi bi-person-lines-fill"></i> ${user.firstName} ${user.lastName}</a></h6>
                                   //  <hr class="my-0">
         userNameArea.innerHTML = `<h1 class="text-light">${user.firstName} ${user.lastName}</h1>`
-        menuArea.innerHTML = `<li><a href="#profile" data-bs-toggle="modal" data-bs-target="#profileManagementModal"><i class="bx bx-user"></i> <span>Profile</span></a></li>`
+        menuArea.innerHTML = `<li><a href="#profile" data-bs-toggle="modal" data-bs-target="#profileManagementModal"><i class="bi bi-person-fill"></i> <span>Profile</span></a></li>`
         reportButtonArea.innerHTML = `<i class="bi bi-plus d-xl-none" data-bs-toggle="modal" data-bs-target="#driverReportModal" id="driverReportButton"></i></button>`
     }
 }

@@ -138,7 +138,7 @@ async function loadUserReport(potholeID){
                 `<div class="carousel-item ${tag}">
                     <img src="${reportImage.imageURL}" style="height: 300px; background-position: center center; object-fit: cover; background-repeat: no-repeat; z-index: 9995" class="d-block w-100">
                     <div class="carousel-caption d-none d-md-block mt-5 pt-5">
-                        <button type="button" id="deleteImageButton" dashDeleteReportImage()" data-bs-toggle="collapse" data-bs-target="#dashDeleteImage-${potholeReport.reportID}-${reportImage.imageID}" aria-expanded="false" aria-controls="collapseExample" class="btn btn-danger"><i class="bx bx-trash"></i> Delete Image</button>
+                        <button type="button" id="deleteImageButton" dashDeleteReportImage()" data-bs-toggle="collapse" data-bs-target="#dashDeleteImage-${potholeReport.reportID}-${reportImage.imageID}" aria-expanded="false" aria-controls="collapseExample" class="btn btn-danger"><i class="bi bi-trash"></i> Delete Image</button>
                         <div class="collapse" id="dashDeleteImage-${potholeReport.reportID}-${reportImage.imageID}">
                             <div class="card card-body text-white mt-3" style="background: #050d18;">
                                 <b>Confirm image deletion?</b>
@@ -195,7 +195,7 @@ async function loadUserReport(potholeID){
 
                 <p> 
                     <div class="d-flex justify-content-center">
-                        <a class="btn btn-primary" data-bs-toggle="collapse" href="#addReportImage-${report.reportID}" role="button" aria-expanded="false" aria-controls="collapseExample"><i class="bx bx-plus-medical"></i>
+                        <a class="btn btn-primary" data-bs-toggle="collapse" href="#addReportImage-${report.reportID}" role="button" aria-expanded="false" aria-controls="collapseExample"><i class="bi bi-plus-medical"></i>
                             Add Image
                         </a>
                     </div>
@@ -222,7 +222,7 @@ async function loadUserReport(potholeID){
                         </div>
                         <div class="text-center mb-3" id="dashboardUploadProgress"></div>
                         <div class="d-flex justify-content-center">
-                            <button onclick="handleAddImage(event, ${report.potholeID}, ${report.reportID})" class="btn btn-primary"><i class='bx bxs-camera-plus'></i> Add</button> 
+                            <button onclick="handleAddImage(event, ${report.potholeID}, ${report.reportID})" class="btn btn-primary"><i class='bi bi-camera-fill'></i> Add</button> 
                         </div>
                     </div>
                 </div>
@@ -238,7 +238,7 @@ async function loadUserReport(potholeID){
 
                 <p>
                     <div class="d-flex justify-content-center">
-                        <a class=" btn btn-primary mt-4" data-bs-toggle="collapse" href="#editPotholeDescription-${report.reportID}" role="button" aria-expanded="false" aria-controls="collapseExample"><i class='bx bx-edit-alt' ></i>
+                        <a class=" btn btn-primary mt-4" data-bs-toggle="collapse" href="#editPotholeDescription-${report.reportID}" role="button" aria-expanded="false" aria-controls="collapseExample"><i class='bi bi-pencil' ></i>
                             Edit Description
                         </a>
                     </div>
@@ -266,7 +266,7 @@ async function loadUserReport(potholeID){
 
                     <label class="fw-bold" for="editDescription-${report.reportID}">Delete Pothole</label>
                     <div class="d-flex justify-content-center mt-3">
-                        <button class="btn btn-danger w-100 py-5" data-bs-toggle="collapse" href="#deletePotholeReport-${report.reportID}" role="button" aria-expanded="false" aria-controls="collapseExample"><i class='bx bx-trash'></i>
+                        <button class="btn btn-danger w-100 py-5" data-bs-toggle="collapse" href="#deletePotholeReport-${report.reportID}" role="button" aria-expanded="false" aria-controls="collapseExample"><i class='bi bi-trash'></i>
                             Delete
                         </button>
                     </div>
