@@ -230,7 +230,7 @@ async function identifyUserContext(){
                                   //  <hr class="my-0">
         userNameArea.innerHTML = `<h1 class="text-light">${user.firstName} ${user.lastName}</h1>`
         menuArea.innerHTML = `<li><a href="#profile" data-bs-toggle="modal" data-bs-target="#profileManagementModal"><i class="bx bx-user"></i> <span>Profile</span></a></li>
-                            <li><a href="#dashboard" onclick="loadDashboard()" data-bs-toggle="pill" data-bs-target="#mainTab-dashboard"><i class="bx bx-book-content"></i> <span>Dashboard</span></a></li>`
+                                <li><a href="#dashboard" onclick="loadDashboard()" data-bs-toggle="pill" data-bs-target="#mainTab-dashboard"><i class="bx bx-book-content"></i> <span>Dashboard</span></a></li>`
         reportButtonArea.innerHTML = `<i class="bi bi-plus d-xl-none" data-bs-toggle="modal" data-bs-target="#driverReportModal" id="driverReportButton"></i></button>`
     }
 }
