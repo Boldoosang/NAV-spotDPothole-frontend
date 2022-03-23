@@ -418,8 +418,8 @@ body.modal-open #mainTabContent{
 /* Mobile Navigation */
 .mobile-nav-toggle {
   position: fixed;
-  right: 15px;
-  top: 15px;
+  right: 45px;
+  top: 45px;
   z-index: 9999;
   border: 0;
   font-size: 24px;

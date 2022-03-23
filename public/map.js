@@ -60,7 +60,7 @@ async function initMap() {
 
 
                 layer.on('contextmenu', function (e) {
-                    menu = `<ul style="display: block; position: relative; border: none; margin: -20;" class="dropdown-menu">
+                    menu = `<ul style="display: block; position: relative; border: none; margin: -20px;" class="dropdown-menu">
                             <li><h6 class="dropdown-header">Routing Menu</h6></li>
                             <li><a class="dropdown-item" href="#" onClick="setStart(event)">Start Route Here</a></li>
                             <li><a class="dropdown-item" href="#"  onClick="setEnd()">End Route Here</a></li>
@@ -216,6 +216,7 @@ function liveRouting(e){
 
         routingConcept()
     }, function () {
+        displayToast("error", "Please ensure that you have location turned on!");
         console.log("err")
     })
 }
@@ -428,7 +429,11 @@ async function routingConcept() {
             }
         }
         else{
-            displayToast("error", "No route exists between these points!")
+            if(!window.navigator.onLine){
+                displayToast("error", "You must be online to use this feature!")
+            } else {
+                displayToast("error", "No route exists between these points!")
+            }
         }
     });
 }

@@ -394,7 +394,8 @@ async function updateProfile(event){
     } else {
         messageOutcomeArea.innerHTML = `<div class="align-middle text-center">
                                             <b class="align-middle text-success text-center">Profile Updated Successfully!</b>
-                                        </div>`;        
+                                        </div>`;  
+        await identifyUserContext()      
     }
 }
 
