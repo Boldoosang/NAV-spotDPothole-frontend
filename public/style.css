@@ -363,7 +363,6 @@ body.modal-open #mainTabContent{
 
 #main {
   margin-left: 300px;
-  transition: all 0.4s;
 }
 
 @media (max-width: 1199px) {
@@ -441,19 +440,8 @@ body.modal-open #mainTabContent{
 .mobile-nav-active {
   overflow: hidden;
 }
-
 .mobile-nav-active #header {
   left: 0;
-}
-
-.mobile-nav-active #main {
-  -webkit-filter: blur(1px);
-  -moz-filter: blur(1px);
-  -o-filter: blur(1px);
-  -ms-filter: blur(1px);
-  filter: blur(1px);
-  transition: all 0.4s;
-  filter: brightness(50%);
 }
 
 #driverReportButton{
@@ -502,10 +490,13 @@ body.modal-open #mainTabContent{
   background-color: #050d18;
 }
 
-
 /*--------------------------------------------------------------
 # Leaderboard Section
 --------------------------------------------------------------*/
+#leaderboard{
+  
+}
+
 .btn-primary{
   background-color : #149ddd;
   border : none;
