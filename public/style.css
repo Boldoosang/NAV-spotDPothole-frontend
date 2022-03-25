@@ -381,7 +381,7 @@ body.modal-open #mainTabContent{
 /* Desktop Navigation */
 
 .nav-menu {
-  padding: 30px 0 0 0;
+  padding: 10px 0 0 0;
 }
 .nav-menu * {
   margin: 0;
@@ -397,7 +397,7 @@ body.modal-open #mainTabContent{
   align-items: center;
   color: #a8a9b4;
   padding: 12px 15px;
-  margin-bottom: 8px;
+  margin-bottom: -10px;
   transition: 0.3s;
   font-size: 15px;
   
