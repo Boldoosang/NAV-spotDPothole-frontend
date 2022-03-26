@@ -712,22 +712,27 @@
       <!-- Offcanvas used to display constituency information, reports, and votes for whenever a pothole is clicked on the map -->
       <div class="offcanvas offcanvas-end" data-bs-scroll="true" tabindex="-1" id="offcanvasReport" aria-labelledby="offcanvasWithBothOptionsLabel">
           <div class="offcanvas-header">
-              <h5 class="offcanvas-title" id="offcanvasWithBothOptionsLabel">Pothole Information</h5>
+              <h5 class="offcanvas-title" id="offcanvasWithBothOptionsLabel">Pothole Report Information</h5>
               <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
           </div>
           <div class="offcanvas-body p-0">
+            <div id="constituencyInformationPanel" class="bg-image">
               <!-- Constituency Information is dynamically loaded into this div via AJAX-->
-              <div id="constituencyName" class="text-center fw-bold display-6"></div>
+              <div id="constituencyName" class="text-center fw-bold display-6 text-white pt-3"></div>
 
               <!-- Councillor information is dynamically loaded into this div via AJAX-->
               <div id="councillorInformation" class="p-3"></div>
+            </div>
+            <hr class="my-0">
+            
+            <div id="numberOfReportsArea" class="text-center fw-bold mt-3 mb-3">
 
-              <hr class="my-0">
+            </div>
 
-              <div>
-                  <!-- Reports are dynamically loaded into this div as accordion lists via AJAX-->
-                  <div class="accordion m-0" id="reportAccordion"></div>
-              </div>
+            <div>
+                <!-- Reports are dynamically loaded into this div as accordion lists via AJAX-->
+                <div class="accordion m-0" id="reportAccordion"></div>
+            </div>
           </div>
       </div>
   

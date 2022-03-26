@@ -479,6 +479,9 @@ async function loadReports(potholeID){
     //Gets all of the pothole reports.
     let potholeReports = await getReports(potholeID)
 
+    let numberOfReportsContainer = document.querySelector('#numberOfReportsArea')
+    numberOfReportsContainer.innerHTML = `Reports : ${potholeReports.length}`;
+
     //Gets the report container and initializes the reports to a blank string.
     let allReportsContainer = document.querySelector("#reportAccordion")
     allReportsContainer.innerHTML = "";
@@ -531,12 +534,14 @@ async function loadReports(potholeID){
                 `<div class="accordion-item">
                     <h2 class="accordion-header" id="heading-${report.reportID}">
                     <button class="accordion-button collapsed fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-${report.reportID}">
-                         <div><span class="font-monospace ${color}" id="accordionNetVotes-${report.reportID}">${(netVotes <= 0 ? "" : "+")}<span>${netVotes}</span></span> | Report (${report.dateReported}) - ${report.reportedBy}</div>
+                         <div><span class="font-monospace ${color}" id="accordionNetVotes-${report.reportID}">${(netVotes <= 0 ? "" : "+")}<span>${netVotes}</span></span> | ${report.reportedBy} - (${report.dateReported})</div>
                     </button>
                     </h2>
                     <div id="collapse-${report.reportID}" class="accordion-collapse collapse" data-bs-parent="#reportAccordion">
                         <div class="accordion-body">
-                            <strong>Report Images</strong>
+                            <div class="text-center">
+                                <strong class="text-center">Images</strong>
+                            </div>
                             <div id="carouselReport-${report.reportID}" class="carousel slide my-2" data-bs-ride="carousel">
                                 <div id="reportImages-${report.reportID}" class="carousel-inner">
                                     ${allReportImages}
@@ -549,6 +554,13 @@ async function loadReports(potholeID){
                                 </button>
                             </div>
                             <hr class="mb-2 mt-3">
+
+                            <div class="text-center">
+                                <strong>Description</br></strong>
+                                ${report.description}
+                            </div>
+
+                            <hr class="my-3">
                             <div id="votingArea" class="text-center">
                                 <strong>Votes</strong><br>
 
@@ -558,7 +570,7 @@ async function loadReports(potholeID){
                                             <i class="bi bi-arrow-down"></i>
                                         </button>
                                     </span>
-                                    <strong class="px-3" id="netVotes-${report.reportID}">${netVotes}</strong>
+                                    <strong class="px-3 ${color}" id="netVotes-${report.reportID}">${netVotes}</strong>
                                     <span id="castedUpvote-${report.reportID}">
                                         <button type="button" class="btn ${upvoteButtonColor}" onclick="voteOnReport(event, ${potholeID}, ${report.reportID}, true)">
                                             <i class="bi bi-arrow-up"></i>
@@ -567,9 +579,8 @@ async function loadReports(potholeID){
                                 </div>
                                 <span id="voteOutcomeMessage-${report.reportID}"></span>
                             </div>
-                            <hr class="my-3">
-                            <strong>Report Description</br></strong>
-                            ${report.description}
+                            
+                            
                         </div>
                     </div>
                 </div>`
@@ -813,8 +824,8 @@ async function loadConstituencyData(constituencyID){
     try {
         councillorInformationArea.innerHTML = 
         `
-        <div class="text-center"><strong>COUNCILLOR INFORMATION<strong></div>
-        <table class="table my-2 table-borderless">
+        <div class="text-center text-white"><strong>COUNCILLOR INFORMATION<strong></div>
+        <table class="table my-2 table-borderless text-white">
             <tbody>
                 <tr>
                     <th scope="row">Name</th>
