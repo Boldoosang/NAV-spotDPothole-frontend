@@ -38,6 +38,10 @@ h1, h2, h3, h4, h5, h6 {
   z-index: 9996;
 }
 
+#constituencyInformationPanel{
+  background-image: url(/public/images/road2.jpg);
+}
+
 body.modal-open header{
   -webkit-filter: blur(1px);
   -moz-filter: blur(1px);
@@ -365,6 +369,7 @@ body.modal-open #mainTabContent{
   margin-left: 300px;
 }
 
+
 @media (max-width: 1199px) {
   #header {
     left: -300px;
@@ -443,6 +448,14 @@ body.modal-open #mainTabContent{
 .mobile-nav-active #header {
   left: 0;
 }
+.mobile-nav-active #main{
+  -webkit-filter: blur(1px);
+  -moz-filter: blur(1px);
+  -o-filter: blur(1px);
+  -ms-filter: blur(1px);
+  filter: blur(1px);
+}
+
 
 #driverReportButton{
   position: fixed;
@@ -493,10 +506,6 @@ body.modal-open #mainTabContent{
 /*--------------------------------------------------------------
 # Leaderboard Section
 --------------------------------------------------------------*/
-#leaderboard{
-  
-}
-
 .btn-primary{
   background-color : #149ddd;
   border : none;
@@ -587,8 +596,8 @@ body.modal-open #mainTabContent{
 }
 
 #reportAccordion > .accordion-item > .accordion-collapse > .accordion-body{
-  background-color : white;
-  color: black;
+  background-color :#050d18;
+  color : white;
 }
 
 #reportAccordion > .accordion-item > .accordion-header > .accordion-button.collapsed{
@@ -597,9 +606,10 @@ body.modal-open #mainTabContent{
 }
 
 #reportAccordion > .accordion-item > .accordion-header > .accordion-button{
-  background-color :#050d18;
-  color : white;
+  background-color: white;
+  color : #149ddd;
 }
+
 
 #submit-passenger-report{
   background: #149ddd;
