@@ -5,11 +5,14 @@
 * License: https://bootstrapmade.com/license/
 */
 
+@import url('https://fonts.googleapis.com/css2?family=Archivo:wght@400&family=Jost:wght@400&display=swap');
+
 /*--------------------------------------------------------------
 # General
 --------------------------------------------------------------*/
 body {
-  font-family: "Open Sans", sans-serif;
+  /*font-family: "Open Sans", sans-serif;*/
+  font-family: 'Archivo', sans-serif;
   color: #272829;
 }
 
@@ -26,7 +29,7 @@ a:hover {
 }
 
 h1, h2, h3, h4, h5, h6 {
-  font-family: "Raleway", sans-serif;
+  font-family: 'Jost', sans-serif;
 }
 
 #map { 
@@ -122,7 +125,7 @@ body.modal-open #mainTabContent{
 .accordion-item {
   background-color: #fff;
   border: 1px solid rgba(0, 0, 0, 0.125);
-}
+}/*
 .accordion-item:first-of-type {
   border-top-left-radius: 0.25rem;
   border-top-right-radius: 0.25rem;
@@ -145,7 +148,7 @@ body.modal-open #mainTabContent{
 .accordion-item:last-of-type .accordion-collapse {
   border-bottom-right-radius: 0.25rem;
   border-bottom-left-radius: 0.25rem;
-}
+}*/
 
 .accordion-body {
   padding: 1rem 1.25rem;

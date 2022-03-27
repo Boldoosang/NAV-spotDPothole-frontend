@@ -271,9 +271,6 @@ async function register(event){
 
 }
 
-
-
-
 //Facilitates the registration of a user when the register form is submitted.
 async function verifyEmail(event){
     //Prevents the reloading of the page.
@@ -480,7 +477,9 @@ async function loadReports(potholeID){
     let potholeReports = await getReports(potholeID)
 
     let numberOfReportsContainer = document.querySelector('#numberOfReportsArea')
-    numberOfReportsContainer.innerHTML = `Reports : ${potholeReports.length}`;
+    numberOfReportsContainer.innerHTML = `${potholeReports.length} Report`;
+    if(potholeReports.length > 1)
+    numberOfReportsContainer.innerHTML +=`s`
 
     //Gets the report container and initializes the reports to a blank string.
     let allReportsContainer = document.querySelector("#reportAccordion")
@@ -506,7 +505,7 @@ async function loadReports(potholeID){
                 allReportImages = ""
                 //Determines if there are pothole images to be added. If not, display a message.
                 if(report.reportedImages.length == 0){
-                    allReportImages = `<div class="d-flex justify-content-center mt-3"><strong>No report images uploaded!</strong></div>`
+                    allReportImages = `<div id="noImageContainer" class="d-flex justify-content-center"><span class="border border-1 border-white rounded-3 px-3 py-5"><strong >No report images uploaded!</strong><span></div>`
                 } else {
                 //Otherwise, iterate over all of the images and add them to the image carousel for the report.
                     let tag = "active"
@@ -528,13 +527,13 @@ async function loadReports(potholeID){
                 downvoteButtonColor = await determineDownVoteButtonColor(report, "downvote")
                 let color = determineTextColor(netVotes);
                 
-
+                var newDate = dateConvert(report.dateReported);
                 //Creates and appends the accordion item containing the report information.
                 allReportsContainer.innerHTML += 
                 `<div class="accordion-item">
                     <h2 class="accordion-header" id="heading-${report.reportID}">
                     <button class="accordion-button collapsed fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-${report.reportID}">
-                         <div><span class="font-monospace ${color}" id="accordionNetVotes-${report.reportID}">${(netVotes <= 0 ? "" : "+")}<span>${netVotes}</span></span> | ${report.reportedBy} - (${report.dateReported})</div>
+                         <div><span class="font-monospace ${color}" id="accordionNetVotes-${report.reportID}">${(netVotes <= 0 ? "" : "+")}<span>${netVotes}</span></span> | ${report.reportedBy} - (${newDate})  </div>
                     </button>
                     </h2>
                     <div id="collapse-${report.reportID}" class="accordion-collapse collapse" data-bs-parent="#reportAccordion">
@@ -1062,6 +1061,38 @@ async function sendReport(latitude, longitude, photoB64, description = null, url
 	} catch (error) {
 		return error;
 	}
+}
+
+//Accepts a date in the format YYYY-MM-DD and returns it in the form DD-MMM-YYYY
+function dateConvert(date){
+    const temp = report.dateReported.split('-')
+    var newDate = temp[2];
+    if(temp[1] == '01')
+        newDate += ' Jan '
+    if(temp[1] == '02')
+        newDate += ' Feb '   
+    if(temp[1] == '03')
+        newDate += ' Mar '
+    if(temp[1] == '04')
+        newDate += ' Apr ' 
+    if(temp[1] == '05')
+        newDate += ' May ' 
+    if(temp[1] == '06')
+        newDate += ' Jun ' 
+    if(temp[1] == '07')
+        newDate += ' Jul ' 
+    if(temp[1] == '08')
+        newDate += ' Aug ' 
+    if(temp[1] == '09')
+        newDate += ' Sep ' 
+    if(temp[1] == '10')
+        newDate += ' Oct ' 
+    if(temp[1] == '11')
+        newDate += ' Nov ' 
+    if(temp[1] == '12')
+        newDate += ' Dec '   
+    newDate += temp[0]  
+    return newDate;
 }
 
 //Bootstraps the application by adding the relevant listeners, toggles, and other initialization procedures.
