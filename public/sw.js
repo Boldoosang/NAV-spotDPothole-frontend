@@ -119,7 +119,7 @@ self.addEventListener('fetch', function(event) {
   // every request from our site, passes through the fetch handler
   //console.log('I am a request with url: ', event.request.clone().url)
 
-  if (event.request.method === 'GET') {
+  if (event.request.method === 'GET' && !event.request.url.includes("openstreetmap.org/")) {
 
     //figure out if these are the main files to be cached
     if(event.request.url.includes("/api/") || event.request.url.includes("osrm") || event.request.url.includes("identify")){

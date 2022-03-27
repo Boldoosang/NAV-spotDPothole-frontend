@@ -451,14 +451,6 @@ body.modal-open #mainTabContent{
 .mobile-nav-active #header {
   left: 0;
 }
-.mobile-nav-active #main{
-  -webkit-filter: blur(1px);
-  -moz-filter: blur(1px);
-  -o-filter: blur(1px);
-  -ms-filter: blur(1px);
-  filter: blur(1px);
-}
-
 
 #driverReportButton{
   position: fixed;
