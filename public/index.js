@@ -534,7 +534,7 @@ async function loadReports(potholeID){
                 var newDate = dateConvert(report.dateReported);
                 //Creates and appends the accordion item containing the report information.
                 allReportsContainer.innerHTML += 
-                `<div class="accordion-item">
+                `<div class="accordion-item rounded-0">
                     <h2 class="accordion-header" id="heading-${report.reportID}">
                     <button class="accordion-button collapsed fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-${report.reportID}">
                          <div><span class="font-monospace ${color}" id="accordionNetVotes-${report.reportID}">${(netVotes <= 0 ? "" : "+")}<span>${netVotes}</span></span> | ${report.reportedBy} - (${newDate})  </div>
