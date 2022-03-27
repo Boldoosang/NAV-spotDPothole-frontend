@@ -4,7 +4,8 @@
     "short_name" : "SpotDPothole",
     "start_url" : "index.html",
     "display" : "standalone",
-    "background_color" : "#fff",
+    "background_color" : "#000000",
+    "theme_color": "#000000",
     "description" : "Pothole spotting and tracking application.",
     "icons" : [
         {
@@ -15,7 +16,8 @@
           {
             "src": "images/icons-512.png",
             "type": "image/png",
-            "sizes": "512x512"
+            "sizes": "512x512",
+            "purpose": "any maskable"
           }
     ]
 }

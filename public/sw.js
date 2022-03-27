@@ -7,12 +7,10 @@ const CURRENT_CACHE = `main-${CACHE_VERSION}`;
 
 // these are the routes we are going to cache for offline support
 const cacheFiles = [
-  'dashboard.js',
   'ttmap.geojson',
   'style.css',
   'manifest.json',
   'map.js',
-  'main.js',
   'index.js',
   'index.html',
   'constants.js',
@@ -23,19 +21,16 @@ const cacheFiles = [
   'images/icons-192.png',
   'images/icons-512.png',
   'images/SpotDPothole-Logo.png',
-
-
-  'vendor/',
-  'https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.1/font/bootstrap-icons.css',
-
-
-  'https://unpkg.com/leaflet@1.7.1/dist/leaflet.css',
+  'https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css',
+  'https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css',
+  'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.css',
   'https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Raleway:300,300i,400,400i,500,500i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i',
-  'https://unpkg.com/@mapbox/leaflet-pip@latest/leaflet-pip.js',
-  'https://unpkg.com/leaflet@1.7.1/dist/leaflet.js',
+  'https://cdn.jsdelivr.net/npm/leaflet-pip@1.1.0/leaflet-pip.js',
+  'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.js',
   'https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/js/bootstrap.bundle.min.js',
   'https://www.gstatic.com/firebasejs/7.15.5/firebase-app.js',
-  'https://www.gstatic.com/firebasejs/7.15.5/firebase-storage.js'
+  'https://www.gstatic.com/firebasejs/7.15.5/firebase-storage.js',
+  'https://dl.dropboxusercontent.com/s/j6yjhvzm5rzb4ob/tandt.mbtiles?dl=1'
 ];
 
 // on activation we clean up the previously registered service workers
@@ -54,12 +49,13 @@ self.addEventListener('activate', evt =>
 );
 
 // on install we download the routes we want to cache for offline
-self.addEventListener('install', evt =>
+self.addEventListener('install', evt =>{
   evt.waitUntil(
     caches.open(CURRENT_CACHE).then(cache => {
       return cache.addAll(cacheFiles);
     })
   )
+}
 );
 
 // fetch the resource from the network
@@ -125,7 +121,7 @@ self.addEventListener('fetch', function(event) {
   // every request from our site, passes through the fetch handler
   //console.log('I am a request with url: ', event.request.clone().url)
 
-  if (event.request.method === 'GET') {
+  if (event.request.method === 'GET' && !event.request.url.includes("openstreetmap.org/")) {
 
     //figure out if these are the main files to be cached
     if(event.request.url.includes("/api/") || event.request.url.includes("osrm") || event.request.url.includes("identify")){
