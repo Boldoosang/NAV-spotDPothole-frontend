@@ -823,7 +823,7 @@ async function loadConstituencyData(constituencyID){
     try {
         councillorInformationArea.innerHTML = 
         `
-        <div class="text-center text-white"><strong>COUNCILLOR INFORMATION<strong></div>
+        <div class="text-center text-white"><strong>COUNCILLOR INFORMATION</strong></div>
         <table class="table my-2 table-borderless text-white">
             <tbody>
                 <tr>

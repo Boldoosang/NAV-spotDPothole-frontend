@@ -404,10 +404,10 @@ body.modal-open #mainTabContent{
   display: flex;
   align-items: center;
   color: #a8a9b4;
-  padding: 12px 15px;
+  padding: 20px 15px;
   margin-bottom: -10px;
   transition: 0.3s;
-  font-size: 15px;
+  font-size: 18px;
   
 }
 .nav-menu a i, .nav-menu a:focus i {
