@@ -26,7 +26,8 @@ const cacheFiles = [
   'https://unpkg.com/leaflet@1.7.1/dist/leaflet.js',
   'https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/js/bootstrap.bundle.min.js',
   'https://www.gstatic.com/firebasejs/7.15.5/firebase-app.js',
-  'https://www.gstatic.com/firebasejs/7.15.5/firebase-storage.js'
+  'https://www.gstatic.com/firebasejs/7.15.5/firebase-storage.js',
+  'https://www.dropbox.com/s/j6yjhvzm5rzb4ob/tandt.mbtiles?dl=1'
 ];
 
 // on activation we clean up the previously registered service workers

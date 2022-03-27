@@ -30,12 +30,28 @@ async function initMap() {
         minZoom: 10
     });
 
-    // var online = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    //     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-    // }).addTo(map);
+    var online = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    });
 
-    var offline = L.tileLayer.mbTiles('./tandt.mbtiles', {}).addTo(map);
+    var offline = L.tileLayer.mbTiles('https://www.dropbox.com/s/j6yjhvzm5rzb4ob/tandt.mbtiles?dl=1', {});
+
+    if (navigator.onLine) {
+        online.addTo(map);
+    } else {
+        offline.addTo(map);
+    }
     
+    //switch between online and offline map
+    var baseMaps = {
+        "Online": online,
+        "Offline": offline
+    };
+
+    L.control.layers(baseMaps, {}, {
+        position: 'bottomleft'
+    }).addTo(map);
+
     /*
     L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
         attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
