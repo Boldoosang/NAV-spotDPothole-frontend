@@ -29,7 +29,8 @@ const cacheFiles = [
   'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.js',
   'https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/js/bootstrap.bundle.min.js',
   'https://www.gstatic.com/firebasejs/7.15.5/firebase-app.js',
-  'https://www.gstatic.com/firebasejs/7.15.5/firebase-storage.js'
+  'https://www.gstatic.com/firebasejs/7.15.5/firebase-storage.js',
+  'https://www.dropbox.com/s/j6yjhvzm5rzb4ob/tandt.mbtiles?dl=1'
 ];
 
 // on activation we clean up the previously registered service workers
@@ -48,12 +49,13 @@ self.addEventListener('activate', evt =>
 );
 
 // on install we download the routes we want to cache for offline
-self.addEventListener('install', evt =>
+self.addEventListener('install', evt =>{
   evt.waitUntil(
     caches.open(CURRENT_CACHE).then(cache => {
       return cache.addAll(cacheFiles);
     })
   )
+}
 );
 
 // fetch the resource from the network
