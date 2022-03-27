@@ -34,7 +34,7 @@ async function initMap() {
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
     });
 
-    var offline = L.tileLayer.mbTiles('https://www.dropbox.com/s/j6yjhvzm5rzb4ob/tandt.mbtiles?dl=1', {});
+    var offline = L.tileLayer.mbTiles('https://dl.dropboxusercontent.com/s/j6yjhvzm5rzb4ob/tandt.mbtiles?dl=1', {});
 
     if (navigator.onLine) {
         online.addTo(map);
