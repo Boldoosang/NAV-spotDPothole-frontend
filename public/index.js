@@ -8,14 +8,19 @@ const firebaseConfig = {
     appId: "1:762264703594:web:355f7105be2eeda5f33013"
 };
 
+// Dashboard Map, Layer and Markers Initialization
 var dashboardMap;
 let dashboardMarkersLayer;
 let dashboardMarkers = [];
 
 // Initialize Firebase
 const app = firebase.initializeApp(firebaseConfig);
+
+// Creates a channel to be used in sending messages between the service worker and the web-app.
 const channel = new BroadcastChannel('sw-messages');
 
+// Creates a function to convert a file to base64.
+// Referenced from: Dmitri Pavlutin, https://stackoverflow.com/questions/36280818/how-to-convert-file-to-base64-in-javascript
 const toBase64 = file => new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.readAsDataURL(file);
@@ -28,49 +33,54 @@ const toBase64 = file => new Promise((resolve, reject) => {
 async function handleStandardReport() {
 	//Get the single file input
 	const file = document.querySelector('#photo').files[0];
-    let currentUser = await identifyUser();
-
+    //Initializes the base64 image string.
     let photoB64 = ""
 	//If a valid file was uploaded, upload it to firebase.
 	if (file != null) {
 		//Determines if the file is not an image.
 		console.log(file.type)
+        //If the file is not a particular format, alert the user and do not upload the file.
 		if(!(['image/png', 'image/jpeg', 'image/gif', 'image/jpg'].includes(file.type))){
 			alert("This file is not an image!")
 			return;
 		}
 
+        //Converts the file to base64 and stores the string outcome.
         photoB64 = await toBase64(file)
 	} else {
+    //Otherwise, if no file was uploaded, set the base64 image content to null.
 		photoB64 = null;
 	}
 
+    //Gets the description text from the form, and builds and send the report using the base64 image and description.
     let description = document.getElementById("descriptionText").value;
 	await buildReport(photoB64, description, STANDARD_REPORT_URL)
 }
 
 // Handles the submission of a standard pothole report for both image and non-image cases.
 async function handleAddImage(event, potholeID, reportID) {
+    //Prevents the page from reloading.
     event.preventDefault();
+
 	//Get the single file input
 	const file = document.querySelector('#dashboardPhoto').files[0];
 
     //Get the upload progress text area.
 	let uploadProgress = document.querySelector("#dashboardUploadProgress")
-    let currentUser = await identifyUser();
 
 	//If a valid file was uploaded, upload it to firebase.
-	if (file != null && "email" in currentUser) {
+	if (file != null) {
 		//Determines if the file is not an image.
-		console.log(file.type)
 		if(!(['image/png', 'image/jpeg', 'image/gif', 'image/jpg'].includes(file.type))){
 			alert("This file is not an image!")
 			return;
 		}
-
+        //Converts the file to base64 and stores the string outcome.
         photoB64 = await toBase64(file)
+        //Sends the base64 image to the backend to be added to the report specified by the potholeID and reportID.
 		await addImageToReport(photoB64, potholeID, reportID)
 	} else {
+    //Otherwise, if no file was provided. Inform the user that no image was selected.
         uploadProgress.innerHTML = `<strong>No image selected!</strong>`
 	}
 }
@@ -91,7 +101,7 @@ async function sendRequest(url, method, data){
             }
         }
 
-        //Creates the GET request with a body.
+        //Creates the request with a body.
         if (data){
             request = {
                 "method" : method,
@@ -102,18 +112,19 @@ async function sendRequest(url, method, data){
             }
             request.body = JSON.stringify(data);
         }
-
+        
+        //If the request is a post request, store the request in a key-value object, and send the object to the service worker.
         if(method == "POST"){
-            console.log("This is a post request!")
+            //console.log("This is a post request!")
+            //Creates the form data objec to hold the request.
             let form_data = {
                 "form_data" : request
             }
 
+            //If the service worker is ready, send the form data, containing the request, to the service worker for processing.
             navigator.serviceWorker.ready.then(worker => {
                 worker.active.postMessage(form_data)
             });
-
-            //navigator.serviceWorker.controller.postMessage(form_data)  // <--- This line right here sends our data to sw.js
         }
 
         //Carries out the requests and collects the results.
@@ -130,7 +141,9 @@ async function sendRequest(url, method, data){
             }
         }
 
+        //If the request returned an error, check the error to determine if the user is banned and remove their token, or return the results.
         if("error" in results){
+            //If the user is banned, remove their access token and alert them.
             if(results["error"] == "User is banned."){
                 window.localStorage.removeItem('access_token');
                 alert("You have been banned!")
@@ -142,12 +155,13 @@ async function sendRequest(url, method, data){
         //Otherwise, return the parsed results.
         return results;
     } catch (e){
-        console.log(e)
+        //console.log(e)
         //If unable to send the request, return an error.
         if(e instanceof TypeError && !window.navigator.onLine){
             return {"error" : "Please go online to use this feature!"};
         }
         
+        //Otherwise, return an unexpected error.
         return {"error" : "An unexpected error has occurred!"};
     }
 }
@@ -178,22 +192,22 @@ async function login(event){
     //Gets and extracts the form data from the login form. Then resets the form.
     let form = event.target;
 
+    //Creates the login details object out of the form values.
     let loginDetails = {
         "email" : form.elements["InputEmail"].value,
         "password" : form.elements["InputPassword"].value
     }
 
-
     //Sends the login request to the server and stores the result.
     let result = await sendRequest(SERVER + "/login", "POST", loginDetails);
+    //Gets the area to write the result.
     let messageArea = document.querySelector("#userLoginMessage")
 
-    //Prints the result of login to the outcome area.
+    //Sets the result of logging in to the outcome area.
     if("error" in result || "msg" in result){
-        console.log("Error")
         messageArea.innerHTML = `<b class="text-danger text-center">${result["error"]}</b>`
     } else {
-        console.log("Success")
+    //If the result is a success, set the returned access token in the storage, sets the outcome message, and refreshes the page.
         window.localStorage.setItem("access_token", result["access_token"]);
         messageArea.innerHTML = `<b class="text-success text-center">Login successful!</b>`
         window.location = "/"
@@ -223,15 +237,15 @@ async function identifyUserContext(){
     let user = await identifyUser();
     let access_token = window.localStorage.getItem("access_token")
 
-    //Writes the appropriate menu options to the user context actions for login/register, or logout.
+    //Gets a handle on each of the name, menu area, 
     let userStateArea = document.querySelector("#userContextGroup");
     let userNameArea = document.querySelector("#userNameArea");
     let menuArea = document.querySelector("#profileArea");
     let reportButtonArea = document.querySelector("#driverReportButtonArea");
+
+    //Writes the appropriate menu options to the user context actions for login/register, or logout.
     if("email" in user && access_token){
         userStateArea.innerHTML = `<li><a class="" href="#" onclick="logout()"><i class='bi bi-box-arrow-left'></i> <span>Logout</span></a></li>`
-                                    //` <h6 class="text-center "><a data-bs-toggle="modal" data-bs-target="#profileManagementModal" class="text-primary fw-bold text-decoration-underline"><i class="bi bi-person-lines-fill"></i> ${user.firstName} ${user.lastName}</a></h6>
-                                  //  <hr class="my-0">
         userNameArea.innerHTML = `<h1 class="text-light">${user.firstName} ${user.lastName}</h1>`
         menuArea.innerHTML = `<li><a href="#profile" data-bs-toggle="modal" data-bs-target="#profileManagementModal"><i class="bi bi-person-fill"></i> <span>Profile</span></a></li>`
         reportButtonArea.innerHTML = `<i class="bi bi-plus d-xl-none" data-bs-toggle="modal" data-bs-target="#driverReportModal" id="driverReportButton"></i></button>`
@@ -245,6 +259,8 @@ async function register(event){
 
     //Gets the submitted form details and parses it into the required format for the request. The form is then reset.
     let form = event.target;
+
+    //Creates the registration details object from the form values.
     let registrationDetails = {
         "email" : form.elements["regInputEmail"].value,
         "firstName" : form.elements["regInputFirstName"].value,
@@ -275,7 +291,7 @@ async function register(event){
 
 }
 
-//Facilitates the registration of a user when the register form is submitted.
+//Facilitates the verification of a user when the verification form is submitted.
 async function verifyEmail(event){
     //Prevents the reloading of the page.
     event.preventDefault();
@@ -283,16 +299,17 @@ async function verifyEmail(event){
     //Gets the submitted form details and parses it into the required format for the request. The form is then reset.
     let form = event.target;
     let token = form.elements["emailToken"].value;
-
+    
+    //Creates the verification object and stores the form value for email verification.
     let verifyDetails = {
         "email" : form.elements["emailVerifyActual"].value,
     }
 
-    //Submits the registration request to the server and stores the result.
+    //Submits the verification request to the server and stores the result.
     let result = await sendRequest(SERVER + "/confirm/" + token, "PUT", verifyDetails);
     let messageArea = document.querySelector("#verificationMessage")
 
-    //Prints the outcome of the request to the outcome area of the registration section.
+    //Prints the outcome of the request to the outcome area of the verification section.
     if("error" in result || "msg" in result){
         messageArea.innerHTML = `<div class="align-middle text-center">
                                     <b class="align-middle text-danger text-center">${result["error"]}</b>
@@ -307,7 +324,7 @@ async function verifyEmail(event){
 }
 
 
-//Facilitates the registration of a user when the register form is submitted.
+//Facilitates the resending of the confirmation user for a user when the resend confirmation form is submitted.
 async function resendConfirmationEmail(event){
     //Prevents the reloading of the page.
     event.preventDefault();
@@ -315,17 +332,19 @@ async function resendConfirmationEmail(event){
     //Gets the submitted form details and parses it into the required format for the request. The form is then reset.
     let form = event.target;
 
+    //Creates an object for sending the values of the email confirmation form.
     let resendDetails = {
         "email" : form.elements["resendConfirmationEmailField"].value,
     }
     
+    //Resets the form.
     form.reset();
 
-    //Submits the registration request to the server and stores the result.
+    //Submits the resend verification request to the server and stores the result.
     let result = await sendRequest(SERVER + "/resendConfirmation", "POST", resendDetails);
     let messageArea = document.querySelector("#resendConfirmationMessage")
 
-    //Prints the outcome of the request to the outcome area of the registration section.
+    //Prints the outcome of the request to the outcome area of the resend confirmation email section.
     if("error" in result || "msg" in result){
         messageArea.innerHTML = `<div class="align-middle text-center">
                                     <b class="align-middle text-danger text-center">${result["error"]}</b>
@@ -339,7 +358,7 @@ async function resendConfirmationEmail(event){
 
 }
 
-//Facilitates the registration of a user when the register form is submitted.
+//Facilitates the resetting the password of a user when the reset password form is submitted.
 async function resetPassword(event){
     //Prevents the reloading of the page.
     event.preventDefault();
@@ -353,11 +372,11 @@ async function resetPassword(event){
         "confirmPassword" : form.elements["rConfirmPassword"].value,
     }
 
-    //Submits the registration request to the server and stores the result.
+    //Submits the password reset request to the server and stores the result.
     let result = await sendRequest(SERVER + "/resetPassword/" + token, "POST", resetDetails);
     let messageArea = document.querySelector("#resetPasswordMessage")
 
-    //Prints the outcome of the request to the outcome area of the registration section.
+    //Prints the outcome of the request to the outcome area of the password reset section.
     if("error" in result || "msg" in result){
         console.log("Error")
         messageArea.innerHTML = `<div class="align-middle text-center">
@@ -373,7 +392,7 @@ async function resetPassword(event){
 }
 
 
-//Facilitates the registration of a user when the register form is submitted.
+//Facilitates the password reset email request of a user when the send password reset form is submitted.
 async function sendResetPassword(event){
     //Prevents the reloading of the page.
     event.preventDefault();
@@ -386,11 +405,11 @@ async function sendResetPassword(event){
 
     form.reset();
 
-    //Submits the registration request to the server and stores the result.
+    //Submits the password reset email request to the server and stores the result.
     let result = await sendRequest(SERVER + "/resetPassword", "POST", resetDetails);
     let messageArea = document.querySelector("#sendResetPasswordMessage")
 
-    //Prints the outcome of the request to the outcome area of the registration section.
+    //Prints the outcome of the request to the outcome area of the password reset email section.
     if("error" in result || "msg" in result){
         messageArea.innerHTML = `<div class="align-middle text-center">
                                     <b class="align-middle text-danger text-center">${result["error"]}</b>
@@ -477,18 +496,23 @@ async function getReports(potholeID){
 
 //Loads the reports for a given pothole into the pothole information pane/canvas/slide-out menu.
 async function loadReports(potholeID){
+    //Gets the report container and initializes the loading screen.
+    let allReportsContainer = document.querySelector("#reportAccordion")
+    allReportsContainer.innerHTML = `<div class="align-middle text-center">
+                                        <div class="spinner-border text-dark mb-2" role="status"></div><br>
+                                        <b class="align-middle text-dark text-center">Loading Reports...</b>
+                                    </div>`;;
+
+
     //Gets all of the pothole reports.
     let potholeReports = await getReports(potholeID)
 
+    //Writes the number of reports to the report area.
     let numberOfReportsContainer = document.querySelector('#numberOfReportsArea')
-    numberOfReportsContainer.innerHTML = `${potholeReports.length} Report`;
+    numberOfReportsContainer.innerHTML = `${potholeReports.length == undefined ? "-" : potholeReports.length} Report`;
+    //If the number of reports is more than 1, add an 's' to make Report plural.
     if(potholeReports.length > 1)
-    numberOfReportsContainer.innerHTML +=`s`
-
-    //Gets the report container and initializes the reports to a blank string.
-    let allReportsContainer = document.querySelector("#reportAccordion")
-    allReportsContainer.innerHTML = "";
-
+        numberOfReportsContainer.innerHTML +=`s`
 
     //Attempts to load the reports into the pane.
     try {
@@ -499,12 +523,11 @@ async function loadReports(potholeID){
             else
                 return -1;
         })
-
+        //After getting the reports from the server, reset the reports container.
+        allReportsContainer.innerHTML = ``
         //If there are reports for the pothole, populate the pane.
         if(potholeReports.length > 0){
             //Iterates over the reports and generates the accordion list for the potholes.
-
-
             for(report of potholeReports){
                 allReportImages = ""
                 //Determines if there are pothole images to be added. If not, display a message.
@@ -531,6 +554,7 @@ async function loadReports(potholeID){
                 downvoteButtonColor = await determineDownVoteButtonColor(report, "downvote")
                 let color = determineTextColor(netVotes);
                 
+                //Converts the date to a dateobject
                 var newDate = dateConvert(report.dateReported);
                 //Creates and appends the accordion item containing the report information.
                 allReportsContainer.innerHTML += 
@@ -573,7 +597,7 @@ async function loadReports(potholeID){
                                             <i class="bi bi-arrow-down"></i>
                                         </button>
                                     </span>
-                                    <strong class="px-3 ${color}" id="netVotes-${report.reportID}">${netVotes}</strong>
+                                    <strong class="px-3 ${color}" id="netVotes-${report.reportID}"><span class="text-white">${netVotes}<span></strong>
                                     <span id="castedUpvote-${report.reportID}">
                                         <button type="button" class="btn ${upvoteButtonColor}" onclick="voteOnReport(event, ${potholeID}, ${report.reportID}, true)">
                                             <i class="bi bi-arrow-up"></i>
@@ -600,28 +624,20 @@ async function loadReports(potholeID){
 
 //Loads the report page content into the report page based on the device that is being used.
 async function loadReportPage(){
+    //Gets the report dash area.
     let reportArea = document.querySelector("#reportContent");
-    let reportModal = document.querySelector("#standardReportModal");
 
+    //Gets the user context
     let user = await identifyUser();
 
+    //If the user is not logged in, display an error message.
     if("error" in user || "msg" in user){
         reportArea.innerHTML = `<div class="mt-5 text-center text-black">
                                         <h2>User is not logged in!</h2>
                                         <p>${user["error"]}</p>
                                     </div>`
-        //reportModal.innerHTML = `<div class="modal-dialog">
-        //                            <div class="modal-content">
-        //                                <div class="modal-header justify-content-center">
-        //                                    <h2>User is not logged in!</h2>
-        //                                </div>
-        //                                <div class="modal-body text-center">
-        //                                    <p>${user["error"]}</p>
-        //                                </div>
-        //                               <div class="modal-footer"></div>
-        //                            </div>
-        //                        </div>`
     } else {
+    //Otherwise, display the interfaces if the device the user is logged in and the device is a mobile device.
         //If a mobile device is not being used, display that their device is unsupported.
         //if(isMobileDevice()){
              //reportArea.innerHTML = `
@@ -643,6 +659,7 @@ async function loadReportPage(){
 
 //Loads the report leaderboard data into the report leaderboard page.
 async function loadReportLeaderboardData(){
+    //Gets the leaderboard area handle.
     let leaderboard = document.querySelector("#reportLeaderboard")
 
     //Sets the headers of the leaderboard.
@@ -654,10 +671,10 @@ async function loadReportLeaderboardData(){
         <th scope="col">CONSTITUENCY</th>
     </tr>
     `
-    //Retrieves the leaderboard data and stores it.
+    //Retrieves the report leaderboard data and stores it.
     let leaderboardData = await getReportLeaderboardData();
     
-    //Iterates over the leaderboard data and appends rows containing the leaderboard information.
+    //Iterates over the leaderboard data and appends rows containing the report leaderboard information.
     let i = 1;
     for(pothole of leaderboardData){
         try {
@@ -681,6 +698,7 @@ async function loadReportLeaderboardData(){
 
 //Loads the constituency pothole leaderboard data into the leaderboard page.
 async function loadLeaderboardData(){
+    //Retrieves the constituency leaderboard data and stores it.
     let leaderboard = document.querySelector("#constLeaderboard")
     //Sets the headers of the leaderboard.
     leaderboard.innerHTML = `
@@ -743,6 +761,7 @@ async function displayCouncillorInfo(event, constituencyID){
         </table>
         `
     } catch(e){
+        //Displays the error message in the event that the user is offline and the page is not cached.
         if(!window.navigator.onLine){
             councillorModalInfo.innerHTML = `<div class="text-center"><b class="text-danger text-center">Please visit this page when online to save for offline use!</b><div>`
         } else {
@@ -763,9 +782,11 @@ async function voteOnReport(event, potholeID, reportID, isUpvote){
     let netVotesCounter = document.querySelector(`#netVotes-${reportID}`)
     let accordionVotesCounter = document.querySelector(`#accordionNetVotes-${reportID}`)
 
+    //Gets the vote buttons
     let upvoteButton = document.querySelector(`#castedUpvote-${reportID}`)
     let downvoteButton = document.querySelector(`#castedDownvote-${reportID}`)
     
+    //Gets the outcome message area.
     let messageArea = document.querySelector(`#voteOutcomeMessage-${reportID}`)
 
     //Sends the vote request to the server for the pothole and reportID.
@@ -789,12 +810,11 @@ async function voteOnReport(event, potholeID, reportID, isUpvote){
             //Recalculates the votes, text colors and button colors.
             newNetVotes = calculateNetVotes(updatedReport)
             let color = determineTextColor(newNetVotes)
-
             let updatedDownvoteButtonColor = await determineDownVoteButtonColor(updatedReport)
             let updatedUpvoteButtonColor = await determineUpVoteButtonColor(updatedReport)
 
             //Replaces the buttons, text, and counters for the updated report.
-            netVotesCounter.innerHTML = newNetVotes
+            netVotesCounter.innerHTML = `<span class="text-white">${newNetVotes}</span>`
             accordionVotesCounter.innerHTML = `<span class="font-monospace ${color}">${(newNetVotes < 0 ? "" : newNetVotes == 0 ? "&nbsp" : "+")}<span id="accordionNetVotes-${updatedReport.reportID}">${newNetVotes}</span></span>`
             upvoteButton.innerHTML = `<button id="castedUpvote-${updatedReport.reportID}" type="button" class="btn ${updatedUpvoteButtonColor}" onclick="voteOnReport(event, ${potholeID}, ${updatedReport.reportID}, true)">
                                         <i class="bi bi-arrow-up"></i>
@@ -850,6 +870,7 @@ async function loadConstituencyData(constituencyID){
         </table>
         `
     } catch(e){
+        //If the user is offline and the data is not cached, display the cache error message.
         if(!window.navigator.onLine){
             councillorInformationArea.innerHTML = `<div class="text-center text-white"><b class="text-danger text-center">Please visit this page when online to save for offline use!</b><div>`
         } else {
@@ -951,6 +972,7 @@ async function postDriverReport() {
   	await buildReport(null, null, DRIVER_REPORT_URL);
 }
 
+//Gets and updates the coordinates of the user in the standard report screen.
 async function updateLocalCoords(){
     var latitude, longitude;
 
@@ -964,8 +986,7 @@ async function updateLocalCoords(){
 			latitude = position.coords.latitude;
 			longitude = position.coords.longitude;
 
-            console.log(latitude, longitude)
-
+            //Sets the latitude and longitude in the localstorage.
             localStorage.setItem("latitude", latitude)
             localStorage.setItem("longitude", longitude)
 
@@ -986,9 +1007,9 @@ async function updateLocalCoords(){
 		displayToast("failed", "Unfortunately we couldn't find your coordinates!")
 	}
 
+    //Gets the coordiantes stored in localStorage of the browser, and writes them to the DOM field.
     latitude = localStorage.getItem("latitude")
     longitude = localStorage.getItem("longitude")
-
     coordTextArea.placeholder = `Latitude: ${latitude}, Longitude: ${longitude}`
 }
 
@@ -996,6 +1017,7 @@ async function updateLocalCoords(){
 async function buildReport(photoB64, description, url) {
 	var latitude, longitude;
 
+    //Attempts to parse the latitude and longitude from the localStorage.
     try {
         latitude = parseFloat(localStorage.getItem("latitude"))
         longitude = parseFloat(localStorage.getItem("longitude"))
@@ -1005,13 +1027,11 @@ async function buildReport(photoB64, description, url) {
         longitude = undefined;
     }
 
-
-	console.log(latitude, longitude)
 	//Checks to see if the device supports geolocation.
 	if (longitude != undefined && latitude != undefined) {
         //Sends the report to the endpoint and stores the results.
         let results = await sendReport(latitude, longitude, photoB64, description, url)
-        console.log(results)
+        //console.log(results)
         //Prints the results of sending the report.
         try {
             if("msg" in results){
@@ -1027,7 +1047,6 @@ async function buildReport(photoB64, description, url) {
             displayToast("failed", e.message)
         }
  	} else {
-        console.log("One of them is undefined!")
 	    //If the device does not support geolocation, display an error message.
 		displayToast("failed", "Unfortunately we couldn't find your coordinates!")
 	}
@@ -1035,9 +1054,10 @@ async function buildReport(photoB64, description, url) {
 
 //Sends a generated report to the endpoint URL.
 async function sendReport(latitude, longitude, photoB64, description = null, url){
-	
+    //Determines if the latitude and longitude resites within the map bounds.
     var inMap = leafletPip.pointInLayer([longitude, latitude], map);
 
+    //If the location is not within the map, return an error message.
     if(inMap.length == 0)
         return {error: "You must be within the map to report a pothole!"}
 
@@ -1067,6 +1087,7 @@ async function sendReport(latitude, longitude, photoB64, description = null, url
 	}
 }
 
+//Brandon's code.
 //Accepts a date in the format YYYY-MM-DD and returns it in the form DD-MMM-YYYY
 function dateConvert(date){
     const temp = report.dateReported.split('-')
@@ -1105,43 +1126,34 @@ async function main(){
     identifyUserContext()
     //Disables the back button
     disableBackButton()
-    //Adds a listener to the driver report button.
+    //Adds a click listener to the driver report button.
     document.getElementById('submit-driver-report').addEventListener('click', postDriverReport);
-
-    //Gets the sidebar toggle and updates its state, locally on the device, whenever it is clicked.
-    const sidebarToggle = document.body.querySelector('#sidebarToggle');
-    if (sidebarToggle) {
-        if (localStorage.getItem('sb|sidebar-toggle') === 'true') {
-            document.body.classList.toggle('sb-sidenav-toggled');
-        }
-        sidebarToggle.addEventListener('click', event => {
-            event.preventDefault();
-            document.body.classList.toggle('sb-sidenav-toggled');
-            localStorage.setItem('sb|sidebar-toggle', document.body.classList.contains('sb-sidenav-toggled'));
-        });
-    }
-
+    //Adds a click listener to the standard report button.
     document.getElementById('submit-passenger-report').addEventListener('click', handleStandardReport);
-
+    //Adds a listener to detect when the user has gone offline, and displays a corresponding message.
     window.addEventListener("offline", (event)=>{
         displayToast("failed", "Your network connection has been lost!")
     })
-
+    //Adds a listener to detect when the user has gone online, and displays a corresponding message.
     window.addEventListener("online", (event)=>{
         displayToast("success", "Network connection established!")
     })
 
-    
+    //Adds a listener to detect whenever a message has been sent via the channel; ie from the service worker.
     channel.addEventListener('message', event => {
+        //Displays the contents of the data in the channel via a toast if it contains a message or error.
         if("message" in event.data){
             displayToast("sync", event.data["message"])
         } else {
             displayToast("failed", event.data["error"])
         }
+        //Refreshes the potholes on the map; this assumes that the message pertains to syncing.
         displayPotholes();
     });
 
+    //Gets the current user.
     let user = await identifyUser();
+    //If the current user is logged in, initialize their dashboard and display their potholes.
     if(!("error" in user || "msg" in user)){
         await initDashboardMap();
         displayUserPotholes();
@@ -1149,7 +1161,7 @@ async function main(){
 
 }
 
-
+//Initializes the dashboard map.
 async function initDashboardMap(){
     dashboardMap = L.map('dashboardMap', {
         center: [10.69, -61.23],
@@ -1157,37 +1169,25 @@ async function initDashboardMap(){
         minZoom: 10
     });
 
+    //Gets the tile layer for the map and adds it to the map.
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
     }).addTo(dashboardMap);
-
-    /*
-    L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
-        attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
-        maxZoom: 18,
-        id: 'mapbox/streets-v11',
-        tileSize: 512,
-        zoomOffset: -1,
-        accessToken: 'pk.eyJ1IjoidGhlaHVtYW4iLCJhIjoiY2t3YXJoeTdhMm1ocDJxbW4wMXpuc2NhbCJ9.j0jEiwJsxa-Gm2DMb6Fdzw'
-    }).addTo(map);
-    */
 }
 
-
+//Gets all of the current user's potholes and returns it.
 async function getUserPotholes(){
     let potholes = await sendRequest(SERVER + '/api/dashboard/potholes', 'GET');
-
     return potholes;
 }
 
+//Gets the report images for a particular report, and returns the images.
 async function getUserReportImages(potholeID, reportID){
     let images = await sendRequest(SERVER + `/api/reports/pothole/${potholeID}/report/${reportID}/images`, 'GET');
-    console.log(images);
-
     return images;
 }
 
-//gets the dashboard modal
+//Gets the dashboard modal interface.
 function getDashboardModal(){
     var modalElementList = [].slice.call(document.querySelectorAll('.dashboardModal'))
     var modalList = modalElementList.map(function (modalEl) {
@@ -1201,65 +1201,66 @@ function getDashboardModal(){
     }
 }
 
-//function responsible for displaying the potholes on the map
+//Display the user's potholes on the dashboard map.
 async function displayUserPotholes(){
-    if(dashboardMarkers)
+    //Resets the dashboard layers and markers if previously initialized.
+    if(dashboardMarkers) //[] == 0
         dashboardMarkers = []
     if(dashboardMarkersLayer)
         dashboardMarkersLayer.clearLayers();
 
-    //adds a markers layer to the map
+    //Adds a markers layer to the map
     dashboardMarkersLayer = L.layerGroup().addTo(dashboardMap); 
 
+    //Gets the user's potholes and displays them on the map if there are any.
     let potholes = await getUserPotholes();
     if(potholes.length > 0){
         for(let pothole of potholes){
             try {
-                //create a new marker object with the constituency name, pothole id and constituency id
+                //Create a new marker object with the constituency name, pothole id and constituency id
                 let marker = L.marker([pothole.latitude, pothole.longitude], {
                     potholeID: pothole.potholeID
                 }).on('click', async function(){
-
+                    //When a pothole report has been clicked, load the report into the modal and toggle the modal.
                     loadUserReport(pothole.potholeID);
-
-
-                    var dashboardModal = getDashboardModal();
-                    dashboardModal.toggle();
-
-                    //load reports and constituency data when the marker is clicked
-                    //loadReports(this.options.potholeID);
-                    //loadConstituencyData(this.options.constituencyID)
-                    
-                    //toggle the offcanvas
-                    //var offCanvasReport= getOffCanvas();
-                    //offCanvasReport.toggle();
-                }).bindPopup(pothole.numReports + " Report(s)").addTo(dashboardMarkersLayer);
+                    getDashboardModal().toggle();
+                //Adds the marker layer to the markers layer.
+                }).addTo(dashboardMarkersLayer);
+                //Pushes the created marker into a list of markers.
                 dashboardMarkers.push(marker)
             } catch (e){
+                //In the event of an error, print the most common error to the console.
                 console.log("PotholeID: " + pothole.potholeID + " may not lie on map!")
             }
         }   
     } 
     
-    setTimeout(() => {
-        map.invalidateSize();
-    }, 500);
+    
+    //setTimeout(() => {
+    //Resets the map to resize to the size of the UI.
+    map.invalidateSize();
+    //}, 200);
 }
 
+//Loads a user's report given the potholeID.
 async function loadUserReport(potholeID){
+    //Gets the dashboard title and body.
     let dashboardTitle = document.querySelector("#dashboard-title");
     let dashboardBody = document.querySelector("#dashboard-body");
-    let dashboardFooter = document.querySelector("#dashboard-footer");
 
+    //Sets the title of the report.
     dashboardTitle.innerText = "Your Report";
 
+    //Gets the report details and the report images for the report made by the user.
     try {
         var potholeReport = await getIndividualReport(potholeID);
         var reportedImages = await getUserReportImages(potholeID, potholeReport.reportID)
     } catch (e){
+        //Prints any errors that may occur.
         console.log(e)
     }
 
+    //If the user has switched to offline mode after accessing the dashboard, notify them that the dashboard can only be used online.
     if(!window.navigator.onLine){
         dashboardBody.innerHTML = `<div class="mt-5 text-center text-black">
                                     <h2>Unavailable!</h2>
@@ -1268,9 +1269,10 @@ async function loadUserReport(potholeID){
         return;
     }
 
+    //Initializes the string containing the image URLs.
     allReportImages = ""
 
-    //Attempts to load the reports into the pane.
+    //Attempts to load the report into the dashboard.
     try {
         //Determines if there are pothole images to be added. If not, display a message.
         if(reportedImages.length == 0){
@@ -1300,13 +1302,12 @@ async function loadUserReport(potholeID){
             }
         }  
     } catch(e){
-        //If any error occurs, display that there were no reports for ht pothole.
+        //If any error occurs, display that there were no reports for the pothole.
         allReportImages = `<div class="d-flex justify-content-center mt-3"><strong>Error retrieving images for report!</strong></div>`
     }
 
-
-    if(report != null){
-        console.log(report)
+    //If the pothole report has content, format and display the pothole content with corresponding edit buttons.
+    if(potholeReport != null){
         dashboardBody.innerHTML = 
         `
         <ul class="nav nav-pills nav-justified mb-3 w-100" id="pills-tab-dashboard" role="tablist" style="background: #040b14">
@@ -1327,7 +1328,7 @@ async function loadUserReport(potholeID){
 
             <div class="tab-pane fade show active mt-4" id="pills-imageTab" role="tabpanel" aria-labelledby="pills-home-tab">
         
-                <p class="fw-bold " for="editImages-${report.reportID}">Pothole Images</p>
+                <p class="fw-bold " for="editImages-${potholeReport.reportID}">Pothole Images</p>
                 <div id="dashCarouselReport-${potholeReport.reportID}" class="carousel slide my-2" data-bs-ride="carousel">
                     <div id="dashReportImages-${potholeReport.reportID}" class="carousel-inner">
                         ${allReportImages}
@@ -1343,13 +1344,13 @@ async function loadUserReport(potholeID){
 
                 <p> 
                     <div class="d-flex justify-content-center">
-                        <a class="btn btn-primary" data-bs-toggle="collapse" href="#addReportImage-${report.reportID}" role="button" aria-expanded="false" aria-controls="collapseExample"><i class="bi bi-plus-medical"></i>
+                        <a class="btn btn-primary" data-bs-toggle="collapse" href="#addReportImage-${potholeReport.reportID}" role="button" aria-expanded="false" aria-controls="collapseExample"><i class="bi bi-plus-medical"></i>
                             Add Image
                         </a>
                     </div>
                 </p>
 
-                <div class="collapse" id="addReportImage-${report.reportID}">
+                <div class="collapse" id="addReportImage-${potholeReport.reportID}">
                     <div class="text-white mb-2">
 
                         <!-- Image Preview Area -->
@@ -1370,7 +1371,7 @@ async function loadUserReport(potholeID){
                         </div>
                         <div class="text-center mb-3" id="dashboardUploadProgress"></div>
                         <div class="d-flex justify-content-center">
-                            <button onclick="handleAddImage(event, ${report.potholeID}, ${report.reportID})" class="btn btn-primary"><i class='bi bi-camera-fill'></i> Add</button> 
+                            <button onclick="handleAddImage(event, ${potholeReport.potholeID}, ${potholeReport.reportID})" class="btn btn-primary"><i class='bi bi-camera-fill'></i> Add</button> 
                         </div>
                     </div>
                 </div>
@@ -1380,23 +1381,23 @@ async function loadUserReport(potholeID){
 
             <div class="tab-pane fade show mt-4" id="pills-descriptionTab" role="tabpanel" aria-labelledby="pills-home-tab">
                 <div class="form-group mb-2">
-                    <label class="fw-bold" for="editDescription-${report.reportID}">Pothole Description</label>
-                    <p class="ms-3 mt-2">${report.description}</p>
+                    <label class="fw-bold" for="editDescription-${potholeReport.reportID}">Pothole Description</label>
+                    <p class="ms-3 mt-2">${potholeReport.description}</p>
                 </div>
 
                 <p>
                     <div class="d-flex justify-content-center">
-                        <a class=" btn btn-primary mt-4" data-bs-toggle="collapse" href="#editPotholeDescription-${report.reportID}" role="button" aria-expanded="false" aria-controls="collapseExample"><i class='bi bi-pencil' ></i>
+                        <a class=" btn btn-primary mt-4" data-bs-toggle="collapse" href="#editPotholeDescription-${potholeReport.reportID}" role="button" aria-expanded="false" aria-controls="collapseExample"><i class='bi bi-pencil' ></i>
                             Edit Description
                         </a>
                     </div>
                 </p>
 
-                <div class="collapse" id="editPotholeDescription-${report.reportID}">
+                <div class="collapse" id="editPotholeDescription-${potholeReport.reportID}">
                     <div class="text-white mb-2">
-                        <form class="form-group mb-1" onsubmit="updatePotholeDescription(event, ${report.potholeID}, ${report.reportID})">
+                        <form class="form-group mb-1" onsubmit="updatePotholeDescription(event, ${potholeReport.potholeID}, ${potholeReport.reportID})">
                             
-                            <input type="text" id="updatePotholeDescription-${report.reportID}" class="text-muted form-control mt-2" name="description" value="${report.description}" required>
+                            <input type="text" id="updatePotholeDescription-${potholeReport.reportID}" class="text-muted form-control mt-2" name="description" value="${potholeReport.description}" required>
                             <br>
                             <div class="d-flex justify-content-center">
                                 <button type="submit" class="btn btn-primary">Update</button>
@@ -1412,19 +1413,19 @@ async function loadUserReport(potholeID){
             <div class="tab-pane fade show mt-4" id="pills-deleteTab" role="tabpanel" aria-labelledby="pills-home-tab">
                 <p>
 
-                    <label class="fw-bold" for="editDescription-${report.reportID}">Delete Pothole</label>
+                    <label class="fw-bold" for="editDescription-${potholeReport.reportID}">Delete Pothole</label>
                     <div class="d-flex justify-content-center mt-3">
-                        <button class="btn btn-danger w-100 py-5" data-bs-toggle="collapse" href="#deletePotholeReport-${report.reportID}" role="button" aria-expanded="false" aria-controls="collapseExample"><i class='bi bi-trash'></i>
+                        <button class="btn btn-danger w-100 py-5" data-bs-toggle="collapse" href="#deletePotholeReport-${potholeReport.reportID}" role="button" aria-expanded="false" aria-controls="collapseExample"><i class='bi bi-trash'></i>
                             Delete
                         </button>
                     </div>
                 </p>
-                <div class="mt-4 collapse" id="deletePotholeReport-${report.reportID}">
+                <div class="mt-4 collapse" id="deletePotholeReport-${potholeReport.reportID}">
                     <div class="text-white text-center">
                         <b>Are you sure you want to delete this report?</b><br>
                         <div class="mt-4 text-center">
-                            <button onclick="deletePotholeReport(event, ${report.potholeID}, ${report.reportID})" class="btn btn-danger me-3">Confirm</button>
-                            <button class="btn btn-secondary" type="button" data-bs-toggle="collapse" data-bs-target="#deletePotholeReport-${report.reportID}" aria-expanded="false" aria-controls="collapseExample">
+                            <button onclick="deletePotholeReport(event, ${potholeReport.potholeID}, ${potholeReport.reportID})" class="btn btn-danger me-3">Confirm</button>
+                            <button class="btn btn-secondary" type="button" data-bs-toggle="collapse" data-bs-target="#deletePotholeReport-${potholeReport.reportID}" aria-expanded="false" aria-controls="collapseExample">
                                 Close
                             </button>
                         </div>
@@ -1435,27 +1436,28 @@ async function loadUserReport(potholeID){
         </div>  
         `
         
-      
-        /*
-        `<p>${report.dateReported}</p>
-        <p>${report.description}</p>
-        <p>${report.potholeID}</p>
-        <p>${report.reportID}</p>
-        <p>${report.reportedBy}</p>
-        <p>${report.reportedImages}</p>
-        <p>${report.userID}</p>
-        <p>${report.votes}</p>`
-        */
     } else {
+    //Otherwise, display an error if no pothole can be displayed from the pin.
         dashboardBody.innerHTML = `<p>An error has occurred!</p>`
     }
 }
 
 
-
+//Deletes an entire pothole report from within the dashboard.
 async function deletePotholeReport(event, potholeID, reportID){
-    let result = await sendRequest(SERVER + `/api/reports/pothole/${potholeID}/report/${reportID}`, "DELETE");
+    //Gets the outcome area and displays the outcome.
     let messageOutcomeArea  = document.querySelector("#deletePotholeMessage");
+
+    //Sets an initial outcome.
+    messageOutcomeArea.innerHTML = `<div class="align-middle text-center">
+                                        <b class="align-middle text-success mt-2 text-center">Deleting Pothole...</b>
+                                    </div>`;
+
+    //Sends a delete request that corresponds to the report.
+    let result = await sendRequest(SERVER + `/api/reports/pothole/${potholeID}/report/${reportID}`, "DELETE");
+
+    
+    
 
     if("error" in result || "msg" in result){
         messageOutcomeArea.innerHTML = `<div class="align-middle text-center">
@@ -1464,33 +1466,43 @@ async function deletePotholeReport(event, potholeID, reportID){
         messageOutcomeArea.innerHTML = `<div class="align-middle text-center">
                                             <b class="align-middle text-success text-center">Pothole Deleted Successfully!</b>
                                         </div>`;
-
+        //Reloads the dashboard and displays the updated potholes on the main map.
         loadDashboard();
         displayPotholes();
     }
 
 }
 
+//Updates the pothole description for a given pothole, from within the dashboard.
 async function updatePotholeDescription(event, potholeID, reportID){
+    //Gets and sets the initial message when updating a pothole description.
+    let messageOutcomeArea = document.querySelector("#updateDescriptionMessage")
+    messageOutcomeArea.innerHTML = `<div class="align-middle text-center">
+                                        <div class="spinner-border text-success mb-2" role="status"></div><br>
+                                        <b class="align-middle text-success text-center">Updating Description...</b>
+                                    </div>`;
+    //Prevents the page from reloading on submission.
     event.preventDefault();
 
+    //Gets the form and creates the updated description object.
     let form = event.target;
-
     let newDescription = {
         "description" : form.elements["description"].value
     }
 
+    //Sends the PUT request to the server with the new information for the pothole.
     let result = await sendRequest(SERVER + `/api/reports/pothole/${potholeID}/report/${reportID}`, "PUT", newDescription);
-    let messageOutcomeArea  = document.querySelector("#updateDescriptionMessage");
-
+    
+    //Displays the outcome in the associated text area.
     if("error" in result || "msg" in result){
         messageOutcomeArea.innerHTML = `<div class="align-middle text-center">
         <b class="text-danger text-center">${result["error"]}</b></div>`;
     } else {
         messageOutcomeArea.innerHTML = `<div class="align-middle text-center">
-                                            <div class="spinner-border text-success mb-2" role="status"></div><br>
-                                            <b class="align-middle text-success text-center">Description Updated Successfully!</b>
+                                            <b class="align-middle text-success text-center mt-2">Description Updated! Reloading...</b>
                                         </div>`;
+
+        //Reloads the report after 3 seconds with the updated information.
         setTimeout(()=>{
             loadUserReport(potholeID)
         }, 3000, potholeID)
@@ -1498,21 +1510,24 @@ async function updatePotholeDescription(event, potholeID, reportID){
     }
 }
 
-
+//Allows for a user to change their password while logged in.
 async function changePassword(event){
+    //Prevents the page from reloading on submission.
     event.preventDefault();
 
+    //Gets the form containing the information and extracts the form values for password changing.
     let form = event.target;
-
     let passwordDetails = {
         "oldPassword" : form.elements["oldPassword"].value,
         "password" : form.elements["password"].value,
         "confirmPassword" : form.elements["confirmPassword"].value
     }
 
+    //Sends the password change request to the backend for processing.
     let result = await sendRequest(SERVER + `/user/password`, "PUT", passwordDetails);
-    let messageOutcomeArea  = document.querySelector("#updatePasswordMessage");
 
+    //Gets a handle on the message outcome area and displays the outcome in the message area.
+    let messageOutcomeArea  = document.querySelector("#updatePasswordMessage");
     if("error" in result || "msg" in result){
         messageOutcomeArea.innerHTML = `<div class="align-middle text-center">
         <b class="text-danger text-center">${result["error"]}</b></div>`;
@@ -1523,19 +1538,23 @@ async function changePassword(event){
     }
 }
 
+//Allows for a user to change their profile information such as their name.
 async function updateProfile(event){
+    //Prevents the page from reloading on submission.
     event.preventDefault();
 
+    //Gets the form containing the information and extracts the form values for name changing.
     let form = event.target;
-
     let profileDetails = {
         "firstName" : form.elements["firstName"].value,
         "lastName" : form.elements["lastName"].value,
     }
 
+    //Sends the name change request to the backend for processing.
     let result = await sendRequest(SERVER + `/user/profile`, "PUT", profileDetails);
-    let messageOutcomeArea  = document.querySelector("#updateProfileMessage");
 
+    //Gets a handle on the message outcome area and displays the outcome in the message area.
+    let messageOutcomeArea  = document.querySelector("#updateProfileMessage");
     if("error" in result || "msg" in result){
         messageOutcomeArea.innerHTML = `<div class="align-middle text-center">
         <b class="text-danger text-center">${result["error"]}</b></div>`;
@@ -1543,42 +1562,37 @@ async function updateProfile(event){
         messageOutcomeArea.innerHTML = `<div class="align-middle text-center">
                                             <b class="align-middle text-success text-center">Profile Updated Successfully!</b>
                                         </div>`;  
+        //Updates the user's display information on their nav.
         await identifyUserContext()      
     }
 }
 
-
-async function loadProfileData(){
-    let user = await identifyUser();
-
-    let firstName = document.querySelector("#updateProfile-firstName")
-    let lastName = document.querySelector("#updateProfile-lastName")
-
-    let messageOutcomeArea  = document.querySelector("#updateProfileMessage");
-
-    if("error" in user || "msg" in user){
-        messageOutcomeArea.innerHTML = `<b class="text-danger text-center">User is not logged in.</b></div>`;
-    } else {
-        firstName.value = user["firstName"];
-        lastName.value = user["lastName"];
-    }
-}
-
+//Allows for a user to add an image to their existing report via the dashboard.
 async function addImageToReport(photoB64, potholeID, reportID){
+    //Gets a handle on the message outcome area 
+    let messageOutcomeArea  = document.querySelector("#imageUpdateMessage");
+    messageOutcomeArea.innerHTML = `<div class="align-middle text-center my-2">
+                                            <div class="spinner-border text-success mb-2" role="status"></div><br>
+                                            <b class="align-middle text-success text-center mt-2">Adding Image...</b>
+                                    </div>`;
+
+    //Creates the image array for the report.
     let B64Image = {
         "images" : [photoB64]
     }
 
+    //Sends the image to the backend to be added to the report images.
     let result = await sendRequest(SERVER + `/api/reports/pothole/${potholeID}/report/${reportID}/images`, "POST", B64Image);
-    let messageOutcomeArea  = document.querySelector("#imageUpdateMessage");
+    
+    //Displays the image add outcome via the outcome area.
     if("error" in result || "msg" in result){
         messageOutcomeArea.innerHTML = `<div class="align-middle text-center">
         <b class="text-danger text-center">${result["error"]}</b></div>`;
     } else {
         messageOutcomeArea.innerHTML = `<div class="align-middle text-center mb-2">
-                                            <div class="spinner-border text-success mb-2" role="status"></div><br>
-                                            <b class="align-middle text-success text-center">Image Added successfully!</b>
+                                            <b class="align-middle text-success text-center mt-2">Image Added! Reloading...</b>
                                         </div>`;
+        //Reloads the user report with the updated information.
         setTimeout(()=>{
             loadUserReport(potholeID)
         }, 3000, potholeID)
@@ -1586,20 +1600,29 @@ async function addImageToReport(photoB64, potholeID, reportID){
     }
 }
 
-
+//Allows for a user to remove an image from their existing report via the dashboard.
 async function deleteImageFromReport(event, potholeID, reportID, imageID){
+    let messageOutcomeArea  = document.querySelector("#imageUpdateMessage");
+    messageOutcomeArea.innerHTML = `<div class="align-middle text-center mb-2">
+                                            <div class="spinner-border text-success mb-2" role="status"></div><br>
+                                            <b class="align-middle text-success text-center mt-2">Deleting Image...</b>
+                                        </div>`;
+
+    //Prevents the page from reloading.
     event.preventDefault();
 
+    //Sends the delete request to the backend and stores the response.
     let result = await sendRequest(SERVER + `/api/reports/pothole/${potholeID}/report/${reportID}/images/${imageID}`, "DELETE");
-    let messageOutcomeArea  = document.querySelector("#imageUpdateMessage");
+    
+    //Displays the response in the message outcome area.
     if("error" in result || "msg" in result){
         messageOutcomeArea.innerHTML = `<div class="align-middle text-center">
         <b class="text-danger text-center">${result["error"]}</b></div>`;
     } else {
         messageOutcomeArea.innerHTML = `<div class="align-middle text-center mb-2">
-                                            <div class="spinner-border text-success mb-2" role="status"></div><br>
-                                            <b class="align-middle text-success text-center">Image Deleted Successfully!</b>
+                                            <b class="align-middle text-success text-center mt-2">Image Deleted! Reloading...</b>
                                         </div>`;
+        //Refreshes the report after the image has been deleted.
         setTimeout(()=>{
             loadUserReport(potholeID)
         }, 3000, potholeID)
@@ -1607,9 +1630,11 @@ async function deleteImageFromReport(event, potholeID, reportID, imageID){
     }
 }
 
-
+//Retrieves an individual report from the server, via the potholeID.
 async function getIndividualReport(potholeID){
+    //Gets all of the reports from the server.
     let reports = await sendRequest(SERVER + `/api/dashboard/reports`, 'GET');
+    //Attempts to iterate over the report to find a matching report, and returns it.
     try {
         for(report of reports){
             if(report.potholeID == potholeID){
@@ -1617,37 +1642,42 @@ async function getIndividualReport(potholeID){
             }
         }
     } catch(e){
+        //Prints any errors and returns null if there are no matching reports.
         console.log(e);
         return null
     }
 }
 
-
+//Loads the dashboard modal.
 async function loadDashboard(){
     let user = await identifyUser();
-    let loginStateArea = document.querySelector("#dashboardMap");
+    //Gets the dashboard component handles.
+    let dashboardMapArea = document.querySelector("#dashboardMap");
     let dashboardMessage = document.querySelector("#dashboardMessage")
 
-
+    //If the user is not online, hide the dashboard map and display a message that the dashboard can only be used online.
     if(!window.navigator.onLine){
-        loginStateArea.style.visibility = "hidden"
+        dashboardMapArea.style.visibility = "hidden"
         dashboardMessage.innerHTML = `<div class="mt-5 text-center text-black">
                                             <h2>Unavailable!</h2>
                                             <p>Sorry, the dashboard is only available in online mode.</p>
                                         </div>`
     } else {
-        loginStateArea.style.visibility = "visible"
+    //Otherwise, display the dashboard, and empty the message string.
+        dashboardMapArea.style.visibility = "visible"
         dashboardMessage.innerHTML = ``
+        //If the user is not logged in, display the not logged in error.
         if("error" in user || "msg" in user){
-            loginStateArea.innerHTML = `<div class="mt-5 text-center text-black">
+            dashboardMapArea.innerHTML = `<div class="mt-5 text-center text-black">
                                             <h2>User is not logged in!</h2>
                                             <p>${user["error"]}</p>
                                         </div>`
         } else {
+            //Otherwise, display the user potholes and reset the map size.
             await displayUserPotholes();
-            setTimeout(() => {
+            //setTimeout(() => {
                 dashboardMap.invalidateSize();
-            }, 200);
+            //}, 200);
         }
     }   
 }
