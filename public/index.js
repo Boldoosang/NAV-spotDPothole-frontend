@@ -494,7 +494,7 @@ async function loadReports(potholeID){
     try {
         //Sorts the pothole by ID; most recent to least recent.
         potholeReports = potholeReports.sort((a, b) => {
-            if (a.potholeID < b.potholeID)
+            if (a.reportID < b.reportID)
                 return 1;                
             else
                 return -1;
@@ -537,7 +537,7 @@ async function loadReports(potholeID){
                 `<div class="accordion-item rounded-0">
                     <h2 class="accordion-header" id="heading-${report.reportID}">
                     <button class="accordion-button collapsed fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-${report.reportID}">
-                         <div><span class="font-monospace ${color}" id="accordionNetVotes-${report.reportID}">${(netVotes <= 0 ? "" : "+")}<span>${netVotes}</span></span> | ${report.reportedBy} - (${newDate})  </div>
+                         <div><span class="font-monospace ${color}" id="accordionNetVotes-${report.reportID}">${(netVotes < 0 ? "" : netVotes == 0 ? "&nbsp" : "+")}<span>${netVotes}</span></span> | ${report.reportedBy} - [${newDate}]  </div>
                     </button>
                     </h2>
                     <div id="collapse-${report.reportID}" class="accordion-collapse collapse" data-bs-parent="#reportAccordion">
@@ -662,7 +662,7 @@ async function loadReportLeaderboardData(){
     for(pothole of leaderboardData){
         try {
         leaderboard.innerHTML += `
-        <tr onclick="reportLeaderboardModal(${pothole.lat}, ${pothole.long}, ${pothole.potholeID})">
+        <tr onclick="reportLeaderboardModal(${pothole.lat}, ${pothole.long}, ${pothole.potholeID})"  id=${(i < 4 ? "topThreeRows" : "")}>
             <td>${i}</td>
             <td class="text-primary text-decoration-underline">Pothole #${pothole.potholeID}</td>
             <td>${pothole.numReports}</td>
@@ -698,7 +698,7 @@ async function loadLeaderboardData(){
     let i = 1;
     for(constituency of leaderboardData){
         leaderboard.innerHTML += `
-        <tr>
+        <tr id=${(i < 4 ? "topThreeRows" : "")}>
             <td>${i}</td>
             <td>${constituency.name}</td>
             <td>${constituency.count}</td>
@@ -795,7 +795,7 @@ async function voteOnReport(event, potholeID, reportID, isUpvote){
 
             //Replaces the buttons, text, and counters for the updated report.
             netVotesCounter.innerHTML = newNetVotes
-            accordionVotesCounter.innerHTML = `<span class="font-monospace ${color}">${(newNetVotes <= 0 ? "" : "+")}<span id="accordionNetVotes-${updatedReport.reportID}">${newNetVotes}</span></span>`
+            accordionVotesCounter.innerHTML = `<span class="font-monospace ${color}">${(newNetVotes < 0 ? "" : newNetVotes == 0 ? "&nbsp" : "+")}<span id="accordionNetVotes-${updatedReport.reportID}">${newNetVotes}</span></span>`
             upvoteButton.innerHTML = `<button id="castedUpvote-${updatedReport.reportID}" type="button" class="btn ${updatedUpvoteButtonColor}" onclick="voteOnReport(event, ${potholeID}, ${updatedReport.reportID}, true)">
                                         <i class="bi bi-arrow-up"></i>
                                     </button>`
@@ -851,10 +851,10 @@ async function loadConstituencyData(constituencyID){
         `
     } catch(e){
         if(!window.navigator.onLine){
-            councillorInformationArea.innerHTML = `<div class="text-center"><b class="text-danger text-center">Please visit this page when online to save for offline use!</b><div>`
+            councillorInformationArea.innerHTML = `<div class="text-center text-white"><b class="text-danger text-center">Please visit this page when online to save for offline use!</b><div>`
         } else {
             //If there was an error formatting or accessing the data, display an error message saying that no constituency information is available.
-            councillorInformationArea.innerHTML = `<div class="d-flex justify-content-center my-3"><strong>No constituency information available!</strong></div>`
+            councillorInformationArea.innerHTML = `<div class="d-flex justify-content-center text-white my-3"><strong>No constituency information available!</strong></div>`
         }
     }
 }

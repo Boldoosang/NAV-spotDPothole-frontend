@@ -42,7 +42,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 #constituencyInformationPanel{
-  background-image: url(/public/images/road2.jpg);
+  background-image: url(/public/images/road.jpg);
 }
 
 body.modal-open header{
@@ -501,6 +501,12 @@ body.modal-open #mainTabContent{
 /*--------------------------------------------------------------
 # Leaderboard Section
 --------------------------------------------------------------*/
+
+#topThreeRows > td{
+  padding-top : 1.5rem;
+  padding-bottom: 1.5rem;
+}
+
 .btn-primary{
   background-color : #149ddd;
   border : none;
