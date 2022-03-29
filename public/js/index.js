@@ -1148,8 +1148,10 @@ async function main(){
         displayToast("failed", "Your network connection has been lost!")
     })
     //Adds a listener to detect when the user has gone online, and displays a corresponding message.
+    //Also requests background syncing.
     window.addEventListener("online", (event)=>{
         displayToast("success", "Network connection established!")
+        requestBackgroundSync();
     })
 
     //Adds a listener to detect whenever a message has been sent via the channel; ie from the service worker.
@@ -1667,6 +1669,12 @@ async function getIndividualReport(potholeID){
         console.log(e);
         return null
     }
+}
+
+//Manually requests a background sync event.
+async function requestBackgroundSync() {
+    const registration = await navigator.serviceWorker.ready;
+    await registration.sync.register('sendSavedRequests');
 }
 
 //Loads the dashboard modal.

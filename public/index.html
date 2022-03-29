@@ -56,7 +56,7 @@
 
                   navigator.serviceWorker.ready.then(function(registration) {
                       console.log('Service Worker Ready!')
-                      return registration.sync.register('sendFormData')
+                      return registration.sync.register('sendSavedRequests')
                   }).then(function () {
                       console.log('Sync event registered!')
                   }).catch(function() {
