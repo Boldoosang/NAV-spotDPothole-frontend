@@ -257,6 +257,13 @@ async function register(event){
     //Prevents the reloading of the page.
     event.preventDefault();
 
+    //Gets a handle on the outcome area.
+    let messageArea = document.querySelector("#userRegisterMessage")
+    messageArea.innerHTML = `<div class="align-middle text-center">
+                                <div class="spinner-border text-success mb-2" role="status"></div><br>
+                                <b class="align-middle text-success text-center">Registering...</b>
+                            </div>`;
+
     //Gets the submitted form details and parses it into the required format for the request. The form is then reset.
     let form = event.target;
 
@@ -273,18 +280,18 @@ async function register(event){
 
     //Submits the registration request to the server and stores the result.
     let result = await sendRequest(SERVER + "/register", "POST", registrationDetails);
-    let messageArea = document.querySelector("#userRegisterMessage")
+    
 
     //Prints the outcome of the request to the outcome area of the registration section.
     if("error" in result || "msg" in result){
-        console.log("Error")
+        //console.log("Error")
         messageArea.innerHTML = `<div class="align-middle text-center">
-                                    <b class="align-middle text-danger text-center">${result["error"]}</b>
+                                    <b class="align-middle text-danger text-center mt-2">${result["error"]}</b>
                                 </div>`
     } else {
-        console.log("Success")
+        //console.log("Success")
         messageArea.innerHTML = `<div class="align-middle text-center">
-                                    <b class="text-success text-center">Registration successful!</b>
+                                    <b class="text-success text-center mt-2">${result["message"]}</b>
                                 </div>`
     
     }
@@ -501,7 +508,7 @@ async function loadReports(potholeID){
     allReportsContainer.innerHTML = `<div class="align-middle text-center">
                                         <div class="spinner-border text-dark mb-2" role="status"></div><br>
                                         <b class="align-middle text-dark text-center">Loading Reports...</b>
-                                    </div>`;;
+                                    </div>`;
 
 
     //Gets all of the pothole reports.
@@ -791,10 +798,11 @@ async function voteOnReport(event, potholeID, reportID, isUpvote){
 
     //Sends the vote request to the server for the pothole and reportID.
     let result = await sendRequest(SERVER + `/api/vote/pothole/${potholeID}/report/${reportID}/vote`, "POST", voteData);
-    
+    let userLogin = await identifyUser();
+
     //If there was an error in voting, display the login error. (The only type of error possible)
     if("error" in result || "msg" in result){
-        if(!window.navigator.onLine && "error" in result){
+        if(!window.navigator.onLine && "email" in userLogin){
             messageArea.innerHTML = `<b class="text-danger text-center">Vote will be synced once reconnected!</b>`
         } else {
             messageArea.innerHTML = `<b class="text-danger text-center">Please login to vote!</b>`
@@ -1042,6 +1050,7 @@ async function buildReport(photoB64, description, url) {
                 displayToast("failed", results["error"])
             } else if("message" in results){
                 displayToast("success", results["message"])
+                displayPotholes();
             }
         } catch (e) {
             displayToast("failed", e.message)
@@ -1144,6 +1153,10 @@ async function main(){
         //Displays the contents of the data in the channel via a toast if it contains a message or error.
         if("message" in event.data){
             displayToast("sync", event.data["message"])
+        } else if("refresh" in event.data) {
+            window.location.reload();
+        } else if("install" in event.data){
+            displayToast("sync", "Initializing Application...")
         } else {
             displayToast("failed", event.data["error"])
         }
@@ -1236,10 +1249,10 @@ async function displayUserPotholes(){
     } 
     
     
-    //setTimeout(() => {
-    //Resets the map to resize to the size of the UI.
-    map.invalidateSize();
-    //}, 200);
+    setTimeout(() => {
+        //Resets the map to resize to the size of the UI.
+        map.invalidateSize();
+    }, 200);
 }
 
 //Loads a user's report given the potholeID.
@@ -1675,9 +1688,9 @@ async function loadDashboard(){
         } else {
             //Otherwise, display the user potholes and reset the map size.
             await displayUserPotholes();
-            //setTimeout(() => {
+            setTimeout(() => {
                 dashboardMap.invalidateSize();
-            //}, 200);
+            }, 200);
         }
     }   
 }

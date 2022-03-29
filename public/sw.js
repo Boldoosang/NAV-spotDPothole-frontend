@@ -5,25 +5,33 @@
 const CACHE_VERSION = 1;
 const CURRENT_CACHE = `main-${CACHE_VERSION}`;
 
+var CACHE_NAME = 'offline-form';
+var FOLDER_NAME = 'post_requests'
+var IDB_VERSION = 1
+var form_data
+const channel = new BroadcastChannel('sw-messages');
+
 // these are the routes we are going to cache for offline support
 const cacheFiles = [
   'ttmap.geojson',
-  'style.css',
+  'css/style.css',
+  'css/bootstrap.min.css.map',
   'manifest.json',
-  'map.js',
-  'index.js',
+  'js/map.js',
+  'js/index.js',
   'index.html',
-  'constants.js',
-  'leaflet.geometryutil.js',
-  'leaflet-routing-machine.js',
+  'js/constants.js',
+  'js/leaflet.geometryutil.js',
+  'js/leaflet-routing-machine.js',
   'images/favicon-16x16.png',
   'images/favicon-32x32.png',
   'images/icons-192.png',
   'images/icons-512.png',
+  'images/road.jpg',
   'images/SpotDPothole-Logo.png',
   'https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css',
-  'bootstrap.min.css',
-  'leaflet.min.css',
+  'css/bootstrap.min.css',
+  'css/leaflet.min.css',
   'https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Raleway:300,300i,400,400i,500,500i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i',
   'https://cdn.jsdelivr.net/npm/leaflet-pip@1.1.0/leaflet-pip.js',
   'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.js',
@@ -34,7 +42,7 @@ const cacheFiles = [
 ];
 
 // on activation we clean up the previously registered service workers
-self.addEventListener('activate', evt =>
+self.addEventListener('activate', evt => {
   evt.waitUntil(
     caches.keys().then(cacheNames => {
       return Promise.all(
@@ -46,18 +54,18 @@ self.addEventListener('activate', evt =>
       );
     })
   )
-);
+  channel.postMessage({"refresh" : true})
+});
 
 // on install we download the routes we want to cache for offline
 self.addEventListener('install', evt =>{
-  console.log("INSTALLED")
+  channel.postMessage({"install" : true})
   evt.waitUntil(
     caches.open(CURRENT_CACHE).then(cache => {
       return cache.addAll(cacheFiles);
     })
   )
-}
-);
+});
 
 // fetch the resource from the network
 const fromNetwork = (request, timeout) =>
@@ -82,7 +90,7 @@ const fromCache = request =>
             //console.log(await matching.json())
             return matching;
         }).catch(function(e){
-            console.log("This doesn't match anything in the cache!")
+            //console.log("This doesn't match anything in the cache!")
             return new Response();
         })
     );
@@ -118,10 +126,10 @@ var isExistInCache = function(request){
 }
 
 //bg sync fetch
+
 self.addEventListener('fetch', function(event) {
   // every request from our site, passes through the fetch handler
   //console.log('I am a request with url: ', event.request.clone().url)
-
   if (event.request.method === 'GET' && !event.request.url.includes("openstreetmap.org/")) {
 
     //figure out if these are the main files to be cached
@@ -144,7 +152,7 @@ self.addEventListener('fetch', function(event) {
     event.waitUntil(update(event.request));
   } else if (event.request.clone().method === 'POST') {
     // attempt to send request normally
-    console.log('form_data', form_data)
+    //console.log('form_data', form_data)
     event.respondWith(fetch(event.request.clone()).catch(function (error) {
       // only save post requests in browser, if an error occurs
       if(event.request.url.includes('/api/reports/standard') || event.request.url.includes('/api/reports/driver') || event.request.url.includes('vote')){
@@ -157,10 +165,7 @@ self.addEventListener('fetch', function(event) {
 //end bg sync fetch
 
 
-var CACHE_NAME = 'offline-form';
-var FOLDER_NAME = 'post_requests'
-var IDB_VERSION = 1
-var form_data
+
 
 //Background Sync
 
@@ -180,7 +185,7 @@ function savePostRequests(url, request) {
   })
 
   request.onsuccess = function (event) {
-    console.log('A new post request has been added to local IndexedDB.')
+    console.log('Request added to sync queue.')
   }
 
   request.onerror = function (error) {
@@ -214,7 +219,7 @@ var our_db
 openDatabase()
 
 self.addEventListener('message', function (event) {
-  console.log('Form data received from request', event.data)
+  //console.log('Form data received from request', event.data)
   if (event.data.hasOwnProperty('form_data')) {
     // receives form data from script.js upon submission
     form_data = event.data.form_data
@@ -237,13 +242,16 @@ function sendPostToServer () {
       // At this point, we have collected all the post requests in indexedb.
         for (let savedRequest of savedRequests) {
           // send them to the server one after the other
-          console.log('saved request', savedRequest)
+          //console.log('saved request', savedRequest)
           var requestUrl = savedRequest.url
           var request = savedRequest.request
           fetch(requestUrl, request).then(async function (response) {
-            console.log('server response', response)
-            const channel = new BroadcastChannel('sw-messages');
+            //console.log('server response', response)
+            
             responseJson = await response.json()
+
+            if("msg" in responseJson)
+              responseJson = {"error" : "Please relogin to the application to sync."}
             channel.postMessage(responseJson);
             //if (response.status < 400) {
               // If sending the POST request was successful, then remove it from the IndexedDB.
@@ -267,7 +275,7 @@ function sendPostToServer () {
 
 
 self.addEventListener('sync', function (event) {
-  console.log('now online')
+  console.log('Connected to Internet')
   if (event.tag === 'sendFormData') { // event.tag name checked here must be the same as the one used while registering sync
     event.waitUntil(
       // Send our POST request to the server, now that the user is online

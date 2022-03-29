@@ -21,24 +21,24 @@
   <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Raleway:300,300i,400,400i,500,500i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i" rel="stylesheet">
 
   <!-- Bootstrap CSS Files -->
-  <link href="bootstrap.min.css" rel="stylesheet">
+  <link href="css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css">
 
   <!-- Template Main CSS File -->
-  <link href="style.css" rel="stylesheet">
+  <link href="css/style.css" rel="stylesheet">
 
   <!-- Imports Leaflet Libraries -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.js" integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
   <script src="https://cdn.jsdelivr.net/npm/leaflet-pip@1.1.0/leaflet-pip.js"></script>
-  <link rel="stylesheet" href="leaflet.min.css" />
+  <link rel="stylesheet" href="css/leaflet.min.css" />
 
   <!-- Imports Routing Libraries -->
-  <script src="leaflet-routing-machine.js" defer></script>
-  <script src="leaflet.geometryutil.js" defer></script>
+  <script src="js/leaflet-routing-machine.js" defer></script>
+  <script src="js/leaflet.geometryutil.js" defer></script>
 
   <!-- Imports Offline Map Libraries -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/0.3.1/js/sql.js"></script>
-  <script src="Leaflet.TileLayer.MBTiles.js"></script>
+  <script src="js/Leaflet.TileLayer.MBTiles.js"></script>
 
   <!-- =======================================================
   * Template Name: iPortfolio - v3.7.0
@@ -49,21 +49,41 @@
 
 
   <script>
-        if ('serviceWorker' in navigator) {
-            // we are checking here to see if the browser supports the service worker api
-            window.addEventListener('load', function() {
-                navigator.serviceWorker.register('sw.js');
+          if ('serviceWorker' in navigator) {
+              // we are checking here to see if the browser supports the service worker api
+              window.addEventListener('load', function() {
+                  navigator.serviceWorker.register('sw.js')
 
-                navigator.serviceWorker.ready.then(function(registration) {
-                    console.log('Service Worker Ready!')
-                    return registration.sync.register('sendFormData')
-                }).then(function () {
-                    console.log('Sync event registered!')
-                }).catch(function() {
-                    console.log('Sync registration failed!')
-                });
-            }); 
-        }
+                  navigator.serviceWorker.ready.then(function(registration) {
+                      console.log('Service Worker Ready!')
+                      return registration.sync.register('sendFormData')
+                  }).then(function () {
+                      console.log('Sync event registered!')
+                  }).catch(function() {
+                      console.log('Sync registration failed!')
+                  });
+              }); 
+
+
+              navigator.serviceWorker.getRegistration().then(function(reg) {
+              // There's an active SW, but no controller for this tab.
+              try {
+                if (reg.active && !navigator.serviceWorker.controller) {
+                  // Perform a soft reload to load everything from the SW and get
+                  // a consistent set of resources.
+                  console.log("Hard refresh detected; reloading service worker listeners.")
+                  window.location.reload();
+                }
+              } catch(e){
+                console.log("First use of application; service worker listeners must be initialized.")
+              }
+
+              });
+
+          }
+
+          
+        
     </script>
 </head>
 
@@ -754,13 +774,13 @@
   <script src="https://www.gstatic.com/firebasejs/7.15.5/firebase-storage.js"></script>
 
   <!-- Main constants file -->
-  <script src="constants.js"></script>
+  <script src="js/constants.js"></script>
 
   <!-- Main web javascript file -->
-  <script src="index.js"></script>
+  <script src="js/index.js"></script>
 
   <!-- Map javascript -->
-  <script src="map.js"></script>
+  <script src="js/map.js"></script>
 </body>
 
 </html>

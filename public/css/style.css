@@ -42,7 +42,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 #constituencyInformationPanel{
-  background-image: url(images/road.jpg);
+  background-image: url(../images/road.jpg);
 }
 
 body.modal-open header{
