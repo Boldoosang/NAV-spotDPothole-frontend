@@ -11,6 +11,7 @@ let route
 let map
 let watchid
 let popupLocation
+let lControl
 
 
 function isPointOnLine(point, path) {
@@ -24,6 +25,8 @@ function isPointOnLine(point, path) {
 
 //fuction to load the map and the geoJSON data for the constituencies
 async function initMap() {
+    var offline;
+
     map = L.map('map', {
         center: [10.69, -61.23],
         zoom: 9,
@@ -32,23 +35,13 @@ async function initMap() {
 
     var online = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-    });
+    }).addTo(map);
 
-    var offline = L.tileLayer.mbTiles('https://dl.dropboxusercontent.com/s/j6yjhvzm5rzb4ob/tandt.mbtiles?dl=1', {});
-
-    if (navigator.onLine) {
-        online.addTo(map);
-    } else {
-        offline.addTo(map);
-    }
-    
-    //switch between online and offline map
     var baseMaps = {
         "Online": online,
-        "Offline": offline
-    };
+    }
 
-    L.control.layers(baseMaps, {}, {
+    lControl = L.control.layers(baseMaps, {}, {
         position: 'bottomleft'
     }).addTo(map);
 
@@ -459,7 +452,19 @@ async function routingConcept() {
 
 async function main() {
     await initMap();
-    displayPotholes();
-}
+    await displayPotholes();
+        caches.open(`main-1`).then(function(cache){
+            cache.keys().then(function(cacheKeys){
+                cacheKeys.find((o,i) => {
+                    if(o.url.includes('https://dl.dropboxusercontent.com/s/87jkx7txs1uazqw/tandtS.mbtiles?dl=1')){
+                        offline = L.tileLayer.mbTiles('https://dl.dropboxusercontent.com/s/87jkx7txs1uazqw/tandtS.mbtiles?dl=1');
+                        
+                        //switch between online and offline map
+                        lControl.addBaseLayer(offline, "Offline"); 
+                    }
+                })
+            })
+        })
+}   
 
 window.addEventListener('DOMContentLoaded', main);

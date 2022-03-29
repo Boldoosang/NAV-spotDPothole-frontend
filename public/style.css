@@ -42,7 +42,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 #constituencyInformationPanel{
-  background-image: url(/public/images/road.jpg);
+  background-image: url(images/road.jpg);
 }
 
 body.modal-open header{
@@ -404,7 +404,7 @@ body.modal-open #mainTabContent{
   display: flex;
   align-items: center;
   color: #a8a9b4;
-  padding: 20px 15px;
+  padding: 15px 15px;
   margin-bottom: -10px;
   transition: 0.3s;
   font-size: 18px;

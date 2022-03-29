@@ -22,15 +22,15 @@ const cacheFiles = [
   'images/icons-512.png',
   'images/SpotDPothole-Logo.png',
   'https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css',
-  'https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css',
-  'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.css',
+  'bootstrap.min.css',
+  'leaflet.min.css',
   'https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Raleway:300,300i,400,400i,500,500i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i',
   'https://cdn.jsdelivr.net/npm/leaflet-pip@1.1.0/leaflet-pip.js',
   'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.js',
   'https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/js/bootstrap.bundle.min.js',
   'https://www.gstatic.com/firebasejs/7.15.5/firebase-app.js',
   'https://www.gstatic.com/firebasejs/7.15.5/firebase-storage.js',
-  'https://dl.dropboxusercontent.com/s/j6yjhvzm5rzb4ob/tandt.mbtiles?dl=1'
+  'https://dl.dropboxusercontent.com/s/87jkx7txs1uazqw/tandtS.mbtiles?dl=1'
 ];
 
 // on activation we clean up the previously registered service workers
@@ -50,6 +50,7 @@ self.addEventListener('activate', evt =>
 
 // on install we download the routes we want to cache for offline
 self.addEventListener('install', evt =>{
+  console.log("INSTALLED")
   evt.waitUntil(
     caches.open(CURRENT_CACHE).then(cache => {
       return cache.addAll(cacheFiles);
@@ -125,7 +126,7 @@ self.addEventListener('fetch', function(event) {
 
     //figure out if these are the main files to be cached
     if(event.request.url.includes("/api/") || event.request.url.includes("osrm") || event.request.url.includes("identify")){
-      console.log(event.request.url + " will get the latest version!")
+      //console.log(event.request.url + " will get the latest version!")
 
       event.respondWith(
         fromNetwork(event.request, 10000).catch(() => fromCache(event.request))
@@ -133,7 +134,7 @@ self.addEventListener('fetch', function(event) {
 
       
     } else {
-      console.log(event.request.url + " will be retrieved from cache first, then network!")
+      //console.log(event.request.url + " will be retrieved from cache first, then network!")
       event.respondWith(
         caches.match(event.request).then(function(response) {
           return response || fetch(event.request);
