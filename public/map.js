@@ -453,14 +453,11 @@ async function routingConcept() {
 async function main() {
     await initMap();
     await displayPotholes();
-
-    //timeout for 1000 ms
-    setTimeout(function () {
         caches.open(`main-1`).then(function(cache){
             cache.keys().then(function(cacheKeys){
                 cacheKeys.find((o,i) => {
-                    if(o.url.includes('https://dl.dropboxusercontent.com/s/j6yjhvzm5rzb4ob/tandt.mbtiles?dl=1')){
-                        offline = L.tileLayer.mbTiles('https://dl.dropboxusercontent.com/s/j6yjhvzm5rzb4ob/tandt.mbtiles?dl=1');
+                    if(o.url.includes('https://dl.dropboxusercontent.com/s/87jkx7txs1uazqw/tandtS.mbtiles?dl=1')){
+                        offline = L.tileLayer.mbTiles('https://dl.dropboxusercontent.com/s/87jkx7txs1uazqw/tandtS.mbtiles?dl=1');
                         
                         //switch between online and offline map
                         lControl.addBaseLayer(offline, "Offline"); 
@@ -468,7 +465,6 @@ async function main() {
                 })
             })
         })
-    }, 1000);
 }   
 
 window.addEventListener('DOMContentLoaded', main);
