@@ -249,7 +249,8 @@ function sendPostToServer () {
 					responseJson = await response.json()
 
 					//Displays the response as a toast on the web-app.
-					channel.postMessage(responseJson);
+					if(responseJson != undefined)
+						channel.postMessage(responseJson);
 
 					//Removes the post request from the IndexedDB.
 					getObjectStore(FOLDER_NAME, 'readwrite').delete(savedRequest.id)
