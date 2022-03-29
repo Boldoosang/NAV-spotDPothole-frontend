@@ -433,8 +433,8 @@ body.modal-open #mainTabContent{
 /* Mobile Navigation */
 .mobile-nav-toggle {
   position: fixed;
-  right: 15px;
-  top: 15px;
+  right: 25px;
+  top: 25px;
   z-index: 9999;
   border: 0;
   font-size: 24px;
@@ -681,7 +681,7 @@ td > .btn-dark{
 # Sections General
 --------------------------------------------------------------*/
 section {
-  padding: 0px 0;
+  padding: 60px 0;
   overflow: hidden;
 }
 
