@@ -647,7 +647,7 @@ async function loadReportLeaderboardData(){
 
     //Sets the headers of the leaderboard.
     leaderboard.innerHTML = `
-    <tr>
+    <tr id="headerRow">
         <th scope="col">RANK</th>
         <th scope="col">POTHOLE ID</th>
         <th scope="col">NUMBER OF REPORTS</th>
@@ -662,9 +662,9 @@ async function loadReportLeaderboardData(){
     for(pothole of leaderboardData){
         try {
         leaderboard.innerHTML += `
-        <tr onclick="reportLeaderboardModal(${pothole.lat}, ${pothole.long}, ${pothole.potholeID})"  id=${(i < 4 ? "topThreeRows" : "")}>
-            <td>${i}</td>
-            <td class="text-primary text-decoration-underline">Pothole #${pothole.potholeID}</td>
+        <tr onclick="reportLeaderboardModal(${pothole.lat}, ${pothole.long}, ${pothole.potholeID})"  id=${(i == 1 ? "fstPlaceRow" : i == 2 ? "sndPlaceRow" : i == 3 ? "trdPlaceRow" : "")}>
+            <td><b>${i}</b></td>
+            <td class="${(i < 4 ? "text-dark text-decoration-underline" : "text-primary text-decoration-underline")}">Pothole #${pothole.potholeID}</td>
             <td>${pothole.numReports}</td>
             <td>${pothole.constituency}</td>
         </tr>
@@ -684,7 +684,7 @@ async function loadLeaderboardData(){
     let leaderboard = document.querySelector("#constLeaderboard")
     //Sets the headers of the leaderboard.
     leaderboard.innerHTML = `
-    <tr>
+    <tr id="headerRow">
         <th scope="col">RANK</th>
         <th scope="col">CONSTITUENCY</th>
         <th scope="col">NUMBER OF POTHOLES</th>
@@ -698,11 +698,11 @@ async function loadLeaderboardData(){
     let i = 1;
     for(constituency of leaderboardData){
         leaderboard.innerHTML += `
-        <tr id=${(i < 4 ? "topThreeRows" : "")}>
-            <td>${i}</td>
+        <tr id=${(i == 1 ? "fstPlaceRow" : i == 2 ? "sndPlaceRow" : i == 3 ? "trdPlaceRow" : "")}>
+            <td><b>${i}</b></td>
             <td>${constituency.name}</td>
             <td>${constituency.count}</td>
-            <td><button class="btn btn-primary w-100" data-bs-toggle="modal" data-bs-target="#councillorInfoModal" onclick="displayCouncillorInfo(event, '${constituency.constitID}')">Councillor Info</a><td>
+            <td><button class="btn btn-dark w-100" data-bs-toggle="modal" data-bs-target="#councillorInfoModal" onclick="displayCouncillorInfo(event, '${constituency.constitID}')">Councillor Info</button></td>
         </tr>
         `
         i++;

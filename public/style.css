@@ -502,9 +502,46 @@ body.modal-open #mainTabContent{
 # Leaderboard Section
 --------------------------------------------------------------*/
 
-#topThreeRows > td{
+#fstPlaceRow > td{
   padding-top : 1.5rem;
   padding-bottom: 1.5rem;
+  background-color: #1cb6ff
+}
+#sndPlaceRow > td{
+  padding-top : 1.5rem;
+  padding-bottom: 1.5rem;
+  background-color: #5cc5f7
+}
+
+#trdPlaceRow > td{
+  padding-top : 1.5rem;
+  padding-bottom: 1.5rem;
+  background-color: #afe2fa;
+}
+
+#potHoleLink{
+  color:white;
+}
+
+#headerRow{
+  border-left-width: 0px;
+  border-right-width: 0px;
+}
+
+tr{
+  border-left-width: 2px;
+  border-right-width: 2px;
+  border-bottom-width: 2px;
+  border-radius:2.5rem;
+  border-color:black;
+}
+
+th, td{
+  text-align: center;
+}
+
+td > .btn-dark{
+  background-color: #050d18;
 }
 
 .btn-primary{
@@ -517,7 +554,7 @@ body.modal-open #mainTabContent{
 }
 
 .nav-pills > .nav-item > .nav-link{
-  color : #149ddd;
+  color : white;
 }
 
 .nav-pills > .nav-item > .button{
