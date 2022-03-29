@@ -943,26 +943,30 @@ function disableBackButton(){
 
 
 //Used to display a toast with a message.
-function displayToast(type, message) {
+function displayToast(type, message, customDuration=2.5) {
     //Creates the id for the notification using the date.
 	var id = Date.now() + ' - ' + "notification_" + (Math.random() + 1).toString(36).substring(5);
     //Creates a new div and sets the meassge content.
 	var div = document.createElement('div');
-	div.textContent = message;
+	div.innerHTML = `<p class="m-0 p-0 text-white">${message}</p>`;
 
     //Sets the attributes of the toast div.
 	div.setAttribute('id', id)
 	div.setAttribute('class', '');
+
+    
   
     //Sets the color of the div based on the message type.
-	if( type=='success'){
+	if(type=='success'){
 		div.setAttribute('class', "message success show");    
 	} else if (type=='sync'){
         div.setAttribute('class', "message sync show");  
+    } else if (type=='install'){
+        div.setAttribute('class', "message refresh install");  
     } else {
 		div.setAttribute('class', "message failed show");
 	}
-  
+
     //Adds the toast to the DOM.
   	document.getElementById('mainTabContent').appendChild(div);
 
@@ -971,7 +975,7 @@ function displayToast(type, message) {
 		console.log(id)
 		let element = document.getElementById(id);
 		element.className = element.className.replace("show", "hide"); 
-	}, 3000);
+	}, customDuration*1000 + 500);
 }
 
 //Facilitates the submission of a driver report for processing at the backend.
@@ -1154,9 +1158,13 @@ async function main(){
         if("message" in event.data){
             displayToast("sync", event.data["message"])
         } else if("refresh" in event.data) {
-            window.location.reload();
+            displayToast("install", '<a class="text-decoration-underline text-white" href="index.html">Application Initialized. Tap here to refresh or wait 10 seconds.</a>', 9)
+            setTimeout(()=>{
+                window.location.reload();
+            }, 10000)
+            
         } else if("install" in event.data){
-            displayToast("sync", "Initializing Application...")
+            displayToast("sync", "First Application Initialization...")
         } else {
             displayToast("failed", event.data["error"])
         }

@@ -18,7 +18,7 @@
   <link href="images/favicon-16x16.png" rel="icon">
 
   <!-- Google Fonts -->
-  <link href="https://fonts.googleapis.com/css?family=Open+Sans:300|Poppins:300,400,500" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com/css?family=Open+Sans:300|Poppins:300,400,500" rel="stylesheet">
 
   <!-- Bootstrap CSS Files -->
   <link href="css/bootstrap.min.css" rel="stylesheet">
@@ -110,14 +110,14 @@
         <ul class="list-group list-group-flush">
           <li><a href="#map" onclick="displayPotholes()" data-bs-toggle="pill" data-bs-target="#mainTab-map"><i class="bi bi-house-fill"></i> <span>Home</span></a></li>
           <li><a href="#report" onclick="loadReportPage(event)" data-bs-toggle="pill" data-bs-target="#mainTab-report"><i class="bi bi-megaphone-fill"></i> <span>Make Report</span></a></li> 
-            <div id="profileArea"></div>
+            <ul id="profileArea"></ul>
           <li><a href="#dashboard" onclick="loadDashboard()" data-bs-toggle="pill" data-bs-target="#mainTab-dashboard"><i class="bi bi-clipboard"></i> <span>Dashboard</span></a></li>
           <li><a href="#leaderboard" onclick="loadLeaderboardData()" data-bs-toggle="pill" data-bs-target="#mainTab-leaderboard"><i class="bi bi-bar-chart-fill"></i> <span>Leaderboard</span></a></li>
           <li><a href="#about" data-bs-toggle="pill" data-bs-target="#mainTab-about"><i class='bi bi-patch-question'></i> <span>About</span></a></li>
           
-          <div id="userContextGroup" class="list-group list-group-flush">
+          <ul id="userContextGroup" class="list-group list-group-flush">
             <li><a href="#loginBtn" data-bs-toggle="modal" data-bs-target="#loginModal"><i class="bi bi-person-check-fill"></i> <span>Login / Register</span></a></li>
-          </div>
+          </ul>
           
         </ul>
       </nav><!-- .nav-menu -->

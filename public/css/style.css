@@ -37,7 +37,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .offcanvas{
-  z-index: 9996;
+  z-index: 10000;
 }
 
 #constituencyInformationPanel{
@@ -220,8 +220,12 @@ body.modal-open #mainTabContent{
   visibility: visible; /* Show the snackbar */
   /* Add animation: Take 0.5 seconds to fade in and out the snackbar.
   However, delay the fade out process for 2.5 seconds */
-  -webkit-animation: fadein 0.5s, fadeout 0.5s 2.5s;
   animation: fadein 0.5s, fadeout 0.5s 2.5s;
+}
+
+.message.install {
+  visibility: visible;
+  animation: fadein 0.5s, fadeout 0.5s 9s;
 }
 
 .message.success{
@@ -230,6 +234,10 @@ body.modal-open #mainTabContent{
 
 .message.sync{
   background-color: #2c3e99;
+}
+
+.message.refresh{
+  background-color: #1b776b;
 }
 
 .message.failed{
@@ -323,7 +331,7 @@ body.modal-open #mainTabContent{
   bottom: 0;
   width: 300px;
   transition: all ease-in-out 0.5s;
-  z-index: 9997;
+  z-index: 9998;
   transition: all 0.5s;
   padding: 0 15px;
   background: #040b14;
@@ -425,8 +433,8 @@ body.modal-open #mainTabContent{
 /* Mobile Navigation */
 .mobile-nav-toggle {
   position: fixed;
-  right: 45px;
-  top: 45px;
+  right: 15px;
+  top: 15px;
   z-index: 9999;
   border: 0;
   font-size: 24px;
