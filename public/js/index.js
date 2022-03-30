@@ -1265,6 +1265,12 @@ async function loadUserReport(potholeID){
     let dashboardTitle = document.querySelector("#dashboard-title");
     let dashboardBody = document.querySelector("#dashboard-body");
 
+    //Sets the initial loading 
+    dashboardBody.innerHTML = `<div class="align-middle text-center mb-2">
+                                    <div class="spinner-border text-white mb-2" role="status"></div><br>
+                                    <b class="align-middle text-white text-center mt-2">Loading Report...</b>
+                                </div>`;
+
     //Sets the title of the report.
     dashboardTitle.innerText = "Your Report";
 
@@ -1282,7 +1288,7 @@ async function loadUserReport(potholeID){
         dashboardBody.innerHTML = `<div class="mt-5 text-center text-black">
                                     <h2>Unavailable!</h2>
                                     <p>Sorry, the dashboard is only available in online mode.</p>
-                                </div>`;
+                                    </div>`;
         return;
     }
 
