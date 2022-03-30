@@ -458,10 +458,7 @@ function determineTextColor(netVotes){
 }
 
 //Determines the upvote button color of a report based on whether the user has upvoted previously on the report.
-async function determineUpVoteButtonColor(report){
-    //Gets the user context.
-    let user = await identifyUser();
-
+function determineUpVoteButtonColor(report, user){
     //Iterates over all of the votes for a report, if there is a upvote from a user that matches the current user, the user has upvoted this already.
     //Return a green button(btn-success)
     for(vote of report.votes){
@@ -477,10 +474,7 @@ async function determineUpVoteButtonColor(report){
 }
 
 //Determines the downvote button color of a report based on whether the user has previously downvoted the report.
-async function determineDownVoteButtonColor(report){
-    //Gets the user context.
-    let user = await identifyUser();
-
+function determineDownVoteButtonColor(report, user){
     //Iterates over all of the votes of a report. If there is a downvote from a user that matches the current user, the user has previously downvoted this report.
     //Return a red button(btn-danger)
     for(vote of report.votes){
@@ -513,6 +507,7 @@ async function loadReports(potholeID){
 
     //Gets all of the pothole reports.
     let potholeReports = await getReports(potholeID)
+    let userLogin = await identifyUser();
 
     //Writes the number of reports to the report area.
     let numberOfReportsContainer = document.querySelector('#numberOfReportsArea')
@@ -557,8 +552,8 @@ async function loadReports(potholeID){
 
                 //Calculates the votes for the report, button colors, and text colors.
                 netVotes = calculateNetVotes(report);
-                upvoteButtonColor = await determineUpVoteButtonColor(report, "upvote")
-                downvoteButtonColor = await determineDownVoteButtonColor(report, "downvote")
+                upvoteButtonColor = determineUpVoteButtonColor(report, userLogin)
+                downvoteButtonColor = determineDownVoteButtonColor(report, userLogin)
                 let color = determineTextColor(netVotes);
                 
                 //Converts the date to a dateobject
@@ -685,15 +680,15 @@ async function loadReportLeaderboardData(){
     let i = 1;
     for(pothole of leaderboardData){
         try {
-        leaderboard.innerHTML += `
-        <tr onclick="reportLeaderboardModal(${pothole.lat}, ${pothole.long}, ${pothole.potholeID})"  id=${(i == 1 ? "fstPlaceRow" : i == 2 ? "sndPlaceRow" : i == 3 ? "trdPlaceRow" : "")}>
-            <td><b>${i}</b></td>
-            <td class="${(i < 4 ? "text-dark text-decoration-underline" : "text-primary text-decoration-underline")}">Pothole #${pothole.potholeID}</td>
-            <td>${pothole.numReports}</td>
-            <td>${pothole.constituency}</td>
-        </tr>
-        `
-        i++;
+            leaderboard.innerHTML += `
+            <tr onclick="reportLeaderboardModal(${pothole.lat}, ${pothole.long}, ${pothole.potholeID})"  id=${(i == 1 ? "fstPlaceRow" : i == 2 ? "sndPlaceRow" : i == 3 ? "trdPlaceRow" : "")}>
+                <td><b>${i}</b></td>
+                <td class="${(i < 4 ? "text-dark text-decoration-underline" : "text-primary text-decoration-underline")}">Pothole #${pothole.potholeID}</td>
+                <td>${pothole.numReports}</td>
+                <td>${pothole.constituency}</td>
+            </tr>
+            `
+            i++;
         } catch (e) {
             //A pothole will be null in the event that it does not fall within the borders of Trinidad and Tobago.
             //Although there is error protection at the frontend to prevent this, postman requests can still place potholes
@@ -796,43 +791,48 @@ async function voteOnReport(event, potholeID, reportID, isUpvote){
     //Gets the outcome message area.
     let messageArea = document.querySelector(`#voteOutcomeMessage-${reportID}`)
 
-    //Sends the vote request to the server for the pothole and reportID.
-    let result = await sendRequest(SERVER + `/api/vote/pothole/${potholeID}/report/${reportID}/vote`, "POST", voteData);
+    //Determines if the user is logged in.
     let userLogin = await identifyUser();
 
-    //If there was an error in voting, display the login error. (The only type of error possible)
-    if("error" in result || "msg" in result){
-        if(!window.navigator.onLine && "email" in userLogin){
-            messageArea.innerHTML = `<b class="text-danger text-center">Vote will be synced once reconnected!</b>`
-        } else {
-            messageArea.innerHTML = `<b class="text-danger text-center">Please login to vote!</b>`
-        }
+    if("msg" in userLogin || !("email" in userLogin)){
+        messageArea.innerHTML = `<b class="text-danger text-center">Please login to vote!</b>`
     } else {
-        //Updates the message area to a success message and attempts to update the colors, text and counter.
-        messageArea.innerHTML = `<b class="text-success text-center">${result["message"]}</b>`
+        //Sends the vote request to the server for the pothole and reportID.
+        let result = await sendRequest(SERVER + `/api/vote/pothole/${potholeID}/report/${reportID}/vote`, "POST", voteData);
+        //If there was an error in voting, display the login error. (The only type of error possible)
+        if("error" in result || "msg" in result){
+            if(!window.navigator.onLine && "email" in userLogin){
+                messageArea.innerHTML = `<b class="text-danger text-center">Vote will be synced once reconnected!</b>`
+            } else {
+                messageArea.innerHTML = `<b class="text-danger text-center">Please login to vote!</b>`
+            }
+        } else {
+            //Updates the message area to a success message and attempts to update the colors, text and counter.
+            messageArea.innerHTML = `<b class="text-success text-center">${result["message"]}</b>`
 
-        try {
-            //Gets the updated vote report.
-            let updatedReport = await sendRequest(SERVER + `/api/reports/pothole/${potholeID}/report/${reportID}`, "GET");
-            
-            //Recalculates the votes, text colors and button colors.
-            newNetVotes = calculateNetVotes(updatedReport)
-            let color = determineTextColor(newNetVotes)
-            let updatedDownvoteButtonColor = await determineDownVoteButtonColor(updatedReport)
-            let updatedUpvoteButtonColor = await determineUpVoteButtonColor(updatedReport)
+            try {
+                //Gets the updated vote report.
+                let updatedReport = await sendRequest(SERVER + `/api/reports/pothole/${potholeID}/report/${reportID}`, "GET");
+                
+                //Recalculates the votes, text colors and button colors.
+                newNetVotes = calculateNetVotes(updatedReport)
+                let color = determineTextColor(newNetVotes)
+                let updatedDownvoteButtonColor = determineDownVoteButtonColor(updatedReport, userLogin)
+                let updatedUpvoteButtonColor = determineUpVoteButtonColor(updatedReport, userLogin)
 
-            //Replaces the buttons, text, and counters for the updated report.
-            netVotesCounter.innerHTML = `<span class="text-white">${newNetVotes}</span>`
-            accordionVotesCounter.innerHTML = `<span class="font-monospace ${color}">${(newNetVotes < 0 ? "" : newNetVotes == 0 ? "&nbsp" : "+")}<span id="accordionNetVotes-${updatedReport.reportID}">${newNetVotes}</span></span>`
-            upvoteButton.innerHTML = `<button id="castedUpvote-${updatedReport.reportID}" type="button" class="btn ${updatedUpvoteButtonColor}" onclick="voteOnReport(event, ${potholeID}, ${updatedReport.reportID}, true)">
-                                        <i class="bi bi-arrow-up"></i>
-                                    </button>`
-            downvoteButton.innerHTML = `<button id="castedDownvote-${updatedReport.reportID}" type="button" class="btn ${updatedDownvoteButtonColor}" onclick="voteOnReport(event, ${potholeID}, ${updatedReport.reportID}, false)">
-                                            <i class="bi bi-arrow-down"></i>
+                //Replaces the buttons, text, and counters for the updated report.
+                netVotesCounter.innerHTML = `<span class="text-white">${newNetVotes}</span>`
+                accordionVotesCounter.innerHTML = `<span class="font-monospace ${color}">${(newNetVotes < 0 ? "" : newNetVotes == 0 ? "&nbsp" : "+")}<span id="accordionNetVotes-${updatedReport.reportID}">${newNetVotes}</span></span>`
+                upvoteButton.innerHTML = `<button id="castedUpvote-${updatedReport.reportID}" type="button" class="btn ${updatedUpvoteButtonColor}" onclick="voteOnReport(event, ${potholeID}, ${updatedReport.reportID}, true)">
+                                            <i class="bi bi-arrow-up"></i>
                                         </button>`
-        } catch(e){
-            //If any errors occur, print the errors.
-            console.log(e)
+                downvoteButton.innerHTML = `<button id="castedDownvote-${updatedReport.reportID}" type="button" class="btn ${updatedDownvoteButtonColor}" onclick="voteOnReport(event, ${potholeID}, ${updatedReport.reportID}, false)">
+                                                <i class="bi bi-arrow-down"></i>
+                                            </button>`
+            } catch(e){
+                //If any errors occur, print the errors.
+                console.log(e)
+            }
         }
     }
 }
@@ -1204,12 +1204,6 @@ async function getUserPotholes(){
     return potholes;
 }
 
-//Gets the report images for a particular report, and returns the images.
-async function getUserReportImages(potholeID, reportID){
-    let images = await sendRequest(SERVER + `/api/reports/pothole/${potholeID}/report/${reportID}/images`, 'GET');
-    return images;
-}
-
 //Gets the dashboard modal interface.
 function getDashboardModal(){
     var modalElementList = [].slice.call(document.querySelectorAll('.dashboardModal'))
@@ -1277,7 +1271,7 @@ async function loadUserReport(potholeID){
     //Gets the report details and the report images for the report made by the user.
     try {
         var potholeReport = await getIndividualReport(potholeID);
-        var reportedImages = await getUserReportImages(potholeID, potholeReport.reportID)
+        reportedImages = potholeReport.reportedImages
     } catch (e){
         //Prints any errors that may occur.
         console.log(e)
