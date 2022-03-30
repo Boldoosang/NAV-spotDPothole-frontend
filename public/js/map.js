@@ -6,6 +6,7 @@ let waypoints = {
     "startPoint" : L.latLng(0, 0),
     "endPoint" : L.latLng(0, 0)
 }
+let debug = false;
 let line
 let route
 let map
@@ -406,7 +407,7 @@ async function routingConcept() {
                     let point = L.latLng(pothole.latitude, pothole.longitude)
 
                     if(isPointOnLine(point, route.coordinates)) {
-                        console.log("PotholeID: " + pothole.potholeID + " lies on route: " + route.name)
+                        console.log("Attempting to avoid " + route.name + " since Pothole " + pothole.potholeID + " lies on route.")
                         clearRoute=false
                         numPotholes++;
                     }
