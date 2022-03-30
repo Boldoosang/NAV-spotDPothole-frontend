@@ -2,16 +2,21 @@
 <html lang="en">
 
 <head>
+  <!-- Defines meta data for characters and viewport -->
   <meta charset="utf-8">
-  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+  <meta content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport">
+  <meta http-equiv="ScreenOrientation" content="autoRotate:disabled">
 
+  <!-- Website Title -->
   <title>SpotDPothole</title>
-  <link crossorigin="anonymous" rel="manifest" href="manifest.json">
+
+  <!-- Website Description Metadata -->
   <meta content="A web application designed for the logging and viewing of potholes located around Trinidad and Tobago." name="description">
   <meta content="SpotDPothole, Tracker, Report, Leaderboard, Dashboard, Constituency, Trinidad and Tobago, Councillor, Pothole, Roads, Routing, Roadways" name="keywords">
-  <meta http-equiv="ScreenOrientation" content="autoRotate:disabled">
   
+  <!-- Sets the PWA theme color, manifest and iOS icon -->
   <meta name="theme-color" content="#000000"/>
+  <link crossorigin="anonymous" rel="manifest" href="manifest.json">
   <link rel="apple-touch-icon" href="images/icons-192.png">
 
   <!-- Favicons -->
@@ -49,46 +54,42 @@
 
 
   <script>
-          if ('serviceWorker' in navigator) {
-              // we are checking here to see if the browser supports the service worker api
-              window.addEventListener('load', function() {
-                  navigator.serviceWorker.register('sw.js')
+    //Determines if the browser supports the service worker.
+    if ('serviceWorker' in navigator) {
+        //If supported, register the service worker once the page has loaded.
+        window.addEventListener('load', function() {
+            navigator.serviceWorker.register('sw.js')
 
-                  navigator.serviceWorker.ready.then(function(registration) {
-                      console.log('Service Worker Ready!')
-                      return registration.sync.register('sendSavedRequests')
-                  }).then(function () {
-                      console.log('Sync event registered!')
-                  }).catch(function() {
-                      console.log('Sync registration failed!')
-                  });
-              }); 
+            //When the service worker is ready, print a ready message and register a sync event.
+            navigator.serviceWorker.ready.then(function(registration) {
+                console.log('Service Worker Ready!')
+                return registration.sync.register('sendSavedRequests')
+            }).then(function () {
+                console.log('Sync event registered!')
+            }).catch(function() {
+                console.log('Sync registration failed!')
+            });
+        }); 
 
 
-              navigator.serviceWorker.getRegistration().then(function(reg) {
-              // There's an active SW, but no controller for this tab.
-              try {
-                if (reg.active && !navigator.serviceWorker.controller) {
-                  // Perform a soft reload to load everything from the SW and get
-                  // a consistent set of resources.
-                  console.log("Hard refresh detected; reloading service worker listeners.")
-                  window.location.reload();
-                }
-              } catch(e){
-                console.log("First use of application; service worker listeners must be initialized.")
-              }
-
-              });
-
+        navigator.serviceWorker.getRegistration().then(function(reg) {
+          // If there is a service worker but no controller, soft reset the page.
+          try {
+            if (reg.active && !navigator.serviceWorker.controller) {
+              //Refreshes the page to get consistent data.
+              console.log("Hard refresh detected; reloading service worker listeners.")
+              window.location.reload();
+            }
+          } catch(e){
+            //Otherwise, there is no active registration and the service worker listeners must be initialized. Print the message.
+            console.log("First use of application; service worker listeners must be initialized.")
           }
-
-          
-        
+        });
+      }
     </script>
 </head>
 
 <body>
-
   <!-- ======= Mobile nav toggle button ======= -->
   <i class="bi bi-list mobile-nav-toggle d-xl-none"></i>
   
@@ -96,6 +97,7 @@
   <header id="header">
     <div class="d-flex flex-column">
 
+      <!-- ======= Displays the user's login state ======= -->
       <div class="profile">
         <a href="index.html">
           <img style="height:120px; width:120px;" alt="Application image logo icon." src="images/icons-512.png">
@@ -103,9 +105,9 @@
         <div id="userNameArea">
           <h1 class="text-light">Guest</h1>
         </div>
-        
       </div>
 
+      <!-- ======= Navigational Options ======= -->
       <nav id="navbar" class="nav-menu navbar mt-3">
         <ul class="list-group list-group-flush">
           <li><a href="#map" onclick="displayPotholes()" data-bs-toggle="pill" data-bs-target="#mainTab-map"><i class="bi bi-house-fill"></i> <span>Home</span></a></li>
@@ -114,18 +116,15 @@
           <li><a href="#dashboard" onclick="loadDashboard()" data-bs-toggle="pill" data-bs-target="#mainTab-dashboard"><i class="bi bi-clipboard"></i> <span>Dashboard</span></a></li>
           <li><a href="#leaderboard" onclick="loadLeaderboardData()" data-bs-toggle="pill" data-bs-target="#mainTab-leaderboard"><i class="bi bi-bar-chart-fill"></i> <span>Leaderboard</span></a></li>
           <li><a href="#about" data-bs-toggle="pill" data-bs-target="#mainTab-about"><i class='bi bi-patch-question'></i> <span>About</span></a></li>
-          
           <ul id="userContextGroup" class="list-group list-group-flush">
             <li><a href="#loginBtn" data-bs-toggle="modal" data-bs-target="#loginModal"><i class="bi bi-person-check-fill"></i> <span>Login / Register</span></a></li>
           </ul>
-          
         </ul>
-      </nav><!-- .nav-menu -->
+      </nav>
     </div>
-  </header><!-- End Header -->
+  </header>
 
   <!-- ======= Main Content Section ======= -->
-
   <main id="main">
     <div class="d-flex flex-column justify-content-center align-items-center" style="padding:0px">
         <div class="container-fluid" style="padding-left: 0px; padding-right: 0px">
@@ -141,7 +140,6 @@
                 </div>
                 
                 
-          
               </div>
 
               <!-- ======= Report Section ======= -->
@@ -154,7 +152,7 @@
             </div>
 
               <!-- ======= Dashboard Section ======= -->
-
+              
               <div class="tab-pane fade" id="mainTab-dashboard" role="tabpanel">
                 <!-- Leaderboard content is displayed here -->
                 <div id="dashboardContent" class="p-0 mx-0" role="tabpanel">
