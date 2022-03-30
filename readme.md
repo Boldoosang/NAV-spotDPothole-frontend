@@ -1,5 +1,5 @@
-# NULLIFY - SpotDPothole Frontend
-Welcome to our University of the West Indies Final Year Project for our Computer Science Degree! This project aims to provide the frontend of an application that is geared towards the logging of potholes located across the roadways of Trinidad and Tobago. This project will be implemented to interface with the corresponding [SpotDPothole Backend](https://github.com/Boldoosang/NAV-spotDPothole-backend). Please note that this project reflects the various prototype stages that will be refined over the course of many sprints. Implemented features of the first prototype can be found below.  
+# NULL AND VOID - SpotDPothole Frontend
+Welcome to our University of the West Indies, Computer Science, Final Year Project! This project aims to provide the frontend of an application that is geared towards the logging of potholes located across the roadways of Trinidad and Tobago. This project will be implemented to interface with the corresponding [SpotDPothole Backend](https://github.com/Boldoosang/NAV-spotDPothole-backend). Please note that this project reflects the various prototype stages that will be refined over the course of many sprints. Implemented features of the first prototype can be found below.  
 
 [![Unit Testing](https://github.com/Boldoosang/NAV-spotDPothole-frontend/actions/workflows/UnitTestFlow.yml/badge.svg)](https://github.com/Boldoosang/NAV-spotDPothole-frontend/actions/workflows/UnitTestFlow.yml)
 [![Integration Testing](https://github.com/Boldoosang/NAV-spotDPothole-frontend/actions/workflows/IntegrationTestFlow.yml/badge.svg)](https://github.com/Boldoosang/NAV-spotDPothole-frontend/actions/workflows/IntegrationTestFlow.yml)
@@ -14,6 +14,16 @@ For the first prototype of the application, the following features have been imp
 * Viewing of reported potholes.
 * Accessing analytical information for potholes.
 * Voting on a report of a pothole.
+* Offline use caching
+* Progressive Web App (PWA)
+* Offline map
+* Syncing of offline reports
+* Interactive dashboard (Manage Reports)
+* Password changing
+* Profile updating
+* Email verification
+* Routing from source to destination
+* Live tracking routing
 
 ## DEPENDENCIES AND FRAMEWORKS
 * [Bootstrap 5](https://getbootstrap.com/docs/5.1/getting-started/introduction/) - Bootstrap 5 used for styling and components
@@ -26,6 +36,7 @@ For the first prototype of the application, the following features have been imp
 * [Mocha](https://www.npmjs.com/package/mocha) - Mocha used as a testing framework.
 * [Chai](https://www.npmjs.com/package/chai) - Chai used in testing as an assertion library.
 * [Jest](https://www.npmjs.com/package/jest) - Javascript based testing framework.
+^ Update
 
 ## CONFIGURATION
 After successful installation of Node.js from the [website](https://nodejs.org/en/), the execution of the following command can be used to install the frontend dependencies for development:
@@ -70,8 +81,9 @@ $ npm run e2etest
 Tests can also be modified by editing the test files located in the /test folder.
 
 ## PROJECT DELIVERABLES
-* [SpotDPothole Web Application](https://spotdpothole.web.app/)
-* [Project Report](https://docs.google.com/document/d/1k6Yjrqm8VEjkWNdJe1c3Nl7906Izm-eqz-5WTjxHqOg/edit?usp=sharing)
+* [SpotDPothole Web Application](https://spotdpoth.web.app/)
+* [SpotDPothole OSRM Server](https://hub.docker.com/r/boldoosang/spotdpothole-osrm)
+* [Project Report](https://docs.google.com/document/d/1MbG_XzXLCaeWMDBc3Zezz9sAgkBU1_tGtYckHa-LVjU)
 * [Trello Board](https://trello.com/b/bCe8RVWj/spotdpothole-board)
-* [Presentation Video](https://drive.google.com/file/d/1I26Kmw9RUOWzvvWH7LVCLmI33z4OshX7/view)
-* [Sprint Reports](https://docs.google.com/document/d/1rzwRfEgYDmo_6frSKnmDBtEQMES-08MSD8YJcVXLk3E)
+* **[Presentation Video](https://drive.google.com/file/d/1I26Kmw9RUOWzvvWH7LVCLmI33z4OshX7/view)
+* [Sprint Reports](https://docs.google.com/document/d/1jxIfp3vwikRcj7EJdyDVY7riiU0riKOS5hV0pR2tbb8)
