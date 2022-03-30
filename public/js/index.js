@@ -1293,7 +1293,7 @@ async function loadUserReport(potholeID){
     try {
         //Determines if there are pothole images to be added. If not, display a message.
         if(reportedImages.length == 0){
-            allReportImages = `<div class="d-flex justify-content-center mt-3"><strong>No report images uploaded!</strong></div>`
+            allReportImages = `<div class="d-flex justify-content-center mt-3 mb-3"><span class="border border-1 border-white rounded-3 px-3 py-5"><strong >No report images uploaded!</strong></div>`
         } else {
         //Otherwise, iterate over all of the images and add them to the image carousel for the report.
             let tag = "active"
