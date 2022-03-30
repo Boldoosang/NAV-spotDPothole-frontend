@@ -531,19 +531,19 @@ body.modal-open #mainTabContent{
 }
 
 #headerRow{
-  border-left-width: 0px;
-  border-right-width: 0px;
+  border-left-width: 0px !important;
+  border-right-width: 0px !important;
 }
 
-tr{
+#leaderboard > #mainTab-leaderboard  tr{
   border-left-width: 2px;
   border-right-width: 2px;
   border-bottom-width: 2px;
   border-radius:2.5rem;
   border-color:black;
-}
+} 
 
-th, td{
+#leaderboard > #mainTab-leaderboard  th, #leaderboard > #mainTab-leaderboard td{
   text-align: center;
 }
 
