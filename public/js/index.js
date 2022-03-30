@@ -222,7 +222,7 @@ async function identifyUser(){
 
     //If there is an email in the response, the user is logged in. Otherwise, the user is not logged in/session is expired.
     try {
-        if("email" in user){
+        if("email" in user && "access_token" in window.localStorage){
             return user;
         } else {
             return {"error" : "User is not logged in or session has expired!"}
@@ -813,8 +813,16 @@ async function voteOnReport(event, potholeID, reportID, isUpvote){
             messageArea.innerHTML = `<b class="text-success text-center">${result["message"]}</b>`
 
             try {
-                //Gets the updated vote report.
-                let updatedReport = await sendRequest(SERVER + `/api/reports/pothole/${potholeID}/report/${reportID}`, "GET");
+
+                let updatedReport
+                //Updates the local cache for reports and gets updated report.
+                let allReports = await sendRequest(SERVER + `/api/reports/pothole/${potholeID}`, "GET");
+                for(currReport of allReports)
+                    if(currReport.reportID == reportID && currReport.potholeID == potholeID)
+                        //Gets the updated vote report.
+                        updatedReport = currReport
+                
+
                 
                 //Recalculates the votes, text colors and button colors.
                 newNetVotes = calculateNetVotes(updatedReport)
@@ -831,6 +839,7 @@ async function voteOnReport(event, potholeID, reportID, isUpvote){
                 downvoteButton.innerHTML = `<button id="castedDownvote-${updatedReport.reportID}" type="button" class="btn ${updatedDownvoteButtonColor}" onclick="voteOnReport(event, ${potholeID}, ${updatedReport.reportID}, false)">
                                                 <i class="bi bi-arrow-down"></i>
                                             </button>`
+                                            
             } catch(e){
                 //If any errors occur, print the errors.
                 console.log(e)
