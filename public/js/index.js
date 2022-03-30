@@ -851,6 +851,12 @@ async function loadConstituencyData(constituencyID){
 
     let councillorInformationArea = document.querySelector("#councillorInformation")
 
+    //Sets initial councillor information
+    councillorInformationArea.innerHTML = `<div class="align-middle text-center mb-2">
+                                                <div class="spinner-border text-white mb-2" role="status"></div><br>
+                                                <b class="align-middle text-white text-center mt-2">Loading Information...</b>
+                                            </div>`;
+
     //Attempts to populate the councillor information area with the formatted information.
     try {
         councillorInformationArea.innerHTML = 
