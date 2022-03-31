@@ -1160,6 +1160,7 @@ async function revealDownloadButton(downloadButton){
     downloadButton.classList.replace("d-none", "d-flex")
 }
 
+
 //Bootstraps the application by adding the relevant listeners, toggles, and other initialization procedures.
 async function main(){
     
@@ -1182,7 +1183,6 @@ async function main(){
         requestBackgroundSync();
     })
 
-    
     let downloadButton = document.querySelector("#mapDownloadButton");
     await revealDownloadButton(downloadButton);
     

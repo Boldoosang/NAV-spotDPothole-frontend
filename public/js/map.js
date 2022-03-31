@@ -35,7 +35,7 @@ async function initMap() {
     });
 
     var online = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        attribution: 'Online Map'
     }).addTo(map);
 
     var baseMaps = {
@@ -458,7 +458,9 @@ async function main() {
             cache.keys().then(function(cacheKeys){
                 cacheKeys.find((o,i) => {
                     if(o.url.includes('https://dl.dropboxusercontent.com/s/87jkx7txs1uazqw/tandtS.mbtiles?dl=1')){
-                        offline = L.tileLayer.mbTiles('https://dl.dropboxusercontent.com/s/87jkx7txs1uazqw/tandtS.mbtiles?dl=1');
+                        offline = L.tileLayer.mbTiles('https://dl.dropboxusercontent.com/s/87jkx7txs1uazqw/tandtS.mbtiles?dl=1', {
+                            attribution: 'Offline Map'
+                        });
                         
                         //switch between online and offline map
                         lControl.addBaseLayer(offline, "Offline"); 
