@@ -1,10 +1,11 @@
+// Use "npm run utest" to run this test file with jest
+
 const SERVER = "https://spotdpothole.herokuapp.com/"
 const PICONG_SERVER = "https://project-caigual.herokuapp.com/publicAPI/info/electoraldistrict"
 const ELECTION_YEAR = "10"
 const DRIVER_REPORT_URL = SERVER + "/api/reports/driver"
 const STANDARD_REPORT_URL = SERVER + "/api/reports/standard"
 
-const leafletPip = require('leaflet-pip')
 const fetch = require('node-fetch');
 
 /* =========================== FUNCTIONS FOR TESTING ================================== */
@@ -81,45 +82,29 @@ async function getCouncillorData(electionYear, constituencyID){
     return councillorData;
 }
 
-//Sends a generated report to the endpoint URL.
-async function sendReport(latitude, longitude, photoB64, description = null, url){
-    //Determines if the latitude and longitude resites within the map bounds.
-    var inMap = leafletPip.pointInLayer([longitude, latitude], map);
 
-    //If the location is not within the map, return an error message.
-    if(inMap.length == 0)
-        return {error: "You must be within the map to report a pothole!"}
-
-    //Creates the data object containing the report information.
-	var data = {
-		"longitude": longitude,
-		"latitude": latitude,
-		"images": []
-	};
-
-    //Adds the description if there is a description.
-	if(description != null){
-		data["description"] = description
-	}
-
-    //Adds images if there are images.
-	if(photoB64 != null){
-		data["images"] = [photoB64];
-	}
-
-	//Attempts to send the request to the endpoint with the data, and returns the outcome.
-	try {
-        console.log(data)
-		return await sendRequest(url, "POST", data)
-	} catch (error) {
-		return error;
-	}
-}
-
-//Gets all of the current user's potholes and returns it.
+// gets all of the current user's potholes and returns it.
 async function getUserPotholes(){
     let potholes = await sendRequest(SERVER + '/api/dashboard/potholes', 'GET');
     return potholes;
+}
+
+// gets an individual report from a specific pothole that the user has reported
+async function getIndividualReport(potholeID){
+    //Gets all of the reports from the server.
+    let reports = await sendRequest(SERVER + `/api/dashboard/reports`, 'GET');
+    //Attempts to iterate over the report to find a matching report, and returns it.
+    try {
+        for(report of reports){
+            if(report.potholeID == potholeID){
+                return report;
+            }
+        }
+    } catch(e){
+        //Prints any errors and returns null if there are no matching reports.
+        //console.log(e);
+        return null
+    }
 }
 
 
@@ -178,14 +163,43 @@ test('Test sendRequest with login attempt is successfull', async() =>{
     expect(result).toHaveProperty("access_token");
 })
 
-/*7. test to determine if sendReport returns the right results
-test('Test sendReport with correct information is successfull', async() =>{
-    let result = sendReport(10.631918, -61.353192,null,null,STANDARD_REPORT_URL);
-    expect(result).toStrictEqual({"error" : "An unexpected error has occurred!"})
-})*/
-
-//8. test to determine if getUserPotholes returns all of the current user's potholes.
+//7. test to determine if getUserPotholes returns all of the current user's potholes.
 test('Test getUserPotholes returns no potholes for a non-logged in user', async() =>{
     let result = await getUserPotholes();
     expect(result).toBeNull;
 })
+
+//8. test to determine if sendRequest with register returns the right results with incorrect data
+test('Test sendReport with incorrect information is unsuccessfull', async() =>{
+    let registrationDetails = {
+        "email" : "@justinbaldeo.com",
+        "firstName" : "Justevon",
+        "lastName" : "Baldeorathj",
+        "password" : null,
+        "confirmPassword" : null,
+        "agreeToS" : null,
+    }
+    let result = await sendRequest(SERVER + "/register", "POST", registrationDetails);
+    expect(result).toHaveProperty("error")
+})
+
+//9. test whether the sending a report request returns the right result
+test('Test sendRequest with POST returns the correct status', async() =>{
+    var data = {
+		"longitude": 10.631949,
+		"latitude":  -61.353160,
+		"images": [],
+        "description":null,
+	};
+    let result =  await sendRequest(STANDARD_REPORT_URL, "POST", data);
+    expect(result).toHaveProperty("msg");
+})
+
+//10. tests the getIndividualReport function 
+test('Test getIndividualReport() returns correct result for potholeID of 1', async() =>{
+    let result = await getIndividualReport(1);
+    expect(result).toBeNull();
+})
+
+//let result = await sendRequest(SERVER + `/api/reports/pothole/${potholeID}/report/${reportID}`, "DELETE");
+
