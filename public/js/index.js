@@ -14,6 +14,7 @@ let dashboardMarkersLayer;
 let dashboardMarkers = [];
 let userState = null;
 
+
 // Initialize Firebase
 const app = firebase.initializeApp(firebaseConfig);
 
@@ -137,7 +138,7 @@ async function sendRequest(url, method, data){
             if(results["msg"] == "Signature verification failed" || results["msg"] == "Token has expired"){
                 window.localStorage.removeItem('access_token');
                 alert("Session has expired!")
-                window.location = "/"
+                window.location = "index.html"
                 return;
             }
         }
@@ -148,7 +149,7 @@ async function sendRequest(url, method, data){
             if(results["error"] == "User is banned."){
                 window.localStorage.removeItem('access_token');
                 alert("You have been banned!")
-                window.location = "/"
+                window.location = "index.html"
                 return;
             }
         }
@@ -182,7 +183,7 @@ async function logout(){
     
     //Updates the user context elements and refreshes the page.
     identifyUserContext()
-    window.location = `/`
+    window.location = `index.html`
 }
 
 //Facilitates the login of a user based on their login information.
@@ -211,7 +212,7 @@ async function login(event){
     //If the result is a success, set the returned access token in the storage, sets the outcome message, and refreshes the page.
         window.localStorage.setItem("access_token", result["access_token"]);
         messageArea.innerHTML = `<b class="text-success text-center">Login successful!</b>`
-        window.location = "/"
+        window.location = "index.html"
     }
 }
 
@@ -250,7 +251,7 @@ async function identifyUserContext(){
         userStateArea.innerHTML = `<li><a class="" href="#" onclick="logout()"><i class='bi bi-box-arrow-left'></i> <span>Logout</span></a></li>`
         userNameArea.innerHTML = `<h1 class="text-light">${user.firstName} ${user.lastName}</h1>`
         menuArea.innerHTML = `<li><a href="#profile" data-bs-toggle="modal" data-bs-target="#profileManagementModal"><i class="bi bi-person-fill"></i> <span>Profile</span></a></li>`
-        reportButtonArea.innerHTML = `<i class="bi bi-plus d-xl-none" data-bs-toggle="modal" data-bs-target="#driverReportModal" id="driverReportButton"></i></button>`
+        reportButtonArea.innerHTML = `<i class="bi bi-plus d-xl-none" data-bs-toggle="modal" data-bs-target="#driverReportModal" id="driverReportButton"></i>`
     }
 }
 
@@ -1149,8 +1150,19 @@ function dateConvert(date){
     return newDate;
 }
 
+async function downloadMapTiles(){
+    navigator.serviceWorker.ready.then(worker => {
+        worker.active.postMessage({"downloadMap" : true})
+    });
+}
+
+async function revealDownloadButton(downloadButton){
+    downloadButton.classList.replace("d-none", "d-flex")
+}
+
 //Bootstraps the application by adding the relevant listeners, toggles, and other initialization procedures.
 async function main(){
+    
     //Determines the user context.
     await identifyUserContext()
     //Disables the back button
@@ -1170,8 +1182,13 @@ async function main(){
         requestBackgroundSync();
     })
 
+    
+    let downloadButton = document.querySelector("#mapDownloadButton");
+    await revealDownloadButton(downloadButton);
+    
     //Adds a listener to detect whenever a message has been sent via the channel; ie from the service worker.
     channel.addEventListener('message', event => {
+        
         //Displays the contents of the data in the channel via a toast if it contains a message or error.
         if("message" in event.data){
             displayToast("sync", event.data["message"])
@@ -1183,6 +1200,21 @@ async function main(){
             
         } else if("install" in event.data){
             displayToast("sync", "First Application Initialization...")
+        } else if ("mapDownloaded" in event.data){
+            downloadButton.classList.remove("d-flex")
+            downloadButton.classList.add("d-none")
+        } else if ("mapDownloading" in event.data){
+            downloadButton.classList.remove("d-flex")
+            downloadButton.classList.add("d-none")
+            displayToast("sync", "Downloading Map...")
+        } else if("mapDownloadComplete" in event.data){
+            if(window.navigator.onLine){
+                downloadButton.classList.remove("d-flex")
+                downloadButton.classList.add("d-none")
+                window.location.reload()
+            } else {
+                displayToast("failed", 'You must be online to download the map.')
+            }
         } else {
             displayToast("failed", event.data["error"])
         }
@@ -1198,7 +1230,14 @@ async function main(){
         displayUserPotholes();
     }
 
+    //Initializes tooltips
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl)
+    })
+
 }
+
 
 //Initializes the dashboard map.
 async function initDashboardMap(){

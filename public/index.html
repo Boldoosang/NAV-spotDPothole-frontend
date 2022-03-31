@@ -54,6 +54,7 @@
 
 
   <script>
+    
     //Determines if the browser supports the service worker.
     if ('serviceWorker' in navigator) {
         //If supported, register the service worker once the page has loaded.
@@ -133,6 +134,11 @@
               <div class="tab-pane active fade show" id="mainTab-map" role="tabpanel">
                 <!-- Map is rendered here -->
                 <div id="mapContent" class="p-0 mx-0"><div id="map" style="width: 100%; height:100vh"></div></div>
+
+                <!-- ======= Map download button ======= -->
+                <div id="mapDownloadButtonArea">
+                  <i data-bs-toggle="tooltip" data-bs-placement="left" title="Download Offline Map" onclick="downloadMapTiles()" class="bi bi-download d-none" id="mapDownloadButton"></i>
+                </div>
 
                 <!-- ======= Mobile report button ======= -->
                 <div id="driverReportButtonArea">
