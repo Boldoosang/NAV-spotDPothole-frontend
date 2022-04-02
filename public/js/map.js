@@ -7,6 +7,7 @@ let waypoints = {
     "endPoint" : L.latLng(0, 0)
 }
 let debug = false
+let debuglines
 let line
 let route
 let map
@@ -98,10 +99,11 @@ function clearRouting(){
     if(watchid != null){
         navigator.geolocation.clearWatch(watchid)
     }
-    map.removeLayer(startCircle)
-    map.removeLayer(endCircle)
-    map.removeLayer(line)
-    map.removeLayer(route)
+    if(debuglines) map.removeLayer(debuglines)
+    if (startCircle) map.removeLayer(startCircle)
+    if (endCircle) map.removeLayer(endCircle)
+    if (line) map.removeLayer(line)
+    if (route) map.removeLayer(route)
     waypoints.startPoint = L.latLng(0, 0)
     waypoints.endPoint = L.latLng(0, 0)
 }
@@ -412,6 +414,7 @@ async function routingConcept() {
         let numClear = 0;
         if(routes){
             let potholes = await getPotholes()
+            debuglines = L.layerGroup().addTo(map);
 
             for(let route of routes){
                 let clearRoute = true
@@ -422,7 +425,7 @@ async function routingConcept() {
                     if(isPointOnLine(point, route.coordinates)) {
                         console.log("Attempting to avoid " + route.name + " since Pothole " + pothole.potholeID + " lies on route.")
                         clearRoute=false
-                        numPotholes++;
+                        numPotholes++;          
                     }
                 } 
 
@@ -435,12 +438,14 @@ async function routingConcept() {
                         line.addTo(map)
                         numClear++
                     }
-                }
-                else {
-                    line = L.Routing.line(route,{
-                        styles: [{color: 'gray'}]
-                    })
-                    line.addTo(map)
+                } else{
+                    if(debug){
+                        var templine = L.Routing.line(route,{
+                            styles: [{color: 'gray'}]
+                        })
+                        templine.addTo(debuglines)
+                        
+                    }
                 }
             }
 
