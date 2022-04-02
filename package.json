@@ -19,6 +19,7 @@
   },
   "homepage": "https://github.com/Boldoosang/NULLIFY-spotDPothole-frontend#readme",
   "dependencies": {
+    "@mapbox/leaflet-pip": "^1.1.0",
     "@types/jest": "^27.0.3",
     "chai": "^4.3.4",
     "chromium": "^3.0.3",
@@ -29,7 +30,7 @@
     "puppeteer": "^12.0.1"
   },
   "devDependencies": {
-    "jest": "^27.4.3"
+    "jest": "^27.5.1"
   },
   "jest": {
     "testEnvironment": "jsdom"

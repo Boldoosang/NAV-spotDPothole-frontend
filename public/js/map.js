@@ -35,7 +35,7 @@ async function initMap() {
     });
 
     var online = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        attribution: 'Online Map'
     }).addTo(map);
 
     var baseMaps = {
@@ -407,7 +407,7 @@ async function routingConcept() {
                     let point = L.latLng(pothole.latitude, pothole.longitude)
 
                     if(isPointOnLine(point, route.coordinates)) {
-                        console.log("PotholeID: " + pothole.potholeID + " lies on route: " + route.name)
+                        console.log("Attempting to avoid " + route.name + " since Pothole " + pothole.potholeID + " lies on route.")
                         clearRoute=false
                         numPotholes++;
                     }
@@ -480,7 +480,9 @@ async function main() {
             cache.keys().then(function(cacheKeys){
                 cacheKeys.find((o,i) => {
                     if(o.url.includes('https://dl.dropboxusercontent.com/s/87jkx7txs1uazqw/tandtS.mbtiles?dl=1')){
-                        offline = L.tileLayer.mbTiles('https://dl.dropboxusercontent.com/s/87jkx7txs1uazqw/tandtS.mbtiles?dl=1');
+                        offline = L.tileLayer.mbTiles('https://dl.dropboxusercontent.com/s/87jkx7txs1uazqw/tandtS.mbtiles?dl=1', {
+                            attribution: 'Offline Map'
+                        });
                         
                         //switch between online and offline map
                         lControl.addBaseLayer(offline, "Offline"); 

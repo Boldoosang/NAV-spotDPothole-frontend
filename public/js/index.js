@@ -12,6 +12,8 @@ const firebaseConfig = {
 var dashboardMap;
 let dashboardMarkersLayer;
 let dashboardMarkers = [];
+let userState = null;
+
 
 // Initialize Firebase
 const app = firebase.initializeApp(firebaseConfig);
@@ -136,7 +138,7 @@ async function sendRequest(url, method, data){
             if(results["msg"] == "Signature verification failed" || results["msg"] == "Token has expired"){
                 window.localStorage.removeItem('access_token');
                 alert("Session has expired!")
-                window.location = "/"
+                window.location = "index.html"
                 return;
             }
         }
@@ -147,7 +149,7 @@ async function sendRequest(url, method, data){
             if(results["error"] == "User is banned."){
                 window.localStorage.removeItem('access_token');
                 alert("You have been banned!")
-                window.location = "/"
+                window.location = "index.html"
                 return;
             }
         }
@@ -167,7 +169,7 @@ async function sendRequest(url, method, data){
 }
 
 //Facilitates the logout of a user by removing their access token.
-function logout(){
+async function logout(){
     //Attempts to retrieve the access token of the user.
     accessToken = window.localStorage.getItem("access_token");
 
@@ -181,7 +183,7 @@ function logout(){
     
     //Updates the user context elements and refreshes the page.
     identifyUserContext()
-    window.location = `/`
+    window.location = `index.html`
 }
 
 //Facilitates the login of a user based on their login information.
@@ -210,7 +212,7 @@ async function login(event){
     //If the result is a success, set the returned access token in the storage, sets the outcome message, and refreshes the page.
         window.localStorage.setItem("access_token", result["access_token"]);
         messageArea.innerHTML = `<b class="text-success text-center">Login successful!</b>`
-        window.location = "/"
+        window.location = "index.html"
     }
 }
 
@@ -221,7 +223,7 @@ async function identifyUser(){
 
     //If there is an email in the response, the user is logged in. Otherwise, the user is not logged in/session is expired.
     try {
-        if("email" in user){
+        if("email" in user && "access_token" in window.localStorage){
             return user;
         } else {
             return {"error" : "User is not logged in or session has expired!"}
@@ -235,6 +237,7 @@ async function identifyUser(){
 async function identifyUserContext(){
     //Gets the user context.
     let user = await identifyUser();
+    window.userState = user;
     let access_token = window.localStorage.getItem("access_token")
 
     //Gets a handle on each of the name, menu area, 
@@ -248,7 +251,7 @@ async function identifyUserContext(){
         userStateArea.innerHTML = `<li><a class="" href="#" onclick="logout()"><i class='bi bi-box-arrow-left'></i> <span>Logout</span></a></li>`
         userNameArea.innerHTML = `<h1 class="text-light">${user.firstName} ${user.lastName}</h1>`
         menuArea.innerHTML = `<li><a href="#profile" data-bs-toggle="modal" data-bs-target="#profileManagementModal"><i class="bi bi-person-fill"></i> <span>Profile</span></a></li>`
-        reportButtonArea.innerHTML = `<i class="bi bi-plus d-xl-none" data-bs-toggle="modal" data-bs-target="#driverReportModal" id="driverReportButton"></i></button>`
+        reportButtonArea.innerHTML = `<i class="bi bi-plus d-xl-none" data-bs-toggle="modal" data-bs-target="#driverReportModal" id="driverReportButton"></i>`
     }
 }
 
@@ -507,7 +510,7 @@ async function loadReports(potholeID){
 
     //Gets all of the pothole reports.
     let potholeReports = await getReports(potholeID)
-    let userLogin = await identifyUser();
+    let userLogin = window.userState;
 
     //Writes the number of reports to the report area.
     let numberOfReportsContainer = document.querySelector('#numberOfReportsArea')
@@ -630,7 +633,7 @@ async function loadReportPage(){
     let reportArea = document.querySelector("#reportContent");
 
     //Gets the user context
-    let user = await identifyUser();
+    let user = window.userState;
 
     //If the user is not logged in, display an error message.
     if("error" in user || "msg" in user){
@@ -792,7 +795,7 @@ async function voteOnReport(event, potholeID, reportID, isUpvote){
     let messageArea = document.querySelector(`#voteOutcomeMessage-${reportID}`)
 
     //Determines if the user is logged in.
-    let userLogin = await identifyUser();
+    let userLogin = window.userState;
 
     if("msg" in userLogin || !("email" in userLogin)){
         messageArea.innerHTML = `<b class="text-danger text-center">Please login to vote!</b>`
@@ -811,8 +814,16 @@ async function voteOnReport(event, potholeID, reportID, isUpvote){
             messageArea.innerHTML = `<b class="text-success text-center">${result["message"]}</b>`
 
             try {
-                //Gets the updated vote report.
-                let updatedReport = await sendRequest(SERVER + `/api/reports/pothole/${potholeID}/report/${reportID}`, "GET");
+
+                let updatedReport
+                //Updates the local cache for reports and gets updated report.
+                let allReports = await sendRequest(SERVER + `/api/reports/pothole/${potholeID}`, "GET");
+                for(currReport of allReports)
+                    if(currReport.reportID == reportID && currReport.potholeID == potholeID)
+                        //Gets the updated vote report.
+                        updatedReport = currReport
+                
+
                 
                 //Recalculates the votes, text colors and button colors.
                 newNetVotes = calculateNetVotes(updatedReport)
@@ -829,6 +840,7 @@ async function voteOnReport(event, potholeID, reportID, isUpvote){
                 downvoteButton.innerHTML = `<button id="castedDownvote-${updatedReport.reportID}" type="button" class="btn ${updatedDownvoteButtonColor}" onclick="voteOnReport(event, ${potholeID}, ${updatedReport.reportID}, false)">
                                                 <i class="bi bi-arrow-down"></i>
                                             </button>`
+                                            
             } catch(e){
                 //If any errors occur, print the errors.
                 console.log(e)
@@ -846,16 +858,16 @@ async function getCouncillorData(electionYear, constituencyID){
 
 //Loads the councillor data for the constituency into the pothole information pane.
 async function loadConstituencyData(constituencyID){
-    //Gets the councillor data for the constituencyID and election year.
-    let councillorData = await getCouncillorData(ELECTION_YEAR, constituencyID)
-
+    //Gets a handle on the councillor information area.
     let councillorInformationArea = document.querySelector("#councillorInformation")
-
     //Sets initial councillor information
     councillorInformationArea.innerHTML = `<div class="align-middle text-center mb-2">
                                                 <div class="spinner-border text-white mb-2" role="status"></div><br>
                                                 <b class="align-middle text-white text-center mt-2">Loading Information...</b>
                                             </div>`;
+
+    //Gets the councillor data for the constituencyID and election year.
+    let councillorData = await getCouncillorData(ELECTION_YEAR, constituencyID)
 
     //Attempts to populate the councillor information area with the formatted information.
     try {
@@ -978,7 +990,6 @@ function displayToast(type, message, customDuration=2.5) {
 
 	// After 4 seconds, remove the show class from DIV
 	setTimeout(() => { 
-		console.log(id)
 		let element = document.getElementById(id);
 		element.className = element.className.replace("show", "hide"); 
 	}, customDuration*1000 + 500);
@@ -1139,10 +1150,22 @@ function dateConvert(date){
     return newDate;
 }
 
+async function downloadMapTiles(){
+    navigator.serviceWorker.ready.then(worker => {
+        worker.active.postMessage({"downloadMap" : true})
+    });
+}
+
+async function revealDownloadButton(downloadButton){
+    downloadButton.classList.replace("d-none", "d-flex")
+}
+
+
 //Bootstraps the application by adding the relevant listeners, toggles, and other initialization procedures.
 async function main(){
+    
     //Determines the user context.
-    identifyUserContext()
+    await identifyUserContext()
     //Disables the back button
     disableBackButton()
     //Adds a click listener to the driver report button.
@@ -1160,8 +1183,12 @@ async function main(){
         requestBackgroundSync();
     })
 
+    let downloadButton = document.querySelector("#mapDownloadButton");
+    await revealDownloadButton(downloadButton);
+    
     //Adds a listener to detect whenever a message has been sent via the channel; ie from the service worker.
     channel.addEventListener('message', event => {
+        
         //Displays the contents of the data in the channel via a toast if it contains a message or error.
         if("message" in event.data){
             displayToast("sync", event.data["message"])
@@ -1173,6 +1200,21 @@ async function main(){
             
         } else if("install" in event.data){
             displayToast("sync", "First Application Initialization...")
+        } else if ("mapDownloaded" in event.data){
+            downloadButton.classList.remove("d-flex")
+            downloadButton.classList.add("d-none")
+        } else if ("mapDownloading" in event.data){
+            downloadButton.classList.remove("d-flex")
+            downloadButton.classList.add("d-none")
+            displayToast("sync", "Downloading Map...")
+        } else if("mapDownloadComplete" in event.data){
+            if(window.navigator.onLine){
+                downloadButton.classList.remove("d-flex")
+                downloadButton.classList.add("d-none")
+                window.location.reload()
+            } else {
+                displayToast("failed", 'You must be online to download the map.')
+            }
         } else {
             displayToast("failed", event.data["error"])
         }
@@ -1181,14 +1223,21 @@ async function main(){
     });
 
     //Gets the current user.
-    let user = await identifyUser();
+    let user = window.userState;
     //If the current user is logged in, initialize their dashboard and display their potholes.
     if(!("error" in user || "msg" in user)){
         await initDashboardMap();
         displayUserPotholes();
     }
 
+    //Initializes tooltips
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl)
+    })
+
 }
+
 
 //Initializes the dashboard map.
 async function initDashboardMap(){
@@ -1305,7 +1354,7 @@ async function loadUserReport(potholeID){
     try {
         //Determines if there are pothole images to be added. If not, display a message.
         if(reportedImages.length == 0){
-            allReportImages = `<div class="d-flex justify-content-center mt-3"><strong>No report images uploaded!</strong></div>`
+            allReportImages = `<div class="d-flex justify-content-center mt-3 mb-3"><span class="border border-1 border-white rounded-3 px-3 py-5"><strong >No report images uploaded!</strong></div>`
         } else {
         //Otherwise, iterate over all of the images and add them to the image carousel for the report.
             let tag = "active"
@@ -1320,7 +1369,7 @@ async function loadUserReport(potholeID){
                         <button type="button" id="deleteImageButton" dashDeleteReportImage()" data-bs-toggle="collapse" data-bs-target="#dashDeleteImage-${potholeReport.reportID}-${reportImage.imageID}" aria-expanded="false" aria-controls="collapseExample" class="btn btn-danger"><i class="bi bi-trash"></i> Delete Image</button>
                         <div class="collapse" id="dashDeleteImage-${potholeReport.reportID}-${reportImage.imageID}">
                             <div class="card card-body text-white mt-3" style="background: #050d18;">
-                                <b>Confirm image deletion?</b>
+                                <b>Confirm deletion?</b>
                                 <button type="button" data-bs-toggle="collapse" onclick="deleteImageFromReport(event, ${potholeReport.potholeID}, ${potholeReport.reportID}, ${reportImage.imageID})" data-bs-target="#dashDeleteImage-${potholeReport.reportID}-${reportImage.imageID}" aria-expanded="false" aria-controls="collapseExample" class="btn btn-danger my-2">Delete Image</button>
                                 <button type="button" data-bs-toggle="collapse" data-bs-target="#dashDeleteImage-${potholeReport.reportID}-${reportImage.imageID}" aria-expanded="false" aria-controls="collapseExample" class="btn btn-secondary my-2">Close</button>
                             </div>
@@ -1685,7 +1734,7 @@ async function requestBackgroundSync() {
 
 //Loads the dashboard modal.
 async function loadDashboard(){
-    let user = await identifyUser();
+    let user = window.userState;
     //Gets the dashboard component handles.
     let dashboardMapArea = document.querySelector("#dashboardMap");
     let dashboardMessage = document.querySelector("#dashboardMessage")

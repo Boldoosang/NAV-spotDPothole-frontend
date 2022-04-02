@@ -12,6 +12,8 @@ var our_db
 //Approach inspiration taken from pipes in Operating Systems.
 const channel = new BroadcastChannel('sw-messages');
 
+const mbTilesLink = 'https://dl.dropboxusercontent.com/s/87jkx7txs1uazqw/tandtS.mbtiles?dl=1';
+
 //Files to be cached for offline support.
 const cacheFiles = [
 	'ttmap.geojson',
@@ -38,8 +40,7 @@ const cacheFiles = [
 	'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.js',
 	'https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/js/bootstrap.bundle.min.js',
 	'https://www.gstatic.com/firebasejs/7.15.5/firebase-app.js',
-	'https://www.gstatic.com/firebasejs/7.15.5/firebase-storage.js',
-	'https://dl.dropboxusercontent.com/s/87jkx7txs1uazqw/tandtS.mbtiles?dl=1'
+	'https://www.gstatic.com/firebasejs/7.15.5/firebase-storage.js'
 ];
 
 // Service Worker, "service-worker.js", service worker activation referenced from JMPerez, September 28th 2020, found at:
@@ -120,6 +121,7 @@ self.addEventListener('fetch', function(event) {
 			event.respondWith(
 				fromNetwork(event.request, 10000).catch(() => fromCache(event.request))
 			);
+			
 
 		//Otherwise, the remaining content will be static content and will make use of a cache first strategy.
 		} else {
@@ -132,7 +134,16 @@ self.addEventListener('fetch', function(event) {
 		}
 		
 		//Attempts to update the cache the visited resource
-		event.waitUntil(update(event.request));
+		if(event.request.url.includes("mbtiles")){
+			caches.match(mbTilesLink).then(function(response) {
+				if(response){
+					console.log("Offline Map Available!")
+					channel.postMessage({"mapDownloaded" : true});
+				}
+			})
+		} else {
+			event.waitUntil(update(event.request));
+		}
 	//Otherwise, if the request is a POST request; sending the report data or voting, prepare offline techniques if sending fails.
 	} else if (event.request.clone().method === 'POST') {
 		//console.log('form_data', form_data)
@@ -213,6 +224,13 @@ self.addEventListener('message', function (event) {
 	if (event.data.hasOwnProperty('form_data')) {
 		//Sets the intercepted form data to the global form_data object.
 		form_data = event.data.form_data
+	}
+
+	if ("downloadMap" in event.data){
+		channel.postMessage({"mapDownloading" : true})
+		event.waitUntil(update(mbTilesLink).then(function(){
+			channel.postMessage({"mapDownloadComplete" : true})
+		}))
 	}
 })
 
