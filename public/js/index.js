@@ -1186,7 +1186,12 @@ async function main(){
     })
 
     let downloadButton = document.querySelector("#mapDownloadButton");
-    await revealDownloadButton(downloadButton);
+    
+
+    let mapSelectorArea = document.getElementsByClassName("leaflet-control-layers-selector");
+    if(mapSelectorArea.length == 1){
+        await revealDownloadButton(downloadButton);
+    }
     
     //Adds a listener to detect whenever a message has been sent via the channel; ie from the service worker.
     channel.addEventListener('message', event => {
