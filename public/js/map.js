@@ -6,6 +6,7 @@ let waypoints = {
     "startPoint" : L.latLng(0, 0),
     "endPoint" : L.latLng(0, 0)
 }
+let debug = false
 let line
 let route
 let map
@@ -414,11 +415,19 @@ async function routingConcept() {
 
                 route.numPotholes = numPotholes;
 
-                if(clearRoute){
-                    if(line) map.removeLayer(line)
-                    line = L.Routing.line(route)
+                if(!debug){
+                    if(clearRoute){
+                        if(line) map.removeLayer(line)
+                        line = L.Routing.line(route)
+                        line.addTo(map)
+                        numClear++
+                    }
+                }
+                else {
+                    line = L.Routing.line(route,{
+                        styles: [{color: 'gray'}]
+                    })
                     line.addTo(map)
-                    numClear++
                 }
             }
 
@@ -449,10 +458,24 @@ async function routingConcept() {
     });
 }
 
-
 async function main() {
+    var currentCircle;
+
     await initMap();
     await displayPotholes();
+
+    watchid = navigator.geolocation.watchPosition(function (pos){
+        if (currentCircle!=null) map.removeLayer(currentCircle)
+
+       var currentpos = L.latLng(pos.coords.latitude, pos.coords.longitude);
+        currentCircle = L.circleMarker(currentpos, {
+            color: 'red',
+            fillColor: 'red',
+            radius: 8,
+            fillOpacity: 0.2,
+        }).addTo(map);
+    })
+
         caches.open(`main-1`).then(function(cache){
             cache.keys().then(function(cacheKeys){
                 cacheKeys.find((o,i) => {
