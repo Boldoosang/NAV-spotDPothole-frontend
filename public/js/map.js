@@ -94,6 +94,17 @@ async function initMap() {
 let startCircle;
 let endCircle;
 
+function clearRouting(){
+    if(watchid != null){
+        navigator.geolocation.clearWatch(watchid)
+    }
+    map.removeLayer(startCircle)
+    map.removeLayer(endCircle)
+    map.removeLayer(line)
+    map.removeLayer(route)
+    waypoints.startPoint = L.latLng(0, 0)
+    waypoints.endPoint = L.latLng(0, 0)
+}
 
 function setStart(e){
     if(watchid != null){
