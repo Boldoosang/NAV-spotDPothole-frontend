@@ -77,6 +77,7 @@ async function initMap() {
                             <li><a class="dropdown-item" href="#" onClick="setStart(event)">Start Route Here</a></li>
                             <li><a class="dropdown-item" href="#"  onClick="setEnd()">End Route Here</a></li>
                             <li><a class="dropdown-item" href="#"  onClick="liveRouting()">My Location To Here</a></li>
+                            <li><a class="dropdown-item" href="#"  onClick="clearRouting()">Clear Routing Pins</a></li>
                         </ul>`
 
                     var popup = L.popup().setContent(menu).setLatLng(e.latlng).openOn(map);
@@ -92,6 +93,7 @@ async function initMap() {
 
 let startCircle;
 let endCircle;
+
 
 function setStart(e){
     if(watchid != null){
