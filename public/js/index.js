@@ -22,7 +22,7 @@ const app = firebase.initializeApp(firebaseConfig);
 const channel = new BroadcastChannel('sw-messages');
 
 // Creates a function to convert a file to base64.
-// Referenced from: Dmitri Pavlutin, https://stackoverflow.com/questions/36280818/how-to-convert-file-to-base64-in-javascript
+// Referenced from: Dmitri Pavlutin, March 29th 2016, https://stackoverflow.com/questions/36280818/how-to-convert-file-to-base64-in-javascript
 const toBase64 = file => new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.readAsDataURL(file);
@@ -906,6 +906,8 @@ async function loadConstituencyData(constituencyID){
     }
 }
 
+
+//Referenced from Michael Zaporozhets, July 8th 2012, found at:
 //https://stackoverflow.com/questions/11381673/detecting-a-mobile-browser
 //Determines if the current device is a mobile device.
 function isMobileDevice(){
@@ -1184,7 +1186,12 @@ async function main(){
     })
 
     let downloadButton = document.querySelector("#mapDownloadButton");
-    await revealDownloadButton(downloadButton);
+    
+
+    let mapSelectorArea = document.getElementsByClassName("leaflet-control-layers-selector");
+    if(mapSelectorArea.length == 1){
+        await revealDownloadButton(downloadButton);
+    }
     
     //Adds a listener to detect whenever a message has been sent via the channel; ie from the service worker.
     channel.addEventListener('message', event => {
