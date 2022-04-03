@@ -110,8 +110,9 @@ async function getIndividualReport(potholeID){
 
 /* ========================================= TESTS ========================================================= */
 
-//1. test to determine whether the request for councillor data through the use of getCouncillorData returns the right data based on parameters passed
-test('Test Get Councillor Data', async () => {
+// Test 1: This test checks whether the request for councillor data through the use of getCouncillorData() function returns the right data based on parameters passed, 
+// that is the: name, pronouns, address, email address and phone number returned by the function match the expected value.
+test('Test 1: Function getCouncillorData() returns the correct data', async () => {
     let result = await getCouncillorData(ELECTION_YEAR,'CNE');
 
     expect(result).toStrictEqual([{
@@ -119,8 +120,8 @@ test('Test Get Councillor Data', async () => {
     }]);
 });
 
-//2. test to determine whether a sendRequest with method parameter GET returns a success, "status": "Awesome!"
-test ('Test sendRequest with GET' , async () => {
+// Test 2: This test uses a sendRequest with method parameter GET and expects it to return a success, with the value: "status": "Awesome!".
+test ('Test 2: Test sendRequest with GET' , async () => {
     let result = await sendRequest('https://spotdpothole3613.free.beeceptor.com/testGet', 'GET')
 
     expect(result).toStrictEqual({
@@ -128,8 +129,8 @@ test ('Test sendRequest with GET' , async () => {
       })
 })
 
-//3. test to determine whether a sendRequest with method parameter POST returns a success, "status": "Awesome!"
-test ('Test sendRequest with POST' , async () => {
+// Test 3: This test uses a sendRequest with method parameter POST and expects it to return a success, with the value: "status": "Awesome!".
+test ('Test 3: Test sendRequest with POST' , async () => {
     let result = await sendRequest('https://spotdpothole3613.free.beeceptor.com/testPost', 'POST')
 
     expect(result).toStrictEqual({
@@ -137,24 +138,32 @@ test ('Test sendRequest with POST' , async () => {
       })
 })
 
-//4. test to determing whether the getReports function returns the right information on a pothole that does not exist
-test('Function getReports produces no report data on a pothole with ID 1', async () => {
-    //console.log(await getReports(1));
+// Test 4: This test checks whether the the right information is returned when the getReports() function is called, such that it expects
+// null values to be returned on a pothole containing the ID 1.
+test('Test 4: Function getReports() produces no report data on a pothole with ID 1', async () => {
     let potholeResults = getReports(1);
     expect(potholeResults).toBeNull;
     expect(potholeResults.length).toBeNull;
 });
 
-//5. test to see if identifyUser returns no results when a user is not logged in
-test('Function identifyUser produces no results when user is not logged in', async() =>{
+// Test 5: This test checks that no information is returned on the call of the function identifyUser(), such that it expects the function to return
+// no results when the user is not logged in. The expected value is the error message "error" : "User is not logged in or session has expired!".
+test('Test 5: Function identifyUser() produces no results when user is not logged in', async() =>{
     let result = await identifyUser();
     expect(result).toStrictEqual({
         "error" : "User is not logged in or session has expired!"
     })
 });
 
-//6. test to determine if sendRequest produces the right results when a user logs in successfully
-test('Test sendRequest with login attempt is successfull', async() =>{
+// Test 6: This test checks that the right information is returned when getUserPotholes() is called, such that it expects the function to return null for the user not being logged in.
+test('Test 6: Function getUserPotholes() returns no potholes for a non-logged in user', async() =>{
+    let result = await getUserPotholes();
+    expect(result).toBeNull;
+})
+
+// Test 7: This test checks that sendRequest produces the right results when a user logs in successfully. The test data used for this is "email" : "brandon.bharath@my.uwi.edu" 
+// and "password" : "SpotDPotTester123". The expected result of the test is that an access token for the user is returned.
+test('Test 7: Test sendRequest with correct login attempt returns access token', async() =>{
     let loginDetails = {
         "email" : "brandon.bharath@my.uwi.edu",
         "password" : "SpotDPotTester123"
@@ -163,14 +172,9 @@ test('Test sendRequest with login attempt is successfull', async() =>{
     expect(result).toHaveProperty("access_token");
 })
 
-//7. test to determine if getUserPotholes returns all of the current user's potholes.
-test('Test getUserPotholes returns no potholes for a non-logged in user', async() =>{
-    let result = await getUserPotholes();
-    expect(result).toBeNull;
-})
-
-//8. test to determine if sendRequest with register returns the right results with incorrect data
-test('Test sendReport with incorrect information is unsuccessfull', async() =>{
+// Test 8: This test checks for the right result being returned if sendRequest is called with a /register method along with invalid registration data. The expected result of the test is
+// that the function returns an error message containing the property "error".
+test('Test 8: Test sendRequest with incorrect register information is unsuccessfull', async() =>{
     let registrationDetails = {
         "email" : "@justinbaldeo.com",
         "firstName" : "Justevon",
@@ -183,8 +187,9 @@ test('Test sendReport with incorrect information is unsuccessfull', async() =>{
     expect(result).toHaveProperty("error")
 })
 
-//9. test whether the sending a report request returns the right result
-test('Test sendRequest with POST returns the correct status', async() =>{
+// Test 9: This test determines whether the right result is returned if sendRequest is called with the "POST" method for reporting a pothole. The test uses valid mock data for sending
+// a report with "longitude": 10.631949, "latitude":  -61.353160, "images": [] and "description":null. The test expects the function to return a status report containing the property "msg"
+test('Test 9: Test sendRequest with POST for a pothole report is unsuccessful for non-logged-in user', async() =>{
     var data = {
 		"longitude": 10.631949,
 		"latitude":  -61.353160,
@@ -195,11 +200,9 @@ test('Test sendRequest with POST returns the correct status', async() =>{
     expect(result).toHaveProperty("msg");
 })
 
-//10. tests the getIndividualReport function 
-test('Test getIndividualReport() returns correct result for potholeID of 1', async() =>{
-    let result = await getIndividualReport(1);
+// Test 10: This test determines whether the right result is returned when the getIndividualReport() function is called with a pothole ID of 1 as the parameter. The test expects the 
+// function to have a null result as its return value, as there is no pothole of ID 133. 
+test('Test 10: Function getIndividualReport() returns no result for potholeID of 133', async() =>{
+    let result = await getIndividualReport(133);
     expect(result).toBeNull();
 })
-
-//let result = await sendRequest(SERVER + `/api/reports/pothole/${potholeID}/report/${reportID}`, "DELETE");
-
