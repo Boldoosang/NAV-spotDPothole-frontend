@@ -653,7 +653,7 @@ async function loadReportPage(){
         //} else {
             reportArea.innerHTML = 
             `<div class="list-group p-3 d-flex flex-column justify-content-evenly align-items-middle" style="min-height: 75vh">
-                <button data-bs-target="#standardReportModal" data-bs-toggle="modal" id="standard-button" type="button" class="btn btn-primary py-5">Standard Report</button>                       
+                <button data-bs-target="#standardReportModal" data-bs-toggle="modal" onclick='updateLocalCoords()' id="standard-button" type="button" class="btn btn-primary py-5">Standard Report</button>                       
                 <button data-bs-target="#driverReportModal" data-bs-toggle="modal" id="driver-button" type="button" class="btn btn-dark py-5">Driver Report</button>
             </div>`
         //}
@@ -1165,13 +1165,18 @@ async function revealDownloadButton(downloadButton){
 
 //Bootstraps the application by adding the relevant listeners, toggles, and other initialization procedures.
 async function main(){
-    
     //Determines the user context.
     await identifyUserContext()
     //Disables the back button
     disableBackButton()
-    //Adds a click listener to the driver report button.
-    document.getElementById('submit-driver-report').addEventListener('click', postDriverReport);
+    //Adds a click listener to the driver report button and automatically collapse the modal.
+    document.getElementById('submit-driver-report').addEventListener('click', ()=> {
+        postDriverReport();
+        var myCollapse = document.getElementById('flush-collapseOne')
+        var bsCollapse = new bootstrap.Collapse(myCollapse, {
+            toggle: true
+        })
+    });
     //Adds a click listener to the standard report button.
     document.getElementById('submit-passenger-report').addEventListener('click', handleStandardReport);
     //Adds a listener to detect when the user has gone offline, and displays a corresponding message.
@@ -1228,6 +1233,7 @@ async function main(){
         //Refreshes the potholes on the map; this assumes that the message pertains to syncing.
         displayPotholes();
     });
+
 
     //Gets the current user.
     let user = window.userState;
