@@ -26,7 +26,7 @@ before(async function () {
   });
 
   await page.goto('https://spotdpoth.web.app/')
-  await page.setGeolocation({ latitude: 10.69, longitude: -61.23 });
+  await page.setGeolocation({ latitude: 10.66, longitude: -61.23 });
 });
 
 function getHTML(selector) {
@@ -50,6 +50,7 @@ function checkElements(a) {
 }
 
 context('End to End Tests', () => {
+  //Test 1: Tests that adding a pothole to the map adds a pothole marker to the map
   it('Test 1: Test the addition of potholes to the map', async function () {
     this.timeout(config.timeout);
 
@@ -98,6 +99,7 @@ context('End to End Tests', () => {
     assert(numMarkersAfterAdding > numMarkers, 'Number of markers is not greater after adding a report')
   })
 
+  //Test 2: Tests that editing a pothole description modifies the description that is displayed the potohle offcanvas
   it('Test 2: Test the editing of a pothole description using the dashboard', async function () {
     this.timeout(config.timeout);
 
@@ -138,6 +140,7 @@ context('End to End Tests', () => {
     assert(descriptionTextBefore != descriptionTextAfter)
   })
 
+  //Test 3: Tests that deleting a pothole removes the pothole pin from the map
   it('Test 3: Test the deletion of potholes from the map', async function () {
     this.timeout(config.timeout);
 
@@ -167,6 +170,7 @@ context('End to End Tests', () => {
     assert(numMarkersAfterDeleting < numMarkersBefore, 'Number of markers is not less after deleting a report')
   })
 
+  //Test 4: Tests that upvoting/downvoting a pothole modifies the number of upvotes/downvotes that are displayed in the potohle offcanvas
   it('Test 4: Test the Upvoting/Downvoting of potholes', async function () {
     this.timeout(config.timeout);
     
@@ -201,6 +205,7 @@ context('End to End Tests', () => {
     assert(voteCountAfterDownvote < voteCountAfterUpvote, 'Vote count is not less after downvote')
   })
 
+  //Test 5: Tests that changing the username in the profile modal changes the username in the navbar
   it('Test 5: Test username change', async function () {
     this.timeout(config.timeout);
     
@@ -251,6 +256,7 @@ context('End to End Tests', () => {
     assert(userNameBeforeChange != userNameAfterChange, 'User name is not changed')
   })
 
+  //Test 6: Tests that changing the password in the profile modal changes the password when logging in.
   it('Test 6: Test Password Change', async function () {
     this.timeout(config.timeout);
 

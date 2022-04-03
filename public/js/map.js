@@ -483,15 +483,24 @@ async function main() {
     await displayPotholes();
 
     watchid = navigator.geolocation.watchPosition(function (pos){
+
+        //If the coordinates are successfully obtained, store them.
+        let latitude = pos.coords.latitude;
+        let longitude = pos.coords.longitude;
+
+        //Sets the latitude and longitude in the localstorage.
+        localStorage.setItem("latitude", latitude)
+        localStorage.setItem("longitude", longitude)
+
         if (currentCircle!=null) map.removeLayer(currentCircle)
 
-       var currentpos = L.latLng(pos.coords.latitude, pos.coords.longitude);
-        currentCircle = L.circleMarker(currentpos, {
-            color: 'red',
-            fillColor: 'red',
-            radius: 8,
-            fillOpacity: 0.2,
-        }).addTo(map);
+        var currentpos = L.latLng(pos.coords.latitude, pos.coords.longitude);
+            currentCircle = L.circleMarker(currentpos, {
+                color: 'red',
+                fillColor: 'red',
+                radius: 8,
+                fillOpacity: 0.2,
+            }).addTo(map);
     })
 
         caches.open(`main-1`).then(function(cache){

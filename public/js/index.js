@@ -653,7 +653,7 @@ async function loadReportPage(){
         //} else {
             reportArea.innerHTML = 
             `<div class="list-group p-3 d-flex flex-column justify-content-evenly align-items-middle" style="min-height: 75vh">
-                <button data-bs-target="#standardReportModal" data-bs-toggle="modal" id="standard-button" onclick="updateLocalCoords()" type="button" class="btn btn-primary py-5">Standard Report</button>                       
+                <button data-bs-target="#standardReportModal" data-bs-toggle="modal" id="standard-button" type="button" class="btn btn-primary py-5">Standard Report</button>                       
                 <button data-bs-target="#driverReportModal" data-bs-toggle="modal" id="driver-button" type="button" class="btn btn-dark py-5">Driver Report</button>
             </div>`
         //}
