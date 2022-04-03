@@ -117,6 +117,7 @@
           <li><a href="#dashboard" onclick="loadDashboard()" data-bs-toggle="pill" data-bs-target="#mainTab-dashboard"><i class="bi bi-clipboard"></i> <span>Dashboard</span></a></li>
           <li><a href="#leaderboard" onclick="loadLeaderboardData()" data-bs-toggle="pill" data-bs-target="#mainTab-leaderboard"><i class="bi bi-bar-chart-fill"></i> <span>Leaderboard</span></a></li>
           <li><a href="#about" data-bs-toggle="pill" data-bs-target="#mainTab-about"><i class='bi bi-patch-question'></i> <span>About</span></a></li>
+          <!-- ====== Loads further options for logged-in users in this area ====== -->
           <ul id="userContextGroup" class="list-group list-group-flush">
             <li><a href="#loginBtn" data-bs-toggle="modal" data-bs-target="#loginModal"><i class="bi bi-person-check-fill"></i> <span>Login / Register</span></a></li>
           </ul>
@@ -348,7 +349,7 @@
 
                             <!-- Confirmation and Cancel options for deciding whether to submit the report -->
                             <div id="flush-collapseOne" class="mx-1 accordion-collapse collapse row justify-content-around" aria-labelledby="flush-headingOne" data-bs-parent="#driverSubmitReport">
-                                <button class="btn btn-primary py-5 mt-3"  id="submit-driver-report" type="button" data-bs-dismiss="modal" data-bs-target="#driverReportModal" aria-expanded="false" aria-controls="flush-collapseOne">
+                                <button class="btn btn-primary py-5 mt-3" id="submit-driver-report" type="button" data-bs-dismiss="modal" data-bs-target="#driverReportModal" aria-expanded="false" aria-controls="flush-collapseOne">
                                     Confirm Submission
                                 </button>
                                 <button class="btn btn-danger py-5 mt-3"  type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseOne" aria-expanded="false" aria-controls="flush-collapseOne">
@@ -376,6 +377,7 @@
               <!-- Holds the registration and login tab content forms -->
               <div class="modal-body">
                 <div class="accordion" id="profileAccordion">
+                  <!-- Accordion item for updating the password -->
                   <div class="accordion-item">
                     <h2 class="accordion-header" id="updatePassword">
                       <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseUpdatePasswordForm" aria-expanded="false" aria-controls="collapseUpdatePasswordForm">
@@ -385,6 +387,7 @@
                     <div id="collapseUpdatePasswordForm" class="accordion-collapse collapse" aria-labelledby="updatePassword" data-bs-parent="#profileAccordion">
                       <div class="accordion-body">
                           <div class=" text-white mb-2">
+                            <!-- Form used to update the password -->
                             <form class="form-group mb-1" onsubmit="changePassword(event)">
                                 <label for="updatePassword-original">Old Password</label>
                                 <input type="password" id="updatePassword-original" class="form-control mt-2" name="oldPassword" required>
@@ -405,6 +408,7 @@
                       </div>
                     </div>
 
+                  <!-- Accordion item for updating the user's profile information -->
                   <div class="accordion-item">
                     <h2 class="accordion-header" id="updateProfileName">
                       <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseUpdateProfileName" aria-expanded="false" aria-controls="collapseUpdateProfileName">
@@ -414,6 +418,7 @@
                     <div id="collapseUpdateProfileName" class="accordion-collapse collapse" aria-labelledby="updateProfileName" data-bs-parent="#profileAccordion">
                       <div class="accordion-body">
                         <div class=" text-white mb-2">
+                          <!-- Form for updating profile information -->
                             <form class="form-group mb-1" onsubmit="updateProfile(event)">
                                 <label for="updateProfile-firstName">First Name</label>
                                 <input type="text" id="updateProfile-firstName" class="form-control mt-2" name="firstName" required>
@@ -492,13 +497,12 @@
                                   </form>
 
                                   <!-- Send Password Reset button -->
-
                                   <p class="mt-4 text-center">
                                     <a class="ms-auto" data-bs-toggle="collapse" href="#sendResetPassword" role="button" aria-expanded="false" aria-controls="collapseExample">
                                         Forgot your password?
                                     </a>
                                 </p>
-
+                                <!-- Collapse element containing the send password reset form -->
                                 <div class="collapse" id="sendResetPassword">
                                   <div class="card card-body bg-light text-dark mb-2" id="sendResetCard">
                                       <form class="form-group mb-1" onsubmit="sendResetPassword(event)">
@@ -510,7 +514,6 @@
                                       </form>
                                   </div>
                                 </div>
-
                               </div>
                           </div>
                       </div>
@@ -700,15 +703,11 @@
                                             <button id="resetPasswordButton" class="btn btn-primary px-3">Reset Password</button>
                                         </div>
                                     </form>
-                                
-                                
                                 </div>
                               </div>
                             </div>
-
                           </div>
                       </div>
-
                   </div>
               </div>
               <div class="modal-footer"></div>
@@ -746,6 +745,7 @@
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div id="dashboard-body" class="modal-body">
+                <!-- Dashboard body content loaded here -->
                 <div class="text-center">
                     <b class="text-danger text-center">Loading...</b>
                 </div>
