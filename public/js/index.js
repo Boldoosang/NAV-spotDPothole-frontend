@@ -426,7 +426,7 @@ async function sendResetPassword(event){
                                 </div>`
     } else {
         messageArea.innerHTML = `<div class="align-middle text-center">
-                                    <b class="text-success text-center">${result["message"]} Check your email and use the utility tab above to reset your password.</b>
+                                    <b class="text-success text-center">${result["message"]} Check your email and use the account tab above to reset your password.</b>
                                 </div>`
     }
 
