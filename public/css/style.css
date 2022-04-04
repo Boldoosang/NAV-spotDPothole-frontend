@@ -774,10 +774,11 @@ section {
   margin-bottom: 0;
 }
 #about{
-  position:fixed;
 }
 #aboutContent{
   height:auto;
+  overflow-y:auto;
+  margin-bottom:150px;
 }
 
 /*--------------------------------------------------------------
@@ -829,7 +830,7 @@ section {
 # Footer
 --------------------------------------------------------------*/
 .footer{
-  position: fixed;
+  position: static;
   bottom: 0;
 }
 #footer {
@@ -853,11 +854,4 @@ section {
   text-align: center;
   font-size: 13px;
   color: #eaebf0;
-}
-@media (max-width: 1199px) {
-  #footer {
-    position: relative;
-    width: auto;
-    padding-right: 20px 15px;
-  }
 }
