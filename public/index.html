@@ -346,13 +346,13 @@
                         <!-- Displays the submit button as an accordion for confirmation -->
                         <div class="accordion-item">
                             <!-- Submit button for driver mode -->
-                            <button class="btn btn-primary p-5 w-100" onclick="updateLocalCoords()" id="submit-driver-prereport" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseOne" aria-expanded="false" aria-controls="flush-collapseOne">
+                            <button class="btn btn-primary p-5 w-100" onclick='updateLocalCoords()' id="submit-driver-prereport" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseOne" aria-expanded="false" aria-controls="flush-collapseOne">
                                 Submit Pothole Report
                             </button>
 
                             <!-- Confirmation and Cancel options for deciding whether to submit the report -->
                             <div id="flush-collapseOne" class="mx-1 accordion-collapse collapse row justify-content-around" aria-labelledby="flush-headingOne" data-bs-parent="#driverSubmitReport">
-                                <button class="btn btn-primary py-5 mt-3" onclick="updateLocalCoords()" id="submit-driver-report" type="button" data-bs-dismiss="modal" data-bs-target="#driverReportModal" aria-expanded="false" aria-controls="flush-collapseOne">
+                                <button class="btn btn-primary py-5 mt-3"  id="submit-driver-report" type="button" data-bs-dismiss="modal" data-bs-target="#driverReportModal" aria-expanded="false" aria-controls="flush-collapseOne">
                                     Confirm Submission
                                 </button>
                                 <button class="btn btn-danger py-5 mt-3"  type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseOne" aria-expanded="false" aria-controls="flush-collapseOne">
@@ -465,13 +465,13 @@
                       <div class="nav nav-pills nav-fill" id="nav-tab" role="tablist">
                           <button class="nav-link active" id="nav-login-tab" data-bs-toggle="tab" data-bs-target="#nav-login" type="button" role="tab" >Login</button>
                           <button class="nav-link" id="nav-register-tab" data-bs-toggle="tab" data-bs-target="#nav-register" type="button" role="tab" >Register</button>
-                          <button class="nav-link" id="nav-utility-tab" data-bs-toggle="tab" data-bs-target="#nav-utility" type="button" role="tab">Utility</button>
+                          <button class="nav-link" id="nav-account-tab" data-bs-toggle="tab" data-bs-target="#nav-account" type="button" role="tab">Account</button>
                         </div>
                   </nav>
                   <button type="button" class="btn-close btn-close-white col-1" data-bs-dismiss="modal" aria-label="Close"></button>
               </div>
 
-              <!-- Holds the registration, login  and utility tab content forms -->
+              <!-- Holds the registration, login  and account tab content forms -->
               <div class="modal-body">
                   <div class="tab-content" id="nav-tabContent">
                       <!-- Login tab of the modal -->
@@ -584,8 +584,8 @@
                           </form>
                       </div>
 
-                      <!-- Utility tab of the modal -->
-                      <div class="tab-pane fade" id="nav-utility" role="tabpanel">
+                      <!-- account tab of the modal -->
+                      <div class="tab-pane fade" id="nav-account" role="tabpanel">
 
                         <div class="accordion" id="utilityAccordion">
                             <!-- Resending the confirmation email utility -->
@@ -595,7 +595,7 @@
                                     Resend Confirmation Email
                                   </button>
                                 </h2>
-                                <div id="collapseResendConfirmation" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#utilityAccordion">
+                                <div id="collapseResendConfirmation" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#accountAccordion">
                                   <div class="accordion-body">
 
                                       <!-- Displays Verification form -->
@@ -627,7 +627,7 @@
                                   Email Verification
                                 </button>
                               </h2>
-                              <div id="collapseEmailVerification" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#utilityAccordion">
+                              <div id="collapseEmailVerification" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#accountAccordion">
                                 <div class="accordion-body">
 
                                     <!-- Displays Verification form -->
@@ -670,7 +670,7 @@
                                   Reset Password
                                 </button>
                               </h2>
-                              <div id="collapseResetPassword" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#utilityAccordion">
+                              <div id="collapseResetPassword" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#accountAccordion">
                                 <div class="accordion-body">
 
                                     <!-- Displays Reset Password form -->

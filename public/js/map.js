@@ -482,32 +482,43 @@ async function main() {
     await initMap();
     await displayPotholes();
 
+    /*
     watchid = navigator.geolocation.watchPosition(function (pos){
+
+        //If the coordinates are successfully obtained, store them.
+        let latitude = pos.coords.latitude;
+        let longitude = pos.coords.longitude;
+
+        //Sets the latitude and longitude in the localstorage.
+        localStorage.setItem("latitude", latitude)
+        localStorage.setItem("longitude", longitude)
+
         if (currentCircle!=null) map.removeLayer(currentCircle)
 
-       var currentpos = L.latLng(pos.coords.latitude, pos.coords.longitude);
-        currentCircle = L.circleMarker(currentpos, {
-            color: 'red',
-            fillColor: 'red',
-            radius: 8,
-            fillOpacity: 0.2,
-        }).addTo(map);
+        var currentpos = L.latLng(pos.coords.latitude, pos.coords.longitude);
+            currentCircle = L.circleMarker(currentpos, {
+                color: 'red',
+                fillColor: 'red',
+                radius: 8,
+                fillOpacity: 0.2,
+            }).addTo(map);
     })
+    */
 
-        caches.open(`main-1`).then(function(cache){
-            cache.keys().then(function(cacheKeys){
-                cacheKeys.find((o,i) => {
-                    if(o.url.includes('https://dl.dropboxusercontent.com/s/87jkx7txs1uazqw/tandtS.mbtiles?dl=1')){
-                        offline = L.tileLayer.mbTiles('https://dl.dropboxusercontent.com/s/87jkx7txs1uazqw/tandtS.mbtiles?dl=1', {
-                            attribution: 'Offline Map'
-                        });
-                        
-                        //switch between online and offline map
-                        lControl.addBaseLayer(offline, "Offline"); 
-                    }
-                })
+    caches.open(`main-1`).then(function(cache){
+        cache.keys().then(function(cacheKeys){
+            cacheKeys.find((o,i) => {
+                if(o.url.includes('https://dl.dropboxusercontent.com/s/87jkx7txs1uazqw/tandtS.mbtiles?dl=1')){
+                    offline = L.tileLayer.mbTiles('https://dl.dropboxusercontent.com/s/87jkx7txs1uazqw/tandtS.mbtiles?dl=1', {
+                        attribution: 'Offline Map'
+                    });
+                    
+                    //switch between online and offline map
+                    lControl.addBaseLayer(offline, "Offline"); 
+                }
             })
         })
+    })
 }   
 
 window.addEventListener('DOMContentLoaded', main);
