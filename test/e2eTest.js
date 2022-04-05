@@ -200,6 +200,10 @@ context('End to End Tests', () => {
     await page.click('#votingArea > .my-3 > [id^=castedUpvote-] > [id^=castedUpvote-] > .bi')
 
     await page.waitForTimeout(500)
+
+    voteCount = parseInt(voteCount)
+    voteCountAfterDownvote = parseInt(voteCountAfterDownvote)
+    voteCountAfterUpvote = parseInt(voteCountAfterUpvote)
     
     assert(voteCountAfterUpvote > voteCount , 'Vote count is not greater after upvote')
     assert(voteCountAfterDownvote < voteCountAfterUpvote, 'Vote count is not less after downvote')
