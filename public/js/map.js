@@ -1,4 +1,6 @@
 const container = document.getElementById('map')
+
+//declare globals
 let markersLayer;
 let markers = [];
 let leaderboardData = []
@@ -14,8 +16,10 @@ let map
 let watchid
 let popupLocation
 let lControl
+let startCircle;
+let endCircle;
 
-
+//check if a point is on a line 
 function isPointOnLine(point, path) {
     for (var i = 0; i < path.length - 1; i++) {
         if (L.GeometryUtil.belongsSegment(point, path[i], path[i + 1], 0.2)) {
@@ -35,28 +39,20 @@ async function initMap() {
         minZoom: 10
     });
 
+    //load the online tile layer of the map
     var online = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: 'Online Map'
     }).addTo(map);
 
+    //create a map picker initially containing only the online map 
     var baseMaps = {
         "Online": online,
     }
-
+    
+    //create a map control button
     lControl = L.control.layers(baseMaps, {}, {
         position: 'bottomleft'
     }).addTo(map);
-
-    /*
-    L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
-        attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
-        maxZoom: 18,
-        id: 'mapbox/streets-v11',
-        tileSize: 512,
-        zoomOffset: -1,
-        accessToken: 'pk.eyJ1IjoiYm9sZG9vc2FuZyIsImEiOiJja3dlbzk5NTMwNnBzMnZwd3h5OWhwazJvIn0.FhdBhjtsMsUAge-3EoptiQ'
-    }).addTo(map);
-    */
     
     //load the geoJSON data for the constituencies
     await fetch("./ttmap.geojson").then(function (response) {
@@ -64,14 +60,10 @@ async function initMap() {
     }).then(function (data) {
         L.geoJSON(data, {
             onEachFeature: function (feature, layer) {
+                //shows constituency name on click
                 layer.bindPopup(feature.properties.Constituency);
 
-                // layer.bindPopup(feature.properties.Constituency + 
-                //     '<br>' + `<button class="btn btn-link" onClick="setStart()">Start Route Here</button>`
-                //     + '<br>' + `<button onClick="setEnd()">End Route Here</button>`
-                //     + '<br>' + `<button onClick="liveRouting()">My Location To Here</button>`);
-
-
+                //routing custom context menu
                 layer.on('contextmenu', function (e) {
                     menu = `<ul style="display: block; position: relative; border: none; margin: -20px;" class="dropdown-menu">
                             <li><h6 class="dropdown-header">Routing Menu</h6></li>
@@ -80,7 +72,8 @@ async function initMap() {
                             <li><a class="dropdown-item" href="#"  onClick="liveRouting()">My Location To Here</a></li>
                             <li><a class="dropdown-item" href="#"  onClick="clearRouting()">Clear Routes</a></li>
                         </ul>`
-
+                    
+                    
                     var popup = L.popup().setContent(menu).setLatLng(e.latlng).openOn(map);
 
                     popupLocation = e.latlng
@@ -88,13 +81,9 @@ async function initMap() {
             }
         }).addTo(map)
     });
-
-    
 }
 
-let startCircle;
-let endCircle;
-
+//function used to clear routes from the map
 function clearRouting(){
     if(watchid != null){
         navigator.geolocation.clearWatch(watchid)
@@ -108,7 +97,9 @@ function clearRouting(){
     waypoints.endPoint = L.latLng(0, 0)
 }
 
+//sets the start point when using point to point routing
 function setStart(e){
+    //clears the watchposition if it exists
     if(watchid != null){
         navigator.geolocation.clearWatch(watchid)
     }
@@ -119,6 +110,7 @@ function setStart(e){
     const sp = JSON.stringify(waypoints.startPoint)
     const ep = JSON.stringify(waypoints.endPoint)
 
+    //create start circle if it doesn't exist
     if(startCircle == null){
         startCircle = L.circleMarker(waypoints.startPoint, {
             radius: 8,
@@ -130,6 +122,7 @@ function setStart(e){
         startCircle.addTo(map)
     }
     else{
+        //remove old start circle and create a new one in another location
         map.removeLayer(startCircle)
 
         startCircle = L.circleMarker(waypoints.startPoint, {
@@ -147,7 +140,9 @@ function setStart(e){
     }
 }
 
+//sets the end point when using point to point routing
 function setEnd(e){
+    //clears the watchposition if it exists
     if(watchid != null){
         navigator.geolocation.clearWatch(watchid)
     }
@@ -157,6 +152,7 @@ function setEnd(e){
     const sp = JSON.stringify(waypoints.startPoint)
     const ep = JSON.stringify(waypoints.endPoint)
 
+    //create end circle if it doesn't exist
     if(endCircle == null){
         endCircle = L.circleMarker(waypoints.endPoint, {
             radius: 8,
@@ -168,6 +164,7 @@ function setEnd(e){
         endCircle.addTo(map)
     }
     else{
+        //remove old start circle and create a new one in another location
         map.removeLayer(endCircle)
 
         endCircle = L.circleMarker(waypoints.endPoint, {
@@ -185,13 +182,16 @@ function setEnd(e){
     }
 }
 
+//function used to handle live routing
 function liveRouting(e){
+    //clears the watchposition if it exists
     if(watchid != null){
         navigator.geolocation.clearWatch(watchid)
     }
     let pos = popupLocation
     waypoints.endPoint = pos
 
+    //create end circle if it doesn't exist
     if(endCircle == null){
         endCircle = L.circleMarker(waypoints.endPoint, {
             radius: 7,
@@ -203,6 +203,7 @@ function liveRouting(e){
         endCircle.addTo(map)
     }
     else{
+        //remove old start circle and create a new one in another location
         map.removeLayer(endCircle)
 
         endCircle = L.circleMarker(waypoints.endPoint, {
@@ -215,6 +216,7 @@ function liveRouting(e){
         endCircle.addTo(map)
     }
 
+    //set start circle based on user current location
     watchid = navigator.geolocation.watchPosition(function (pos){
         waypoints.startPoint = L.latLng(pos.coords.latitude, pos.coords.longitude)
         
@@ -248,6 +250,7 @@ function liveRouting(e){
     })
 }
 
+//gets potholes from the database
 async function getPotholes() {
     let potholes = await sendRequest(SERVER + '/api/potholes', 'GET');
     return potholes;
@@ -399,6 +402,7 @@ function reportLeaderboardModal(lat, long, potholeID) {
     console.log(offCanvasReport)
 }
 
+//function to get routes from the database and choose the best route
 async function routingConcept() {
     routingStartPoint = new L.Routing.Waypoint;
     routingStartPoint.latLng = waypoints.startPoint;
@@ -406,6 +410,7 @@ async function routingConcept() {
     routingEndPoint = new L.Routing.Waypoint;
     routingEndPoint.latLng = waypoints.endPoint;    
 
+    //create a new route object using our custom routing server
     var myRoute = L.Routing.osrmv1({
         serviceUrl: 'https://osrm.justinbaldeo.com/route/v1'
     });
@@ -414,8 +419,11 @@ async function routingConcept() {
         let numClear = 0;
         if(routes){
             let potholes = await getPotholes()
+
+            //used for debugging alternative routes
             debuglines = L.layerGroup().addTo(map);
 
+            //for each route, check if it is clear of potholes
             for(let route of routes){
                 let clearRoute = true
                 let numPotholes = 0
@@ -505,6 +513,7 @@ async function main() {
     })
     */
 
+    //gets the map from cache, creates a tile layer for it and adds it to the selector
     caches.open(`main-1`).then(function(cache){
         cache.keys().then(function(cacheKeys){
             cacheKeys.find((o,i) => {
