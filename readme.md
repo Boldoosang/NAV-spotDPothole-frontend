@@ -36,7 +36,9 @@ For the first prototype of the application, the following features have been imp
 * [Mocha](https://www.npmjs.com/package/mocha) - Mocha used as a testing framework.
 * [Chai](https://www.npmjs.com/package/chai) - Chai used in testing as an assertion library.
 * [Jest](https://www.npmjs.com/package/jest) - Javascript based testing framework.
-^ Update
+* [iPortfolio](https://bootstrapmade.com/iportfolio-bootstrap-portfolio-websites-template/) - Bootstrap UI Template by BootstrapMade.
+* [Project OSRM](http://project-osrm.org/) - Open Source Routing Machine used for routing and coordinate snapping.
+* [Microsoft Azure](https://azure.microsoft.com/en-us/) - Virtual Machine hosting for the OSRM server.
 
 ## CONFIGURATION
 After successful installation of Node.js from the [website](https://nodejs.org/en/), the execution of the following command can be used to install the frontend dependencies for development:
