@@ -11,5 +11,5 @@
     "devtools": false,
     "ignoreHTTPSErrors": true,
     "dumpio": false,
-    "defaultViewport": { "width": 800, "height": 800}
+    "defaultViewport": { "width": 1920, "height": 937}
 }
