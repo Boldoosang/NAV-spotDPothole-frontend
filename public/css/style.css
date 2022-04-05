@@ -482,6 +482,36 @@ body.modal-open #mainTabContent{
   cursor: pointer;
 }
 
+
+#mapDownloadButton{
+  animation: fadein 1s;
+  position: fixed;
+  right: 25px;
+  bottom: 42px;
+  transform: translate(-50%, -50%);
+  margin: 0 auto;
+  z-index: 9990;
+  border: 0;
+  font-size: 24px;
+  transition: all 0.4s;
+  outline: none !important;
+  background-color: #ffffff; 
+  color: rgb(27, 75, 209);
+  width: 50px;
+  height: 50px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 0;
+  border-radius: 50px;
+  cursor: pointer;
+}
+
+#mapDownloadButton:hover {
+  background-color: #0c0231; 
+  color: rgb(3, 165, 194);
+}
+
 /* Modal */
 .modal-header{
   border-color :#050d18;
@@ -743,6 +773,13 @@ section {
 .about .content p:last-child {
   margin-bottom: 0;
 }
+#about{
+}
+#aboutContent{
+  height:auto;
+  overflow-y:auto;
+  margin-bottom:150px;
+}
 
 /*--------------------------------------------------------------
 # Facts
@@ -792,30 +829,29 @@ section {
 /*--------------------------------------------------------------
 # Footer
 --------------------------------------------------------------*/
+.footer{
+  position: static;
+  bottom: 0;
+}
 #footer {
   padding: 15px;
   color: #f4f6fd;
   font-size: 14px;
   position: fixed;
   left: 0;
-  bottom: 0;
-  width: 300px;
+  bottom: 0px;
+  width: 100%;
   z-index: 9999;
   background: #040b14;
 }
 #footer .copyright {
   text-align: center;
+  justify-content: center;
 }
 #footer .credits {
   padding-top: 5px;
+  justify-content: center;
   text-align: center;
   font-size: 13px;
   color: #eaebf0;
-}
-@media (max-width: 1199px) {
-  #footer {
-    position: static;
-    width: auto;
-    padding-right: 20px 15px;
-  }
 }

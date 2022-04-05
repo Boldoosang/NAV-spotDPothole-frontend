@@ -6,7 +6,8 @@ let waypoints = {
     "startPoint" : L.latLng(0, 0),
     "endPoint" : L.latLng(0, 0)
 }
-let debug = false;
+let debug = false
+let debuglines
 let line
 let route
 let map
@@ -35,7 +36,7 @@ async function initMap() {
     });
 
     var online = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        attribution: 'Online Map'
     }).addTo(map);
 
     var baseMaps = {
@@ -77,6 +78,7 @@ async function initMap() {
                             <li><a class="dropdown-item" href="#" onClick="setStart(event)">Start Route Here</a></li>
                             <li><a class="dropdown-item" href="#"  onClick="setEnd()">End Route Here</a></li>
                             <li><a class="dropdown-item" href="#"  onClick="liveRouting()">My Location To Here</a></li>
+                            <li><a class="dropdown-item" href="#"  onClick="clearRouting()">Clear Routes</a></li>
                         </ul>`
 
                     var popup = L.popup().setContent(menu).setLatLng(e.latlng).openOn(map);
@@ -92,6 +94,19 @@ async function initMap() {
 
 let startCircle;
 let endCircle;
+
+function clearRouting(){
+    if(watchid != null){
+        navigator.geolocation.clearWatch(watchid)
+    }
+    if(debuglines) map.removeLayer(debuglines)
+    if (startCircle) map.removeLayer(startCircle)
+    if (endCircle) map.removeLayer(endCircle)
+    if (line) map.removeLayer(line)
+    if (route) map.removeLayer(route)
+    waypoints.startPoint = L.latLng(0, 0)
+    waypoints.endPoint = L.latLng(0, 0)
+}
 
 function setStart(e){
     if(watchid != null){
@@ -399,6 +414,7 @@ async function routingConcept() {
         let numClear = 0;
         if(routes){
             let potholes = await getPotholes()
+            debuglines = L.layerGroup().addTo(map);
 
             for(let route of routes){
                 let clearRoute = true
@@ -409,17 +425,27 @@ async function routingConcept() {
                     if(isPointOnLine(point, route.coordinates)) {
                         console.log("Attempting to avoid " + route.name + " since Pothole " + pothole.potholeID + " lies on route.")
                         clearRoute=false
-                        numPotholes++;
+                        numPotholes++;          
                     }
                 } 
 
                 route.numPotholes = numPotholes;
 
-                if(clearRoute){
-                    if(line) map.removeLayer(line)
-                    line = L.Routing.line(route)
-                    line.addTo(map)
-                    numClear++
+                if(!debug){
+                    if(clearRoute){
+                        if(line) map.removeLayer(line)
+                        line = L.Routing.line(route)
+                        line.addTo(map)
+                        numClear++
+                    }
+                } else{
+                    if(debug){
+                        var templine = L.Routing.line(route,{
+                            styles: [{color: 'gray'}]
+                        })
+                        templine.addTo(debuglines)
+                        
+                    }
                 }
             }
 
@@ -450,22 +476,49 @@ async function routingConcept() {
     });
 }
 
-
 async function main() {
+    var currentCircle;
+
     await initMap();
     await displayPotholes();
-        caches.open(`main-1`).then(function(cache){
-            cache.keys().then(function(cacheKeys){
-                cacheKeys.find((o,i) => {
-                    if(o.url.includes('https://dl.dropboxusercontent.com/s/87jkx7txs1uazqw/tandtS.mbtiles?dl=1')){
-                        offline = L.tileLayer.mbTiles('https://dl.dropboxusercontent.com/s/87jkx7txs1uazqw/tandtS.mbtiles?dl=1');
-                        
-                        //switch between online and offline map
-                        lControl.addBaseLayer(offline, "Offline"); 
-                    }
-                })
+
+    /*
+    watchid = navigator.geolocation.watchPosition(function (pos){
+
+        //If the coordinates are successfully obtained, store them.
+        let latitude = pos.coords.latitude;
+        let longitude = pos.coords.longitude;
+
+        //Sets the latitude and longitude in the localstorage.
+        localStorage.setItem("latitude", latitude)
+        localStorage.setItem("longitude", longitude)
+
+        if (currentCircle!=null) map.removeLayer(currentCircle)
+
+        var currentpos = L.latLng(pos.coords.latitude, pos.coords.longitude);
+            currentCircle = L.circleMarker(currentpos, {
+                color: 'red',
+                fillColor: 'red',
+                radius: 8,
+                fillOpacity: 0.2,
+            }).addTo(map);
+    })
+    */
+
+    caches.open(`main-1`).then(function(cache){
+        cache.keys().then(function(cacheKeys){
+            cacheKeys.find((o,i) => {
+                if(o.url.includes('https://dl.dropboxusercontent.com/s/87jkx7txs1uazqw/tandtS.mbtiles?dl=1')){
+                    offline = L.tileLayer.mbTiles('https://dl.dropboxusercontent.com/s/87jkx7txs1uazqw/tandtS.mbtiles?dl=1', {
+                        attribution: 'Offline Map'
+                    });
+                    
+                    //switch between online and offline map
+                    lControl.addBaseLayer(offline, "Offline"); 
+                }
             })
         })
+    })
 }   
 
 window.addEventListener('DOMContentLoaded', main);

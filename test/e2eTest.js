@@ -1,353 +1,347 @@
-/* Install npm install puppeteer mocha chai --save-dev
-           puppeteer: browser automation tool (used for chronium browsers)
-           mocha: Test runner & reporter
-           chai: Testing library ( providdes keywords like assert & expect to check variables)  
-  To run test call "mocha" 
-*/
-
 const puppeteer = require('puppeteer');
-const {expect, assert } = require('chai');
 
-/* Constants */
+const { expect, asserty, assert } = require('chai');
 const config = require('./config.json');
-const host = 'https://spotdpothole.web.app/';
-const frontendURL = "https://spotdpothole.justinbaldeo.com"
+// import fetch from 'node-fetch';
+fetch = require('node-fetch');
 
-/* Global Variables */
 let browser;
 let page;
 let requests = [];
-let responses = [];
-const iPhone = puppeteer.devices['iPhone 6'];
 
-//Tells mocha to run this before doing the test
-beforeEach(async function () {
+before(async function () {
+  this.timeout(config.timeout);
+  browser = await puppeteer.launch(config);
+  const context = browser.defaultBrowserContext();
+  context.clearPermissionOverrides();
+  context.overridePermissions('https://spotdpoth.web.app/', ['geolocation']);
 
-    browser = await puppeteer.launch(config);
-    //page = await browser.newPage();
-    [page] = await browser.pages()
+  [page] = await browser.pages();
 
-    
-    setPageListeners()
-    
-    
-    await page.goto( frontendURL, { waitUntil: 'networkidle0'});
-    
-    
+  await page.setRequestInterception(true);
+
+  page.on('request', request => {
+    requests.push(request.url());
+    request.continue();
   });
 
-
-  async function setPageListeners(){
-    const context = browser.defaultBrowserContext();
-    //context.clearPermissionOverrides();
-    context.overridePermissions( frontendURL, ['geolocation']);
-
-
-    await page.setGeolocation({latitude: 10.69, longitude: -61.23});
-
-    await page.emulateMediaType("screen");  
-    //await page.emulate(iPhone);
-    
-    
-    
-    await page.setRequestInterception(true);
-
-    page.on('request', request => {
-      //let value = {"url": request.url(), "response": JSON.stringify(request.response()) }
-      requests.push( request.url() );
-      request.continue();
-    });
-
-    //page.on('console', (msg) => console.log('PAGE LOG:', JSON.stringify(msg) ));
-
-    /*page.on("response", response =>{
-      
-      responses.push( {"body": response.url()  , "status": response.status()}  )
-      
-    })  */
-  }
-
-
-  function getHTML(selector){
-    return page.evaluate(selector=>{
-      try{
-        return document.querySelector(selector).outerHTML;
-      }catch(e){
-        return null;
-      }
-    }, selector);
-  }
-  
-  function getInnerText(a) {
-    return page.evaluate(a => document.querySelector(a).innerText, a)
-  }
-  
-  function checkElements(a) {
-    for (let [b, c] of Object.entries(a)) it(`Should have ${b}`, async () => {
-        expect(await page.$(c)).to.be.ok
-    })
-  }
-
-  async function LoginUser(username, password){
-    await page.waitForSelector('#wrapper > #sidebar-wrapper > .position-absolute > #userContextGroup > .list-group-item')
-      await page.click('#wrapper > #sidebar-wrapper > .position-absolute > #userContextGroup > .list-group-item')
-
-      await page.waitForTimeout(500)
-
-      await page.focus('#InputEmail')
-      await page.keyboard.type(username)
-
-      await page.focus('#InputPassword')
-      await page.keyboard.type(password)
-
-      await page.waitForSelector('#loginButton')
-      await page.click('#loginButton')
-
-  }
-
-
-
-  async function addInputToField(selector, input, page){
-    await page.evaluate( (htmlElement, page) => {
-      /*Remove required field from text input */
-      document.querySelector(htmlElement).removeAttribute('required');
-      document.querySelector(htmlElement).click()//.select();
-      
-    }, selector, page);
-    if( input)
-    await page.keyboard.type(input)
-
-  }
-
-
-context("End To End test suite", async (  )=>{
-
-  describe("Login Test", ()=>{
-    it("Test 1: Check to see if login was successful", async(  )=>{
-
-      //let loginButtonWrapper = await getHTML('div#userContextGroup')
-      //console.log(loginButtonWrapper)
-      
-      
-      var accessToken1;
-      
-      accessToken1 = await page.evaluate(() => {
-            return localStorage.getItem("access_token");
-          });
-      
-               
-      await LoginUser( 'tester3@yahoo.com' ,'121233');
-      [page] = await browser.pages()
-
-        
-
-      await page.waitForTimeout(3000)
-
-      var accessTokenObj = await page.evaluate(() => {
-          return localStorage.getItem("access_token");
-        });
-      
-      console.log(`Access token before: ${accessToken1} \n vs after ${accessTokenObj}`)
-      return assert.notEqual( accessTokenObj, accessToken1, "No access token detected. Login Unsuccessful")
-      
-      
-    })//end of login
-
-   
-
-  });
-
-
-  
-  describe('Leaderboard Page Test', async ()=>{
-
-    it('Test 2: Constituency Leaderboard Populated', async ( )=>{
-
-      //check count of table
-      const rowCountBefore = await page.$$eval('#constLeaderboard > tbody ', (row) => row.length);
-      
-      //Open side bar & click leaderboard
-      await page.click('#sidebarToggle')
-      //await page.click('a[ data-bs-target="#mainTab-leaderboard"]')
-      //await page.mainFrame().tap('a[data-bs-target="#mainTab-leaderboard"]')
-
-      await page.waitForSelector('body > #wrapper > #sidebar-wrapper > .list-group > .list-group-item:nth-child(3)')
-      //await page.click('body > #wrapper > #sidebar-wrapper > .list-group > .list-group-item:nth-child(3)')
-      await page.$eval('body > #wrapper > #sidebar-wrapper > .list-group > .list-group-item:nth-child(3)', link => link.click())
-
-      
-      page.waitForTimeout(1000)
-      //wait for Tab Selector of constitency Leaderboard to show
-      const rowCountAfter = await page.$$eval('#constLeaderboard > tbody ', (row) => row.length)
-       
-
-      //const rowCountAfter = await page.$$eval('body > .container > .row  tr', (divs) => divs.length);
-      //const rowCountAfter = await page.$$eval('#constLeaderboard > tbody > tr', (row) => row.length)
-      //expect(rowCountBefore).to.equal(0);
-       console.log(`\nTest2: Row Count Before: ${rowCountBefore} vs Row Count After: ${rowCountAfter}\t\t`)
-       //expect(rowCountBefore < rowCountAfter)
-       assert( rowCountBefore < rowCountAfter , "detected no rows added to table")
-       
-    } );
-
-
-    it("Test 3: Report Leaderboard Populated", async()=>{
-
-      //check count of table
-      const rowCountBefore = await page.$$eval('#reportLeaderboard > tbody ', (rows) => rows.length);
-      
-      //Open side bar & click leaderboard
-      await page.click('#sidebarToggle')
-
-      await page.waitForSelector('body > #wrapper > #sidebar-wrapper > .list-group > .list-group-item:nth-child(3)')
-      await page.$eval('body > #wrapper > #sidebar-wrapper > .list-group > .list-group-item:nth-child(3)', link => link.click())
-
-      
-      page.waitForTimeout(1000)
-      
-      //Click report leaderboard Tab
-      //await page.click('button[id="pills-reportLeaderboard-tab"]')
-      const button = await page.$('button[id="pills-reportLeaderboard-tab"]' );  //get's html element
-      await button.evaluate( b => b.click() )   //trigger html element click via javascript
-
-      const rowCountAfter =  await page.$$eval('#reportLeaderboard > tbody ', (rows) => rows.length)
-       
-
-      
-       console.log(`\nTest3: Row Count Before: ${rowCountBefore} vs Row Count After: ${rowCountAfter}\t\t`)
-       //expect(rowCountBefore < rowCountAfter)
-       //assert( rowCountBefore < rowCountAfter , "Report Leaderboard Table was not populated")
-       assert.isAbove(rowCountAfter, rowCountBefore, "Report Leaderboard Table was not populated")
-    });
-    
-  })// end of Leaderboard Test
-  
-
-  describe("Report Page Test", ()=>{
-    
-    it("Test 4: Submit Driver Report", async()=>{
-        await LoginUser( 'tester3@yahoo.com' ,'121233');
-        [page] = await browser.pages()
-
-        //await setPageListeners()
-
-        await page.waitForTimeout(1000)
-
-        //Open side bar & click "Leaderboard" in side bar
-        //await page.click('#sidebarToggle')
-
-        //await page.mainFrame().tap('a[data-bs-target="#mainTab-report"]')
-        await page.click('#wrapper > #sidebar-wrapper > .list-group > a[data-bs-target="#mainTab-report"]')
-        
-        
-        await page.click('#sidebarToggle')
-
-        await page.waitForTimeout(1000)
-        //select driver option
-        let driverButton = "#mainTab-report > #reportContent > #driver-button"
-        //wait for Report Tab to be Display & click driver Button
-        
-        await page.click(driverButton)
-        
-
-        await page.waitForTimeout(500)
-
-        let modalBody = "#driverReportModal > .modal-dialog > .modal-content > .modal-body > #driverSubmitReport > .accordion-item"
-        let submitButton = modalBody + " > #submit-driver-prereport"
-        let confirmButton = modalBody + " > #flush-collapseOne > #submit-driver-report"
-        
-        await page.click(submitButton)
-        await page.waitForTimeout(500)
-        await page.click(confirmButton)
-        
-        //await page.waitForTimeout(2500)
-        let responseStat, requestUrl;
-        [responseStat, requestUrl] = await page.waitForResponse(response => {  return  response.status()}  ).then( (status)=>{ console.log(status["_status"]); return [status["_status"], status["_url"]] } )
-          
-        //console.log("Request Response:" + responseStat)
-        assert( requestUrl == "https://spotdpothole.herokuapp.com//api/reports/driver" , "Request to Send Co ordinates present" )
-        
-        let message = ".message"
-        //assert().deepEqual( {"msg":"Not enough segments"}, JSON.stringify(requests["response"]) , "Cant submit without login")
-        //await page.waitForTimeout(10000)
-        
-        //let displayMessage = await getInnerText(message)
-        //console.log(`\n\nReturn Messae ${ JSON.stringify(displayMessage)}`)
-        //console.log( JSON.stringify(responses))
-        let errormessage = "Unfortunately we couldn't find your coordinates!"
-        let successMessage = "Successfully added pothole report to database!"
-        assert( responseStat==201 || responseStat==200 , "Driver Report failed!")
-        
-    })
-  
-
-    it("Test 5: Submit Passenger Report ", async()=>{
-      await LoginUser( 'tester3@yahoo.com' ,'121233');
-        [page] = await browser.pages()
-        //await setPageListeners()
-        await page.waitForTimeout(1000)
-
-        await page.waitForSelector('body > #wrapper > #sidebar-wrapper > .list-group > .list-group-item:nth-child(2)')
-        await page.click('body > #wrapper > #sidebar-wrapper > .list-group > .list-group-item:nth-child(2)')
-
-        await page.waitForTimeout(500)
-
-        await page.waitForSelector('#mainTab-report > #reportContent > #standard-button')
-        await page.click('#mainTab-report > #reportContent > #standard-button')
-
-        let modal = "#standardReportModal > .modal-dialog > .modal-content"
-        let descriptionInput = modal + " > .modal-body > #standardReport > #description > #descriptionText";
-        
-        await page.waitForTimeout(500)
-
-        await page.waitForSelector(descriptionInput)
-        await page.click(descriptionInput)
-
-        await page.focus('#InputPassword')
-        await page.keyboard.type('New Pothole from e2e test ')
-
-        let button = modal + " > .modal-footer > #submit-passenger-report"
-        await page.waitForSelector(button)
-        await page.click(button)
-
-        let responseStat;
-        responseStat = await page.waitForResponse(response => {  return  response.status()}  ).then( (status)=>{return status["_status"]} )
-          
-        //console.log("Request Response:" + responseStat)
-        assert( responseStat==201 || responseStat==200 , "Passenger Report failed!")
-    })
-
+  await page.goto('https://spotdpoth.web.app/')
+  await page.setGeolocation({ latitude: 10.66, longitude: -61.23 });
 });
 
+function getHTML(selector) {
+  return page.evaluate(selector => {
+    try {
+      return document.querySelector(selector).outerHTML;
+    } catch (e) {
+      return null;
+    }
+  }, selector);
+}
 
-describe("Home Page Test", ()=>{
+function getInnerText(a) {
+  return page.evaluate(a => document.querySelector(a).innerText, a)
+}
 
-  it("Test 6: Check pothole info displays on click of pin", async ()=>{
+function checkElements(a) {
+  for (let [b, c] of Object.entries(a)) it(`Should have ${b}`, async () => {
+    expect(await page.$(c)).to.be.ok
+  })
+}
 
+context('End to End Tests', () => {
+  //Test 1: Tests that adding a pothole to the map adds a pothole marker to the map
+  it('Test 1: Test the addition of potholes to the map', async function () {
+    this.timeout(config.timeout);
 
-    await page.waitForSelector('body > #wrapper > #sidebar-wrapper > .list-group > .list-group-item:nth-child(1)')
-    await page.click('body > #wrapper > #sidebar-wrapper > .list-group > .list-group-item:nth-child(1)')
+    await page.waitForSelector('.list-group > #userContextGroup > li > a')
+    await page.click('.list-group > #userContextGroup > li > a > span')
 
-    await page.waitForSelector('#mapContent > #map > .leaflet-pane > .leaflet-pane > .leaflet-marker-icon:nth-child(1)')
-    await page.click('#mapContent > #map > .leaflet-pane > .leaflet-pane > .leaflet-marker-icon:nth-child(1)')
+    await page.waitForTimeout(500)
 
-    //await page.waitForSelector('div > #reportAccordion > .accordion-item > #heading-77 > .accordion-button')
-    //await page.click('div > #reportAccordion > .accordion-item > #heading-77 > .accordion-button')
+    await page.focus('#InputEmail')
+    await page.keyboard.type('tester31@yahoo.com')
 
-    //await page.waitForSelector('strong > .table > tbody > tr:nth-child(1) > td')
-    //await page.click('strong > .table > tbody > tr:nth-child(1) > td')
+    await page.focus('#InputPassword')
+    await page.keyboard.type('121233')
 
-    let reporter = await getHTML('strong > .table > tbody > tr:nth-child(1) > td')
-    console.log(`The reportee's name: ${reporter}`)
-    assert( reporter != '', "No information found for pothole report")
+    await page.waitForSelector('#loginButton')
+    await page.click('#loginButton')
+
+    var numMarkers = await page.$$eval('#dashboardContent > #dashboardMap > .leaflet-pane > .leaflet-pane > .leaflet-marker-icon', markers => markers.length)
+
+    await page.waitForTimeout(500)
+
+    await page.waitForSelector('#navbar > .list-group > li:nth-child(2) > a > span')
+    await page.click('#navbar > .list-group > li:nth-child(2) > a > span')
+
+    await page.waitForSelector('#standard-button')
+    await page.click('#standard-button')
+
+    await page.waitForTimeout(500)
+
+    await page.focus('#descriptionText')
+    await page.keyboard.type('This is a test report')
+
+    await page.waitForSelector('#submit-passenger-report')
+    await page.click('#submit-passenger-report')
+
+    await page.waitForSelector('#navbar > .list-group > li:nth-child(4) > a > span')
+    await page.click('#navbar > .list-group > li:nth-child(4) > a > span')
+
+    await page.waitForTimeout(500)
+
+    await page.waitForSelector('#dashboardContent > #dashboardMap > .leaflet-pane > .leaflet-pane > .leaflet-marker-icon')
+    await page.click('#dashboardContent > #dashboardMap > .leaflet-pane > .leaflet-pane > .leaflet-marker-icon')
+
+    var numMarkersAfterAdding = await page.$$eval('#dashboardContent > #dashboardMap > .leaflet-pane > .leaflet-pane > .leaflet-marker-icon', markers => markers.length)
+    
+    assert(numMarkersAfterAdding > numMarkers, 'Number of markers is not greater after adding a report')
+  })
+
+  //Test 2: Tests that editing a pothole description modifies the description that is displayed the potohle offcanvas
+  it('Test 2: Test the editing of a pothole description using the dashboard', async function () {
+    this.timeout(config.timeout);
+
+    await page.waitForSelector('#navbar > .list-group > li:nth-child(4) > a > span')
+    await page.click('#navbar > .list-group > li:nth-child(4) > a > span')
+
+    await page.waitForTimeout(500)
+
+    await page.waitForSelector('#dashboardContent > #dashboardMap > .leaflet-pane > .leaflet-pane > .leaflet-marker-icon')
+    await page.click('#dashboardContent > #dashboardMap > .leaflet-pane > .leaflet-pane > .leaflet-marker-icon')
+
+    await page.waitForSelector('#pills-description-tab')
+    await page.click('#pills-description-tab')
+
+    var descriptionTextBefore= await getInnerText('#dashboard-body > #pills-dashboardContent > #pills-descriptionTab > .form-group > .ms-3')
+
+    await page.waitForSelector('#dashboard-body > #pills-dashboardContent > #pills-descriptionTab > .d-flex > .btn')
+    await page.click('#dashboard-body > #pills-dashboardContent > #pills-descriptionTab > .d-flex > .btn')
+
+    await page.click('.text-muted', { clickCount: 3 })
+    await page.keyboard.type('Test Change Description')
+
+    await page.waitForSelector('.collapse > .text-white > .form-group > .d-flex > .btn')
+    await page.click('.collapse > .text-white > .form-group > .d-flex > .btn')
+
+    await page.waitForSelector('#dashboardModal > .modal-dialog > .modal-content > .modal-header > .btn-close')
+    await page.click('#dashboardModal > .modal-dialog > .modal-content > .modal-header > .btn-close')
+
+    await page.waitForSelector('#dashboardContent > #dashboardMap > .leaflet-pane > .leaflet-pane > .leaflet-marker-icon')
+    await page.click('#dashboardContent > #dashboardMap > .leaflet-pane > .leaflet-pane > .leaflet-marker-icon')
+
+    await page.waitForSelector('#pills-description-tab')
+    await page.click('#pills-description-tab')
+
+    await page.waitForSelector('#dashboard-body > #pills-dashboardContent > #pills-descriptionTab > .form-group > .ms-3')
+    var descriptionTextAfter= await getInnerText('#dashboard-body > #pills-dashboardContent > #pills-descriptionTab > .form-group > .ms-3')
+
+    assert(descriptionTextBefore != descriptionTextAfter)
+  })
+
+  //Test 3: Tests that deleting a pothole removes the pothole pin from the map
+  it('Test 3: Test the deletion of potholes from the map', async function () {
+    this.timeout(config.timeout);
+
+    var numMarkersBefore = await page.$$eval('#dashboardContent > #dashboardMap > .leaflet-pane > .leaflet-pane > .leaflet-marker-icon', markers => markers.length)
+
+    await page.waitForSelector('#navbar > .list-group > li:nth-child(4) > a > span')
+    await page.click('#navbar > .list-group > li:nth-child(4) > a > span')
+
+    await page.waitForTimeout(1000)
+
+    await page.waitForSelector('#dashboardContent > #dashboardMap > .leaflet-pane > .leaflet-pane > .leaflet-marker-icon')
+    await page.click('#dashboardContent > #dashboardMap > .leaflet-pane > .leaflet-pane > .leaflet-marker-icon')
+
+    await page.waitForSelector('#pills-delete-tab')
+    await page.click('#pills-delete-tab')
+
+    await page.waitForSelector('#dashboard-body > #pills-dashboardContent > #pills-deleteTab > .d-flex > .btn')
+    await page.click('#dashboard-body > #pills-dashboardContent > #pills-deleteTab > .d-flex > .btn')
+
+    await page.waitForSelector('#pills-deleteTab > [id^=deletePotholeReport-] > .text-white > .mt-4 > .btn-danger')
+    await page.click('#pills-deleteTab > [id^=deletePotholeReport-] > .text-white > .mt-4 > .btn-danger')
+
+    await page.waitForTimeout(500)
+
+    var numMarkersAfterDeleting = await page.$$eval('#dashboardContent > #dashboardMap > .leaflet-pane > .leaflet-pane > .leaflet-marker-icon', markers => markers.length)
+
+    assert(numMarkersAfterDeleting < numMarkersBefore, 'Number of markers is not less after deleting a report')
+  })
+
+  //Test 4: Tests that upvoting/downvoting a pothole modifies the number of upvotes/downvotes that are displayed in the potohle offcanvas
+  it('Test 4: Test the Upvoting/Downvoting of potholes', async function () {
+    this.timeout(config.timeout);
+    
+    await page.waitForSelector('#mapContent > #map > .leaflet-pane > .leaflet-pane > .leaflet-marker-icon:nth-child(4)')
+    await page.click('#mapContent > #map > .leaflet-pane > .leaflet-pane > .leaflet-marker-icon:nth-child(4)')
+    
+    await page.waitForTimeout(500)
+    var voteCount = await getInnerText('.accordion-header > .accordion-button > div > .font-monospace > span')
+
+    await page.waitForSelector('div > #reportAccordion > .accordion-item > .accordion-header > .accordion-button')
+    await page.click('div > #reportAccordion > .accordion-item > .accordion-header > .accordion-button')
+
+    await page.waitForSelector('.accordion-body > #votingArea > .my-3 > [id^=castedDownvote-] > .btn')
+    await page.click('.accordion-body > #votingArea > .my-3 > [id^=castedDownvote-] > .btn')
+
+    await page.waitForTimeout(500)
+    var voteCountAfterDownvote = await getInnerText('.accordion-header > .accordion-button > div > .font-monospace > span')
+
+    await page.waitForSelector('#votingArea > .my-3 > [id^=castedUpvote-] > [id^=castedUpvote-] > .bi')
+    await page.click('#votingArea > .my-3 > [id^=castedUpvote-] > [id^=castedUpvote-] > .bi')
+
+    await page.waitForTimeout(500)
+
+    var voteCountAfterUpvote = await getInnerText('.accordion-header > .accordion-button > div > .font-monospace > span')
+
+    await page.waitForSelector('#votingArea > .my-3 > [id^=castedUpvote-] > [id^=castedUpvote-] > .bi')
+    await page.click('#votingArea > .my-3 > [id^=castedUpvote-] > [id^=castedUpvote-] > .bi')
+
+    await page.waitForTimeout(500)
+    
+    assert(voteCountAfterUpvote > voteCount , 'Vote count is not greater after upvote')
+    assert(voteCountAfterDownvote < voteCountAfterUpvote, 'Vote count is not less after downvote')
+  })
+
+  //Test 5: Tests that changing the username in the profile modal changes the username in the navbar
+  it('Test 5: Test username change', async function () {
+    this.timeout(config.timeout);
+    
+    await page.waitForSelector('#navbar > .list-group > #profileArea > li > a')
+    await page.click('#navbar > .list-group > #profileArea > li > a')
+
+    var userNameBeforeChange = await getInnerText('#header > .d-flex > .profile > #userNameArea > .text-light')
+
+    await page.waitForSelector('.modal-body > #profileAccordion > .accordion-item > #updateProfileName > .accordion-button')
+    await page.click('.modal-body > #profileAccordion > .accordion-item > #updateProfileName > .accordion-button')
+
+    await page.waitForTimeout(500)
+
+    await page.waitForSelector('#updateProfile-lastName')
+    await page.click('#updateProfile-lastName', { clickCount: 3 })
+    await page.keyboard.type('TesterLastName')
+
+    await page.waitForTimeout(500)
+
+    await page.waitForSelector('#updateProfile-firstName')
+    await page.click('#updateProfile-firstName', { clickCount: 3 })
+    await page.keyboard.type('TesterFirstName')
+
+    await page.waitForSelector('#updateProfileButton')
+    await page.click('#updateProfileButton')
+
+    await page.waitForSelector('#profileManagementModal > .modal-dialog > #profileManagementSection > .modal-header > .btn-close')
+    await page.click('#profileManagementModal > .modal-dialog > #profileManagementSection > .modal-header > .btn-close')
+
+    var userNameAfterChange = await getInnerText('#header > .d-flex > .profile > #userNameArea > .text-light')
+
+    await page.waitForSelector('.list-group > #profileArea > li > a > span')
+    await page.click('.list-group > #profileArea > li > a > span')
+
+    await page.waitForSelector('#updateProfile-lastName')
+    await page.click('#updateProfile-lastName', { clickCount: 3 })
+    await page.keyboard.type('TesterF')
+
+    await page.waitForSelector('#updateProfile-firstName')
+    await page.click('#updateProfile-firstName', { clickCount: 3 })
+    await page.keyboard.type('TesterL')
+
+    await page.waitForSelector('#updateProfileButton')
+    await page.click('#updateProfileButton')
+
+    await page.waitForTimeout(500)
+    
+    assert(userNameBeforeChange != userNameAfterChange, 'User name is not changed')
+  })
+
+  //Test 6: Tests that changing the password in the profile modal changes the password when logging in.
+  it('Test 6: Test Password Change', async function () {
+    this.timeout(config.timeout);
+
+    await page.waitForSelector('.list-group > #profileArea > li > a > span')
+    await page.click('.list-group > #profileArea > li > a > span')
+
+    await page.waitForSelector('.modal-body > #profileAccordion > .accordion-item > #updatePassword > .accordion-button')
+    await page.click('.modal-body > #profileAccordion > .accordion-item > #updatePassword > .accordion-button')
+
+    await page.waitForSelector('#updatePassword-original')
+    await page.click('#updatePassword-original', { clickCount: 3 })
+    await page.keyboard.type('121233')
+
+    await page.waitForSelector('#updatePassword-password')
+    await page.click('#updatePassword-password', { clickCount: 3 })
+    await page.keyboard.type('newPassword')
+
+    await page.waitForSelector('#updatePassword-confirmPassword')
+    await page.click('#updatePassword-confirmPassword', { clickCount: 3 })
+    await page.keyboard.type('newPassword')
+
+    await page.waitForSelector('#updatePasswordButton')
+    await page.click('#updatePasswordButton')
+
+    await page.waitForSelector('#profileManagementModal > .modal-dialog > #profileManagementSection > .modal-header > .btn-close')
+    await page.click('#profileManagementModal > .modal-dialog > #profileManagementSection > .modal-header > .btn-close')
+
+    await page.waitForSelector('.list-group > #userContextGroup > li > a > span')
+    await page.click('.list-group > #userContextGroup > li > a > span')
+
+    await page.waitForSelector('.list-group > #userContextGroup > li > a > span')
+    await page.click('.list-group > #userContextGroup > li > a > span')
+
+    await page.waitForSelector('#InputEmail')
+    await page.click('#InputEmail', { clickCount: 3 })
+    await page.keyboard.type('tester31@yahoo.com')
+
+    await page.waitForSelector('#InputPassword')
+    await page.click('#InputPassword', { clickCount: 3 })
+    await page.keyboard.type('newPassword')
+
+    await page.waitForSelector('#loginButton')
+    await page.click('#loginButton')
+
+    var userNameAfterRelog = await getInnerText('#header > .d-flex > .profile > #userNameArea > .text-light')
+    assert(userNameAfterRelog === "Guest", 'Relogin failed')
+
+    await page.waitForSelector('.list-group > #profileArea > li > a > span')
+    await page.click('.list-group > #profileArea > li > a > span')
+
+    await page.waitForSelector('.modal-body > #profileAccordion > .accordion-item > #updatePassword > .accordion-button')
+    await page.click('.modal-body > #profileAccordion > .accordion-item > #updatePassword > .accordion-button')
+
+    await page.waitForSelector('#updatePassword-original')
+    await page.click('#updatePassword-original', { clickCount: 3 })
+    await page.keyboard.type('newPassword')
+
+    await page.waitForSelector('#updatePassword-password')
+    await page.click('#updatePassword-password', { clickCount: 3 })
+    await page.keyboard.type('121233')
+
+    await page.waitForSelector('#updatePassword-confirmPassword')
+    await page.click('#updatePassword-confirmPassword', { clickCount: 3 })
+    await page.keyboard.type('121233')
+
+    await page.waitForSelector('#updatePasswordButton')
+    await page.click('#updatePasswordButton')
+
+    await page.waitForTimeout(500)
   })
 })
 
+beforeEach(async function () {
+  await page.goto('https://spotdpoth.web.app/')
+  await page.waitForTimeout(1000)
+  await page.setViewport({ width: 1920, height: 937 })
+  this.timeout(config.timeout);
+})
 
+afterEach(async function () {
+  requests = []
+})
+
+after(async function () {
+  await page.close();
+  await browser.close();
 });
 
-  //To be Executed after test
-  afterEach(async function (){
-    await browser.close();
-    
-  });

@@ -42,7 +42,7 @@
   <script src="js/leaflet.geometryutil.js" defer></script>
 
   <!-- Imports Offline Map Libraries -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/0.3.1/js/sql.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/0.3.1/js/sql.js" integrity="sha512-muXXdXO1t5rrZE2+CV2wY+1Ojap/QIxTZRqhyN7zBOv9/Dmuhc6A68k+mMBX7EElEPB5N0oR3zWP3TsoBcgKiQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
   <script src="js/Leaflet.TileLayer.MBTiles.js"></script>
 
   <!-- =======================================================
@@ -54,6 +54,7 @@
 
 
   <script>
+    
     //Determines if the browser supports the service worker.
     if ('serviceWorker' in navigator) {
         //If supported, register the service worker once the page has loaded.
@@ -112,10 +113,12 @@
         <ul class="list-group list-group-flush">
           <li><a href="#map" onclick="displayPotholes()" data-bs-toggle="pill" data-bs-target="#mainTab-map"><i class="bi bi-house-fill"></i> <span>Home</span></a></li>
           <li><a href="#report" onclick="loadReportPage(event)" data-bs-toggle="pill" data-bs-target="#mainTab-report"><i class="bi bi-megaphone-fill"></i> <span>Make Report</span></a></li> 
+          <!-- ====== Loads further options for logged-in users in this area ====== -->            
             <ul id="profileArea"></ul>
           <li><a href="#dashboard" onclick="loadDashboard()" data-bs-toggle="pill" data-bs-target="#mainTab-dashboard"><i class="bi bi-clipboard"></i> <span>Dashboard</span></a></li>
           <li><a href="#leaderboard" onclick="loadLeaderboardData()" data-bs-toggle="pill" data-bs-target="#mainTab-leaderboard"><i class="bi bi-bar-chart-fill"></i> <span>Leaderboard</span></a></li>
           <li><a href="#about" data-bs-toggle="pill" data-bs-target="#mainTab-about"><i class='bi bi-patch-question'></i> <span>About</span></a></li>
+          <!-- ======= Loads options for Login/Logout based on the user context ======= -->
           <ul id="userContextGroup" class="list-group list-group-flush">
             <li><a href="#loginBtn" data-bs-toggle="modal" data-bs-target="#loginModal"><i class="bi bi-person-check-fill"></i> <span>Login / Register</span></a></li>
           </ul>
@@ -125,6 +128,7 @@
   </header>
 
   <!-- ======= Main Content Section ======= -->
+  <!-- Contains the tabs that have the main functions of the app, which are loaded based on the buttons in the menu -->
   <main id="main">
     <div class="d-flex flex-column justify-content-center align-items-center" style="padding:0px">
         <div class="container-fluid" style="padding-left: 0px; padding-right: 0px">
@@ -133,6 +137,11 @@
               <div class="tab-pane active fade show" id="mainTab-map" role="tabpanel">
                 <!-- Map is rendered here -->
                 <div id="mapContent" class="p-0 mx-0"><div id="map" style="width: 100%; height:100vh"></div></div>
+
+                <!-- ======= Map download button ======= -->
+                <div id="mapDownloadButtonArea">
+                  <i data-bs-toggle="tooltip" data-bs-placement="left" title="Download Offline Map" onclick="downloadMapTiles()" class="bi bi-download d-none" id="mapDownloadButton"></i>
+                </div>
 
                 <!-- ======= Mobile report button ======= -->
                 <div id="driverReportButtonArea">
@@ -153,6 +162,7 @@
 
               <!-- ======= Dashboard Section ======= -->
               
+              <!-- Displays the dashboard map when the dashboard button is clicked for a logged-in user-->
               <div class="tab-pane fade" id="mainTab-dashboard" role="tabpanel">
                 <!-- Leaderboard content is displayed here -->
                 <div id="dashboardContent" class="p-0 mx-0" role="tabpanel">
@@ -227,8 +237,8 @@
                   <h2>About</h2>
                 </div>
 
-                <!-- About content displayed here-->
-                <div class="ms-5 me-5">
+                <!-- About content displayed here, displaying details about the app and its purpose-->
+                <div class="ms-5 me-5" id="aboutContent">
                   <p>SpotDPothole is a pothole mapping web app that was initially developed by the NULLIFY team, consisting of Justin Baldeosingh,
                     Tevon Thatcher, Brandon Bharath, Jeremiah Strong, and Jordan Douglas. After the conclusion of the initial application, the project was
                     shifted to being developed by the NAV development team, consisting of Justin Baldeosingh, Brandon Bharath and Tevon Thatcher.
@@ -242,6 +252,20 @@
                     show the user the path containing the least potholes. 
                   </p>
                 </div>
+                <footer id="footer">
+                  <div class="pt-3 pb-3">
+                    <div class="copyright text-center justify-content-center">
+                      &copy; Copyright <strong><span>iPortfolio</span></strong>
+                    </div>
+                    <div class="credits text-center justify-content-center">
+                      <!-- All the links in the footer should remain intact. -->
+                      <!-- You can delete the links only if you purchased the pro version. -->
+                      <!-- Licensing information: https://bootstrapmade.com/license/ -->
+                      <!-- Purchase the pro version with working PHP/AJAX contact form: https://bootstrapmade.com/iportfolio-bootstrap-portfolio-websites-template/ -->
+                      Designed by <a href="https://bootstrapmade.com/">BootstrapMade</a>
+                    </div>
+                  </div>
+                </footer>
               </div> 
             </div>
             
@@ -322,7 +346,7 @@
                         <!-- Displays the submit button as an accordion for confirmation -->
                         <div class="accordion-item">
                             <!-- Submit button for driver mode -->
-                            <button class="btn btn-primary p-5 w-100" onclick="updateLocalCoords()" id="submit-driver-prereport" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseOne" aria-expanded="false" aria-controls="flush-collapseOne">
+                            <button class="btn btn-primary p-5 w-100" onclick='updateLocalCoords()' id="submit-driver-prereport" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseOne" aria-expanded="false" aria-controls="flush-collapseOne">
                                 Submit Pothole Report
                             </button>
 
@@ -356,6 +380,7 @@
               <!-- Holds the registration and login tab content forms -->
               <div class="modal-body">
                 <div class="accordion" id="profileAccordion">
+                  <!-- Accordion item for updating user's the password -->
                   <div class="accordion-item">
                     <h2 class="accordion-header" id="updatePassword">
                       <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseUpdatePasswordForm" aria-expanded="false" aria-controls="collapseUpdatePasswordForm">
@@ -365,16 +390,21 @@
                     <div id="collapseUpdatePasswordForm" class="accordion-collapse collapse" aria-labelledby="updatePassword" data-bs-parent="#profileAccordion">
                       <div class="accordion-body">
                           <div class=" text-white mb-2">
+                            <!-- Form used to update the password -->
                             <form class="form-group mb-1" onsubmit="changePassword(event)">
+                                <!-- Enter old password -->
                                 <label for="updatePassword-original">Old Password</label>
                                 <input type="password" id="updatePassword-original" class="form-control mt-2" name="oldPassword" required>
                                 <br>
+                                <!-- Enter new password -->
                                 <label for="updatePassword-password">Password</label>
                                 <input type="password" id="updatePassword-password" class="form-control mt-2" name="password" required>
                                 <br>
+                                <!-- Re-enter new password -->
                                 <label for="updatePassword-confirmPassword">Confirm Password</label>
                                 <input type="password" id="updatePassword-confirmPassword" class="form-control mt-2" name="confirmPassword" required>
                                 <br>
+                                <!-- Form submit button -->
                                 <div class="d-flex justify-content-center">
                                   <button type="submit" class="btn btn-primary" id="updatePasswordButton">Update Password</button>
                                 </div>
@@ -385,6 +415,7 @@
                       </div>
                     </div>
 
+                  <!-- Accordion item for updating the user's profile information -->
                   <div class="accordion-item">
                     <h2 class="accordion-header" id="updateProfileName">
                       <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseUpdateProfileName" aria-expanded="false" aria-controls="collapseUpdateProfileName">
@@ -394,13 +425,17 @@
                     <div id="collapseUpdateProfileName" class="accordion-collapse collapse" aria-labelledby="updateProfileName" data-bs-parent="#profileAccordion">
                       <div class="accordion-body">
                         <div class=" text-white mb-2">
+                          <!-- Form for updating profile information -->
                             <form class="form-group mb-1" onsubmit="updateProfile(event)">
+                                <!-- Update first name -->
                                 <label for="updateProfile-firstName">First Name</label>
                                 <input type="text" id="updateProfile-firstName" class="form-control mt-2" name="firstName" required>
                                 <br>
+                                <!-- Update last name -->
                                 <label for="updateProfile-lastName">Last Name</label>
                                 <input type="text" id="updateProfile-lastName" class="form-control mt-2" name="lastName" required>
                                 <br>
+                                <!-- Form submit button -->
                                 <div class="d-flex justify-content-center">
                                   <button type="submit" class="btn btn-primary" id="updateProfileButton">Update Profile</button>
                                 </div>
@@ -430,13 +465,13 @@
                       <div class="nav nav-pills nav-fill" id="nav-tab" role="tablist">
                           <button class="nav-link active" id="nav-login-tab" data-bs-toggle="tab" data-bs-target="#nav-login" type="button" role="tab" >Login</button>
                           <button class="nav-link" id="nav-register-tab" data-bs-toggle="tab" data-bs-target="#nav-register" type="button" role="tab" >Register</button>
-                          <button class="nav-link" id="nav-utility-tab" data-bs-toggle="tab" data-bs-target="#nav-utility" type="button" role="tab">Utility</button>
+                          <button class="nav-link" id="nav-account-tab" data-bs-toggle="tab" data-bs-target="#nav-account" type="button" role="tab">Account</button>
                         </div>
                   </nav>
                   <button type="button" class="btn-close btn-close-white col-1" data-bs-dismiss="modal" aria-label="Close"></button>
               </div>
 
-              <!-- Holds the registration, login  and utility tab content forms -->
+              <!-- Holds the registration, login  and account tab content forms -->
               <div class="modal-body">
                   <div class="tab-content" id="nav-tabContent">
                       <!-- Login tab of the modal -->
@@ -453,10 +488,12 @@
                                       <div id="welcome" class="d-flex justify-content-center">
                                           <h4 class="text-center">Welcome to the Pothole Spotter</h4>
                                       </div>
+                                      <!-- Enter email address -->
                                       <div class="mb-3 pt-3">
                                           <label for="InputEmail" class="form-label fw-bold">Email Address</label>
                                           <input type="email" class="form-control" id="InputEmail" placeholder="Enter your email" required>
                                       </div>
+                                      <!-- Enter password -->
                                       <div class="mb-3 pt-2" >
                                           <label for="InputPassword" class="form-label fw-bold">Password</label>
                                           <input type="password" class="form-control" id="InputPassword" placeholder="Enter your password" required>
@@ -472,13 +509,12 @@
                                   </form>
 
                                   <!-- Send Password Reset button -->
-
                                   <p class="mt-4 text-center">
                                     <a class="ms-auto" data-bs-toggle="collapse" href="#sendResetPassword" role="button" aria-expanded="false" aria-controls="collapseExample">
                                         Forgot your password?
                                     </a>
                                 </p>
-
+                                <!-- Collapse element containing the send password reset form -->
                                 <div class="collapse" id="sendResetPassword">
                                   <div class="card card-body bg-light text-dark mb-2" id="sendResetCard">
                                       <form class="form-group mb-1" onsubmit="sendResetPassword(event)">
@@ -490,7 +526,6 @@
                                       </form>
                                   </div>
                                 </div>
-
                               </div>
                           </div>
                       </div>
@@ -549,18 +584,18 @@
                           </form>
                       </div>
 
-                      <!-- Utility tab of the modal -->
-                      <div class="tab-pane fade" id="nav-utility" role="tabpanel">
+                      <!-- account tab of the modal -->
+                      <div class="tab-pane fade" id="nav-account" role="tabpanel">
 
                         <div class="accordion" id="utilityAccordion">
-
+                            <!-- Resending the confirmation email utility -->
                             <div class="accordion-item">
                                 <h2 class="accordion-header" id="resendConfirmation">
                                   <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseResendConfirmation">
                                     Resend Confirmation Email
                                   </button>
                                 </h2>
-                                <div id="collapseResendConfirmation" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#utilityAccordion">
+                                <div id="collapseResendConfirmation" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#accountAccordion">
                                   <div class="accordion-body">
 
                                       <!-- Displays Verification form -->
@@ -585,14 +620,14 @@
                                   </div>
                                 </div>
                               </div>
-
+                            <!-- Verifying user email utility -->
                             <div class="accordion-item">
                               <h2 class="accordion-header" id="emailVerification">
                                 <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseEmailVerification">
                                   Email Verification
                                 </button>
                               </h2>
-                              <div id="collapseEmailVerification" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#utilityAccordion">
+                              <div id="collapseEmailVerification" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#accountAccordion">
                                 <div class="accordion-body">
 
                                     <!-- Displays Verification form -->
@@ -628,14 +663,14 @@
                               </div>
                             </div>
 
-
+                            <!-- Resetting the user's password utility -->
                             <div class="accordion-item">
                               <h2 class="accordion-header" id="resetPassword">
                                 <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseResetPassword">
                                   Reset Password
                                 </button>
                               </h2>
-                              <div id="collapseResetPassword" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#utilityAccordion">
+                              <div id="collapseResetPassword" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#accountAccordion">
                                 <div class="accordion-body">
 
                                     <!-- Displays Reset Password form -->
@@ -680,15 +715,11 @@
                                             <button id="resetPasswordButton" class="btn btn-primary px-3">Reset Password</button>
                                         </div>
                                     </form>
-                                
-                                
                                 </div>
                               </div>
                             </div>
-
                           </div>
                       </div>
-
                   </div>
               </div>
               <div class="modal-footer"></div>
@@ -721,11 +752,13 @@
     <div class="dashboardModal modal fade" id="dashboardModal" tabindex="-1">
       <div class="modal-dialog">
         <div class="modal-content">
+          <!-- Dashboard modal shows information on a selected pothole that the user has reported -->
             <div class="modal-header">
                 <h5 class="modal-title" id="dashboard-title">Modal title</h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div id="dashboard-body" class="modal-body">
+                <!-- Dashboard body content loaded here -->
                 <div class="text-center">
                     <b class="text-danger text-center">Loading...</b>
                 </div>
