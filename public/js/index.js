@@ -501,6 +501,7 @@ async function getReports(potholeID){
 //Loads the reports for a given pothole into the pothole information pane/canvas/slide-out menu.
 async function loadReports(potholeID){
     //Gets the report container and initializes the loading screen.
+    
     let allReportsContainer = document.querySelector("#reportAccordion")
     allReportsContainer.innerHTML = `<div class="align-middle text-center">
                                         <div class="spinner-border text-dark mb-2" role="status"></div><br>
@@ -528,13 +529,24 @@ async function loadReports(potholeID){
             else
                 return -1;
         })
+
+
+
         //After getting the reports from the server, reset the reports container.
         allReportsContainer.innerHTML = ``
         //If there are reports for the pothole, populate the pane.
         if(potholeReports.length > 0){
             //Iterates over the reports and generates the accordion list for the potholes.
             for(report of potholeReports){
+                let debugInfo = "";
                 allReportImages = ""
+
+                //Prints debugging information when DEBUG is set to true.
+                if(DEBUG){
+                    let debugPothole = await sendRequest(SERVER + "/api/potholes/" + potholeID, "GET");
+                    let expiryDate = new Date(debugPothole.expiryDate)
+                    debugInfo = `<hr><div class="mt-1">UserID - ${report.userID}<br>PotholeID - ${report.potholeID}<br>ReportID - ${report.reportID}<br>Expiry - ${expiryDate}</div>`
+                }
                 //Determines if there are pothole images to be added. If not, display a message.
                 if(report.reportedImages.length == 0){
                     allReportImages = `<div id="noImageContainer" class="d-flex justify-content-center"><span class="border border-1 border-white rounded-3 px-3 py-5"><strong >No report images uploaded!</strong><span></div>`
@@ -610,6 +622,7 @@ async function loadReports(potholeID){
                                     </span>
                                 </div>
                                 <span id="voteOutcomeMessage-${report.reportID}"></span>
+                                ${debugInfo}
                             </div>
                             
                             

@@ -8,7 +8,7 @@ let waypoints = {
     "startPoint" : L.latLng(0, 0),
     "endPoint" : L.latLng(0, 0)
 }
-let debug = false
+
 let debuglines
 let line
 let route
@@ -439,7 +439,7 @@ async function routingConcept() {
 
                 route.numPotholes = numPotholes;
 
-                if(!debug){
+                if(!DEBUG){
                     if(clearRoute){
                         if(line) map.removeLayer(line)
                         line = L.Routing.line(route)
@@ -447,7 +447,7 @@ async function routingConcept() {
                         numClear++
                     }
                 } else{
-                    if(debug){
+                    if(DEBUG){
                         var templine = L.Routing.line(route,{
                             styles: [{color: 'gray'}]
                         })
