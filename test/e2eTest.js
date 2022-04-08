@@ -1,4 +1,6 @@
 const puppeteer = require('puppeteer');
+const devices = puppeteer.devices;
+const iPhonex = devices['iPhone X'];
 
 const { expect, asserty, assert } = require('chai');
 const config = require('./config.json');
@@ -53,6 +55,15 @@ context('End to End Tests', () => {
   //Test 1: Tests that adding a pothole to the map adds a pothole marker to the map
   it('Test 1: Test the addition of potholes to the map', async function () {
     this.timeout(config.timeout);
+    await page.emulate(iPhonex);
+    await page.goto('https://spotdpoth.web.app/')
+
+    await page.setViewport({ width: 1920, height: 937 })
+
+    await page.waitForTimeout(2000)
+
+    // await page.waitForSelector('.bi')
+    // await page.click('.bi')
 
     await page.waitForSelector('.list-group > #userContextGroup > li > a')
     await page.click('.list-group > #userContextGroup > li > a > span')
@@ -68,9 +79,14 @@ context('End to End Tests', () => {
     await page.waitForSelector('#loginButton')
     await page.click('#loginButton')
 
+    await page.waitForTimeout(1000)
+
     var numMarkers = await page.$$eval('#dashboardContent > #dashboardMap > .leaflet-pane > .leaflet-pane > .leaflet-marker-icon', markers => markers.length)
 
     await page.waitForTimeout(500)
+
+    await page.waitForSelector('.bi')
+    await page.click('.bi')
 
     await page.waitForSelector('#navbar > .list-group > li:nth-child(2) > a > span')
     await page.click('#navbar > .list-group > li:nth-child(2) > a > span')
@@ -86,13 +102,12 @@ context('End to End Tests', () => {
     await page.waitForSelector('#submit-passenger-report')
     await page.click('#submit-passenger-report')
 
+    await page.waitForTimeout(500)
+
     await page.waitForSelector('#navbar > .list-group > li:nth-child(4) > a > span')
     await page.click('#navbar > .list-group > li:nth-child(4) > a > span')
 
     await page.waitForTimeout(500)
-
-    await page.waitForSelector('#dashboardContent > #dashboardMap > .leaflet-pane > .leaflet-pane > .leaflet-marker-icon')
-    await page.click('#dashboardContent > #dashboardMap > .leaflet-pane > .leaflet-pane > .leaflet-marker-icon')
 
     var numMarkersAfterAdding = await page.$$eval('#dashboardContent > #dashboardMap > .leaflet-pane > .leaflet-pane > .leaflet-marker-icon', markers => markers.length)
     
@@ -101,23 +116,30 @@ context('End to End Tests', () => {
 
   //Test 2: Tests that editing a pothole description modifies the description that is displayed the potohle offcanvas
   it('Test 2: Test the editing of a pothole description using the dashboard', async function () {
+    await page.goto('https://spotdpoth.web.app/')
     this.timeout(config.timeout);
 
     await page.waitForSelector('#navbar > .list-group > li:nth-child(4) > a > span')
     await page.click('#navbar > .list-group > li:nth-child(4) > a > span')
 
-    await page.waitForTimeout(500)
-
     await page.waitForSelector('#dashboardContent > #dashboardMap > .leaflet-pane > .leaflet-pane > .leaflet-marker-icon')
     await page.click('#dashboardContent > #dashboardMap > .leaflet-pane > .leaflet-pane > .leaflet-marker-icon')
+
+    await page.waitForTimeout(1000)
 
     await page.waitForSelector('#pills-description-tab')
     await page.click('#pills-description-tab')
 
+    await page.waitForTimeout(500)
+
     var descriptionTextBefore= await getInnerText('#dashboard-body > #pills-dashboardContent > #pills-descriptionTab > .form-group > .ms-3')
+
+    await page.waitForTimeout(500)
 
     await page.waitForSelector('#dashboard-body > #pills-dashboardContent > #pills-descriptionTab > .d-flex > .btn')
     await page.click('#dashboard-body > #pills-dashboardContent > #pills-descriptionTab > .d-flex > .btn')
+
+    await page.waitForTimeout(500)
 
     await page.click('.text-muted', { clickCount: 3 })
     await page.keyboard.type('Test Change Description')
@@ -125,217 +147,223 @@ context('End to End Tests', () => {
     await page.waitForSelector('.collapse > .text-white > .form-group > .d-flex > .btn')
     await page.click('.collapse > .text-white > .form-group > .d-flex > .btn')
 
+    await page.waitForTimeout(1000)
+
     await page.waitForSelector('#dashboardModal > .modal-dialog > .modal-content > .modal-header > .btn-close')
     await page.click('#dashboardModal > .modal-dialog > .modal-content > .modal-header > .btn-close')
+    
+    await page.waitForTimeout(1000)
 
     await page.waitForSelector('#dashboardContent > #dashboardMap > .leaflet-pane > .leaflet-pane > .leaflet-marker-icon')
     await page.click('#dashboardContent > #dashboardMap > .leaflet-pane > .leaflet-pane > .leaflet-marker-icon')
 
+    await page.waitForTimeout(1000)
+
     await page.waitForSelector('#pills-description-tab')
     await page.click('#pills-description-tab')
 
-    await page.waitForSelector('#dashboard-body > #pills-dashboardContent > #pills-descriptionTab > .form-group > .ms-3')
+    await page.waitForTimeout(500)
+
     var descriptionTextAfter= await getInnerText('#dashboard-body > #pills-dashboardContent > #pills-descriptionTab > .form-group > .ms-3')
 
     assert(descriptionTextBefore != descriptionTextAfter)
   })
 
   //Test 3: Tests that deleting a pothole removes the pothole pin from the map
-  it('Test 3: Test the deletion of potholes from the map', async function () {
-    this.timeout(config.timeout);
+  // it('Test 3: Test the deletion of potholes from the map', async function () {
+  //   this.timeout(config.timeout);
 
-    var numMarkersBefore = await page.$$eval('#dashboardContent > #dashboardMap > .leaflet-pane > .leaflet-pane > .leaflet-marker-icon', markers => markers.length)
+  //   var numMarkersBefore = await page.$$eval('#dashboardContent > #dashboardMap > .leaflet-pane > .leaflet-pane > .leaflet-marker-icon', markers => markers.length)
 
-    await page.waitForSelector('#navbar > .list-group > li:nth-child(4) > a > span')
-    await page.click('#navbar > .list-group > li:nth-child(4) > a > span')
+  //   await page.waitForSelector('#navbar > .list-group > li:nth-child(4) > a > span')
+  //   await page.click('#navbar > .list-group > li:nth-child(4) > a > span')
 
-    await page.waitForTimeout(1000)
+  //   await page.waitForTimeout(1000)
 
-    await page.waitForSelector('#dashboardContent > #dashboardMap > .leaflet-pane > .leaflet-pane > .leaflet-marker-icon')
-    await page.click('#dashboardContent > #dashboardMap > .leaflet-pane > .leaflet-pane > .leaflet-marker-icon')
+  //   await page.waitForSelector('#dashboardContent > #dashboardMap > .leaflet-pane > .leaflet-pane > .leaflet-marker-icon')
+  //   await page.click('#dashboardContent > #dashboardMap > .leaflet-pane > .leaflet-pane > .leaflet-marker-icon')
 
-    await page.waitForSelector('#pills-delete-tab')
-    await page.click('#pills-delete-tab')
+  //   await page.waitForSelector('#pills-delete-tab')
+  //   await page.click('#pills-delete-tab')
 
-    await page.waitForSelector('#dashboard-body > #pills-dashboardContent > #pills-deleteTab > .d-flex > .btn')
-    await page.click('#dashboard-body > #pills-dashboardContent > #pills-deleteTab > .d-flex > .btn')
+  //   await page.waitForSelector('#dashboard-body > #pills-dashboardContent > #pills-deleteTab > .d-flex > .btn')
+  //   await page.click('#dashboard-body > #pills-dashboardContent > #pills-deleteTab > .d-flex > .btn')
 
-    await page.waitForSelector('#pills-deleteTab > [id^=deletePotholeReport-] > .text-white > .mt-4 > .btn-danger')
-    await page.click('#pills-deleteTab > [id^=deletePotholeReport-] > .text-white > .mt-4 > .btn-danger')
+  //   await page.waitForSelector('#pills-deleteTab > [id^=deletePotholeReport-] > .text-white > .mt-4 > .btn-danger')
+  //   await page.click('#pills-deleteTab > [id^=deletePotholeReport-] > .text-white > .mt-4 > .btn-danger')
 
-    await page.waitForTimeout(500)
+  //   await page.waitForTimeout(500)
 
-    var numMarkersAfterDeleting = await page.$$eval('#dashboardContent > #dashboardMap > .leaflet-pane > .leaflet-pane > .leaflet-marker-icon', markers => markers.length)
+  //   var numMarkersAfterDeleting = await page.$$eval('#dashboardContent > #dashboardMap > .leaflet-pane > .leaflet-pane > .leaflet-marker-icon', markers => markers.length)
 
-    assert(numMarkersAfterDeleting < numMarkersBefore, 'Number of markers is not less after deleting a report')
-  })
+  //   assert(numMarkersAfterDeleting < numMarkersBefore, 'Number of markers is not less after deleting a report')
+  // })
 
-  //Test 4: Tests that upvoting/downvoting a pothole modifies the number of upvotes/downvotes that are displayed in the potohle offcanvas
-  it('Test 4: Test the Upvoting/Downvoting of potholes', async function () {
-    this.timeout(config.timeout);
+  // //Test 4: Tests that upvoting/downvoting a pothole modifies the number of upvotes/downvotes that are displayed in the potohle offcanvas
+  // it('Test 4: Test the Upvoting/Downvoting of potholes', async function () {
+  //   this.timeout(config.timeout);
     
-    await page.waitForSelector('#mapContent > #map > .leaflet-pane > .leaflet-pane > .leaflet-marker-icon:nth-child(4)')
-    await page.click('#mapContent > #map > .leaflet-pane > .leaflet-pane > .leaflet-marker-icon:nth-child(4)')
+  //   await page.waitForSelector('#mapContent > #map > .leaflet-pane > .leaflet-pane > .leaflet-marker-icon:nth-child(4)')
+  //   await page.click('#mapContent > #map > .leaflet-pane > .leaflet-pane > .leaflet-marker-icon:nth-child(4)')
     
-    await page.waitForTimeout(500)
-    var voteCount = await getInnerText('.accordion-header > .accordion-button > div > .font-monospace > span')
+  //   await page.waitForTimeout(500)
+  //   var voteCount = await getInnerText('.accordion-header > .accordion-button > div > .font-monospace > span')
 
-    await page.waitForSelector('div > #reportAccordion > .accordion-item > .accordion-header > .accordion-button')
-    await page.click('div > #reportAccordion > .accordion-item > .accordion-header > .accordion-button')
+  //   await page.waitForSelector('div > #reportAccordion > .accordion-item > .accordion-header > .accordion-button')
+  //   await page.click('div > #reportAccordion > .accordion-item > .accordion-header > .accordion-button')
 
-    await page.waitForSelector('.accordion-body > #votingArea > .my-3 > [id^=castedDownvote-] > .btn')
-    await page.click('.accordion-body > #votingArea > .my-3 > [id^=castedDownvote-] > .btn')
+  //   await page.waitForSelector('.accordion-body > #votingArea > .my-3 > [id^=castedDownvote-] > .btn')
+  //   await page.click('.accordion-body > #votingArea > .my-3 > [id^=castedDownvote-] > .btn')
 
-    await page.waitForTimeout(500)
-    var voteCountAfterDownvote = await getInnerText('.accordion-header > .accordion-button > div > .font-monospace > span')
+  //   await page.waitForTimeout(500)
+  //   var voteCountAfterDownvote = await getInnerText('.accordion-header > .accordion-button > div > .font-monospace > span')
 
-    await page.waitForSelector('#votingArea > .my-3 > [id^=castedUpvote-] > [id^=castedUpvote-] > .bi')
-    await page.click('#votingArea > .my-3 > [id^=castedUpvote-] > [id^=castedUpvote-] > .bi')
+  //   await page.waitForSelector('#votingArea > .my-3 > [id^=castedUpvote-] > [id^=castedUpvote-] > .bi')
+  //   await page.click('#votingArea > .my-3 > [id^=castedUpvote-] > [id^=castedUpvote-] > .bi')
 
-    await page.waitForTimeout(500)
+  //   await page.waitForTimeout(500)
 
-    var voteCountAfterUpvote = await getInnerText('.accordion-header > .accordion-button > div > .font-monospace > span')
+  //   var voteCountAfterUpvote = await getInnerText('.accordion-header > .accordion-button > div > .font-monospace > span')
 
-    await page.waitForSelector('#votingArea > .my-3 > [id^=castedUpvote-] > [id^=castedUpvote-] > .bi')
-    await page.click('#votingArea > .my-3 > [id^=castedUpvote-] > [id^=castedUpvote-] > .bi')
+  //   await page.waitForSelector('#votingArea > .my-3 > [id^=castedUpvote-] > [id^=castedUpvote-] > .bi')
+  //   await page.click('#votingArea > .my-3 > [id^=castedUpvote-] > [id^=castedUpvote-] > .bi')
 
-    await page.waitForTimeout(500)
+  //   await page.waitForTimeout(500)
 
-    voteCount = parseInt(voteCount)
-    voteCountAfterDownvote = parseInt(voteCountAfterDownvote)
-    voteCountAfterUpvote = parseInt(voteCountAfterUpvote)
+  //   voteCount = parseInt(voteCount)
+  //   voteCountAfterDownvote = parseInt(voteCountAfterDownvote)
+  //   voteCountAfterUpvote = parseInt(voteCountAfterUpvote)
     
-    assert(voteCountAfterUpvote > voteCount , 'Vote count is not greater after upvote')
-    assert(voteCountAfterDownvote < voteCountAfterUpvote, 'Vote count is not less after downvote')
-  })
+  //   assert(voteCountAfterUpvote > voteCount , 'Vote count is not greater after upvote')
+  //   assert(voteCountAfterDownvote < voteCountAfterUpvote, 'Vote count is not less after downvote')
+  // })
 
-  //Test 5: Tests that changing the username in the profile modal changes the username in the navbar
-  it('Test 5: Test username change', async function () {
-    this.timeout(config.timeout);
+  // //Test 5: Tests that changing the username in the profile modal changes the username in the navbar
+  // it('Test 5: Test username change', async function () {
+  //   this.timeout(config.timeout);
     
-    await page.waitForSelector('#navbar > .list-group > #profileArea > li > a')
-    await page.click('#navbar > .list-group > #profileArea > li > a')
+  //   await page.waitForSelector('#navbar > .list-group > #profileArea > li > a')
+  //   await page.click('#navbar > .list-group > #profileArea > li > a')
 
-    var userNameBeforeChange = await getInnerText('#header > .d-flex > .profile > #userNameArea > .text-light')
+  //   var userNameBeforeChange = await getInnerText('#header > .d-flex > .profile > #userNameArea > .text-light')
 
-    await page.waitForSelector('.modal-body > #profileAccordion > .accordion-item > #updateProfileName > .accordion-button')
-    await page.click('.modal-body > #profileAccordion > .accordion-item > #updateProfileName > .accordion-button')
+  //   await page.waitForSelector('.modal-body > #profileAccordion > .accordion-item > #updateProfileName > .accordion-button')
+  //   await page.click('.modal-body > #profileAccordion > .accordion-item > #updateProfileName > .accordion-button')
 
-    await page.waitForTimeout(500)
+  //   await page.waitForTimeout(500)
 
-    await page.waitForSelector('#updateProfile-lastName')
-    await page.click('#updateProfile-lastName', { clickCount: 3 })
-    await page.keyboard.type('TesterLastName')
+  //   await page.waitForSelector('#updateProfile-lastName')
+  //   await page.click('#updateProfile-lastName', { clickCount: 3 })
+  //   await page.keyboard.type('TesterLastName')
 
-    await page.waitForTimeout(500)
+  //   await page.waitForTimeout(500)
 
-    await page.waitForSelector('#updateProfile-firstName')
-    await page.click('#updateProfile-firstName', { clickCount: 3 })
-    await page.keyboard.type('TesterFirstName')
+  //   await page.waitForSelector('#updateProfile-firstName')
+  //   await page.click('#updateProfile-firstName', { clickCount: 3 })
+  //   await page.keyboard.type('TesterFirstName')
 
-    await page.waitForSelector('#updateProfileButton')
-    await page.click('#updateProfileButton')
+  //   await page.waitForSelector('#updateProfileButton')
+  //   await page.click('#updateProfileButton')
 
-    await page.waitForSelector('#profileManagementModal > .modal-dialog > #profileManagementSection > .modal-header > .btn-close')
-    await page.click('#profileManagementModal > .modal-dialog > #profileManagementSection > .modal-header > .btn-close')
+  //   await page.waitForSelector('#profileManagementModal > .modal-dialog > #profileManagementSection > .modal-header > .btn-close')
+  //   await page.click('#profileManagementModal > .modal-dialog > #profileManagementSection > .modal-header > .btn-close')
 
-    var userNameAfterChange = await getInnerText('#header > .d-flex > .profile > #userNameArea > .text-light')
+  //   var userNameAfterChange = await getInnerText('#header > .d-flex > .profile > #userNameArea > .text-light')
 
-    await page.waitForSelector('.list-group > #profileArea > li > a > span')
-    await page.click('.list-group > #profileArea > li > a > span')
+  //   await page.waitForSelector('.list-group > #profileArea > li > a > span')
+  //   await page.click('.list-group > #profileArea > li > a > span')
 
-    await page.waitForSelector('#updateProfile-lastName')
-    await page.click('#updateProfile-lastName', { clickCount: 3 })
-    await page.keyboard.type('TesterF')
+  //   await page.waitForSelector('#updateProfile-lastName')
+  //   await page.click('#updateProfile-lastName', { clickCount: 3 })
+  //   await page.keyboard.type('TesterF')
 
-    await page.waitForSelector('#updateProfile-firstName')
-    await page.click('#updateProfile-firstName', { clickCount: 3 })
-    await page.keyboard.type('TesterL')
+  //   await page.waitForSelector('#updateProfile-firstName')
+  //   await page.click('#updateProfile-firstName', { clickCount: 3 })
+  //   await page.keyboard.type('TesterL')
 
-    await page.waitForSelector('#updateProfileButton')
-    await page.click('#updateProfileButton')
+  //   await page.waitForSelector('#updateProfileButton')
+  //   await page.click('#updateProfileButton')
 
-    await page.waitForTimeout(500)
+  //   await page.waitForTimeout(500)
     
-    assert(userNameBeforeChange != userNameAfterChange, 'User name is not changed')
-  })
+  //   assert(userNameBeforeChange != userNameAfterChange, 'User name is not changed')
+  // })
 
-  //Test 6: Tests that changing the password in the profile modal changes the password when logging in.
-  it('Test 6: Test Password Change', async function () {
-    this.timeout(config.timeout);
+  // //Test 6: Tests that changing the password in the profile modal changes the password when logging in.
+  // it('Test 6: Test Password Change', async function () {
+  //   this.timeout(config.timeout);
 
-    await page.waitForSelector('.list-group > #profileArea > li > a > span')
-    await page.click('.list-group > #profileArea > li > a > span')
+  //   await page.waitForSelector('.list-group > #profileArea > li > a > span')
+  //   await page.click('.list-group > #profileArea > li > a > span')
 
-    await page.waitForSelector('.modal-body > #profileAccordion > .accordion-item > #updatePassword > .accordion-button')
-    await page.click('.modal-body > #profileAccordion > .accordion-item > #updatePassword > .accordion-button')
+  //   await page.waitForSelector('.modal-body > #profileAccordion > .accordion-item > #updatePassword > .accordion-button')
+  //   await page.click('.modal-body > #profileAccordion > .accordion-item > #updatePassword > .accordion-button')
 
-    await page.waitForSelector('#updatePassword-original')
-    await page.click('#updatePassword-original', { clickCount: 3 })
-    await page.keyboard.type('121233')
+  //   await page.waitForSelector('#updatePassword-original')
+  //   await page.click('#updatePassword-original', { clickCount: 3 })
+  //   await page.keyboard.type('121233')
 
-    await page.waitForSelector('#updatePassword-password')
-    await page.click('#updatePassword-password', { clickCount: 3 })
-    await page.keyboard.type('newPassword')
+  //   await page.waitForSelector('#updatePassword-password')
+  //   await page.click('#updatePassword-password', { clickCount: 3 })
+  //   await page.keyboard.type('newPassword')
 
-    await page.waitForSelector('#updatePassword-confirmPassword')
-    await page.click('#updatePassword-confirmPassword', { clickCount: 3 })
-    await page.keyboard.type('newPassword')
+  //   await page.waitForSelector('#updatePassword-confirmPassword')
+  //   await page.click('#updatePassword-confirmPassword', { clickCount: 3 })
+  //   await page.keyboard.type('newPassword')
 
-    await page.waitForSelector('#updatePasswordButton')
-    await page.click('#updatePasswordButton')
+  //   await page.waitForSelector('#updatePasswordButton')
+  //   await page.click('#updatePasswordButton')
 
-    await page.waitForSelector('#profileManagementModal > .modal-dialog > #profileManagementSection > .modal-header > .btn-close')
-    await page.click('#profileManagementModal > .modal-dialog > #profileManagementSection > .modal-header > .btn-close')
+  //   await page.waitForSelector('#profileManagementModal > .modal-dialog > #profileManagementSection > .modal-header > .btn-close')
+  //   await page.click('#profileManagementModal > .modal-dialog > #profileManagementSection > .modal-header > .btn-close')
 
-    await page.waitForSelector('.list-group > #userContextGroup > li > a > span')
-    await page.click('.list-group > #userContextGroup > li > a > span')
+  //   await page.waitForSelector('.list-group > #userContextGroup > li > a > span')
+  //   await page.click('.list-group > #userContextGroup > li > a > span')
 
-    await page.waitForSelector('.list-group > #userContextGroup > li > a > span')
-    await page.click('.list-group > #userContextGroup > li > a > span')
+  //   await page.waitForSelector('.list-group > #userContextGroup > li > a > span')
+  //   await page.click('.list-group > #userContextGroup > li > a > span')
 
-    await page.waitForSelector('#InputEmail')
-    await page.click('#InputEmail', { clickCount: 3 })
-    await page.keyboard.type('tester31@yahoo.com')
+  //   await page.waitForSelector('#InputEmail')
+  //   await page.click('#InputEmail', { clickCount: 3 })
+  //   await page.keyboard.type('tester31@yahoo.com')
 
-    await page.waitForSelector('#InputPassword')
-    await page.click('#InputPassword', { clickCount: 3 })
-    await page.keyboard.type('newPassword')
+  //   await page.waitForSelector('#InputPassword')
+  //   await page.click('#InputPassword', { clickCount: 3 })
+  //   await page.keyboard.type('newPassword')
 
-    await page.waitForSelector('#loginButton')
-    await page.click('#loginButton')
+  //   await page.waitForSelector('#loginButton')
+  //   await page.click('#loginButton')
 
-    var userNameAfterRelog = await getInnerText('#header > .d-flex > .profile > #userNameArea > .text-light')
-    assert(userNameAfterRelog === "Guest", 'Relogin failed')
+  //   var userNameAfterRelog = await getInnerText('#header > .d-flex > .profile > #userNameArea > .text-light')
+  //   assert(userNameAfterRelog === "Guest", 'Relogin failed')
 
-    await page.waitForSelector('.list-group > #profileArea > li > a > span')
-    await page.click('.list-group > #profileArea > li > a > span')
+  //   await page.waitForSelector('.list-group > #profileArea > li > a > span')
+  //   await page.click('.list-group > #profileArea > li > a > span')
 
-    await page.waitForSelector('.modal-body > #profileAccordion > .accordion-item > #updatePassword > .accordion-button')
-    await page.click('.modal-body > #profileAccordion > .accordion-item > #updatePassword > .accordion-button')
+  //   await page.waitForSelector('.modal-body > #profileAccordion > .accordion-item > #updatePassword > .accordion-button')
+  //   await page.click('.modal-body > #profileAccordion > .accordion-item > #updatePassword > .accordion-button')
 
-    await page.waitForSelector('#updatePassword-original')
-    await page.click('#updatePassword-original', { clickCount: 3 })
-    await page.keyboard.type('newPassword')
+  //   await page.waitForSelector('#updatePassword-original')
+  //   await page.click('#updatePassword-original', { clickCount: 3 })
+  //   await page.keyboard.type('newPassword')
 
-    await page.waitForSelector('#updatePassword-password')
-    await page.click('#updatePassword-password', { clickCount: 3 })
-    await page.keyboard.type('121233')
+  //   await page.waitForSelector('#updatePassword-password')
+  //   await page.click('#updatePassword-password', { clickCount: 3 })
+  //   await page.keyboard.type('121233')
 
-    await page.waitForSelector('#updatePassword-confirmPassword')
-    await page.click('#updatePassword-confirmPassword', { clickCount: 3 })
-    await page.keyboard.type('121233')
+  //   await page.waitForSelector('#updatePassword-confirmPassword')
+  //   await page.click('#updatePassword-confirmPassword', { clickCount: 3 })
+  //   await page.keyboard.type('121233')
 
-    await page.waitForSelector('#updatePasswordButton')
-    await page.click('#updatePasswordButton')
+  //   await page.waitForSelector('#updatePasswordButton')
+  //   await page.click('#updatePasswordButton')
 
-    await page.waitForTimeout(500)
-  })
+  //   await page.waitForTimeout(500)
+  // })
 })
 
 beforeEach(async function () {
   await page.goto('https://spotdpoth.web.app/')
-  await page.waitForTimeout(1000)
   await page.setViewport({ width: 1920, height: 937 })
   this.timeout(config.timeout);
 })
