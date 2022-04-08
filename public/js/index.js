@@ -1217,6 +1217,8 @@ async function main(){
         //Displays the contents of the data in the channel via a toast if it contains a message or error.
         if("message" in event.data){
             displayToast("sync", event.data["message"])
+            //Refreshes the potholes on the map; this assumes that the message pertains to syncing.
+            displayPotholes();
         } else if("refresh" in event.data) {
             displayToast("install", '<a class="text-decoration-underline text-white" href="index.html">Application Initialized. Tap here to refresh or wait 10 seconds.</a>', 9)
             setTimeout(()=>{
@@ -1243,8 +1245,7 @@ async function main(){
         } else {
             displayToast("failed", event.data["error"])
         }
-        //Refreshes the potholes on the map; this assumes that the message pertains to syncing.
-        displayPotholes();
+        
     });
 
 
