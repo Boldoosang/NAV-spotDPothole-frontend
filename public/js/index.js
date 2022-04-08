@@ -1022,7 +1022,7 @@ async function updateLocalCoords(){
 
     let coordTextArea = document.querySelector("#coordinatesText");
 
-	var options = { enableHighAccuracy: true, maximumAge: 100, timeout: 50000 };
+	var options = { enableHighAccuracy: true, maximumAge: 0};
 	//Checks to see if the device supports geolocation.
 	if (navigator.geolocation) {
 		//Gets the current geoposition of the device.
