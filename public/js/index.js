@@ -1012,6 +1012,8 @@ function displayToast(type, message, customDuration=2.5) {
 
 //Facilitates the submission of a driver report for processing at the backend.
 async function postDriverReport() {
+    //Updates the local coordinates.
+    await updateLocalCoords();
 	//Builds the driver report; without images and description.
   	await buildReport(null, null, DRIVER_REPORT_URL);
 }
@@ -1030,6 +1032,7 @@ async function updateLocalCoords(){
 			//If the coordinates are successfully obtained, store them.
 			latitude = position.coords.latitude;
 			longitude = position.coords.longitude;
+            alert(position.timestamp)
 
             //Sets the latitude and longitude in the localstorage.
             localStorage.setItem("latitude", latitude)
@@ -1126,6 +1129,8 @@ async function sendReport(latitude, longitude, photoB64, description = null, url
 
 	//Attempts to send the request to the endpoint with the data, and returns the outcome.
 	try {
+        window.localStorage.removeItem("latitude")
+        window.localStorage.removeItem("longitude")
 		return await sendRequest(url, "POST", data)
 	} catch (error) {
 		return error;
