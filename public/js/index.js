@@ -1032,7 +1032,6 @@ async function updateLocalCoords(){
 			//If the coordinates are successfully obtained, store them.
 			latitude = position.coords.latitude;
 			longitude = position.coords.longitude;
-            alert(position.timestamp)
 
             //Sets the latitude and longitude in the localstorage.
             localStorage.setItem("latitude", latitude)
