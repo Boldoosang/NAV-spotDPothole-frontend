@@ -251,7 +251,8 @@ async function identifyUserContext(){
         userStateArea.innerHTML = `<li><a class="" href="#" onclick="logout()"><i class='bi bi-box-arrow-left'></i> <span>Logout</span></a></li>`
         userNameArea.innerHTML = `<h1 class="text-light">${user.firstName} ${user.lastName}</h1>`
         menuArea.innerHTML = `<li><a href="#profile" data-bs-toggle="modal" data-bs-target="#profileManagementModal"><i class="bi bi-person-fill"></i> <span>Profile</span></a></li>`
-        reportButtonArea.innerHTML = `<i class="bi bi-plus d-xl-none" data-bs-toggle="modal" data-bs-target="#driverReportModal" id="driverReportButton"></i>`
+        if(isMobileDevice())
+            reportButtonArea.innerHTML = `<i class="bi bi-plus d-xl-none" data-bs-toggle="modal" data-bs-target="#driverReportModal" id="driverReportButton"></i>`
     }
 }
 
