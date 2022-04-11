@@ -1,4 +1,6 @@
 const puppeteer = require('puppeteer');
+const devices = puppeteer.devices;
+const iPhone = devices['iPad Mini'];
 
 const { expect, asserty, assert } = require('chai');
 const config = require('./config.json');
@@ -69,10 +71,10 @@ context('Integration Testing', () => {
     await page.waitForTimeout(500)
 
     await page.focus('#InputEmail')
-    await page.keyboard.type('tester31@yahoo.com')
+    await page.keyboard.type('spotdpothole-tester6@justinbaldeo.com')
 
     await page.focus('#InputPassword')
-    await page.keyboard.type('121233')
+    await page.keyboard.type('spotdpotholeTest123')
 
     await page.waitForSelector('#loginButton')
     await page.click('#loginButton')
@@ -85,7 +87,13 @@ context('Integration Testing', () => {
   //Test 2: Create a driver report and test that it generates the appropriate request
   it('Test 2: Test Driver Report', async function () {
     this.timeout(config.timeout);
+    page.emulate(iPhone);
 
+    await page.waitForTimeout(1000)
+
+    await page.waitForSelector('.bi')
+    await page.click('.bi')
+    
     await page.waitForSelector('#navbar > .list-group > li:nth-child(2) > a > span')
     await page.click('#navbar > .list-group > li:nth-child(2) > a > span')
 
@@ -287,6 +295,8 @@ context('Integration Testing', () => {
 
     await page.waitForSelector('#pills-deleteTab > .mt-4 > .text-white >.mt-4 > .btn-danger')
     await page.click('#pills-deleteTab > .mt-4 > .text-white >.mt-4 > .btn-danger')
+
+    await page.waitForTimeout(500)
     
     assert(requests.includes("https://spotdpothole.herokuapp.com/api/potholes"), "A request to the pothole endpoint should have been made")
   })
@@ -296,7 +306,12 @@ context('Integration Testing', () => {
     await page.goto('https://spotdpoth.web.app/')
     this.timeout(config.timeout);
 
+    page.emulate(iPhone);
+
     await page.waitForTimeout(1000)
+
+    await page.waitForSelector('.bi')
+    await page.click('.bi')
 
     await page.waitForSelector('#navbar > .list-group > li:nth-child(2) > a > span')
     await page.click('#navbar > .list-group > li:nth-child(2) > a > span')
@@ -336,6 +351,8 @@ context('Integration Testing', () => {
 
     await page.waitForSelector('#pills-deleteTab > .mt-4 > .text-white >.mt-4 > .btn-danger')
     await page.click('#pills-deleteTab > .mt-4 > .text-white >.mt-4 > .btn-danger')
+
+    await page.waitForTimeout(500)
 
     assert(requests.includes("https://spotdpothole.herokuapp.com/api/potholes"), "A request to the pothole endpoint should have been made")
   })

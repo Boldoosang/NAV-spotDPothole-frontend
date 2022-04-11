@@ -1,4 +1,6 @@
 const puppeteer = require('puppeteer');
+const devices = puppeteer.devices;
+const iPhone = devices['iPad Mini'];
 
 const { expect, asserty, assert } = require('chai');
 const config = require('./config.json');
@@ -24,6 +26,8 @@ before(async function () {
     requests.push(request.url());
     request.continue();
   });
+
+  await page.emulate(iPhone);
 
   await page.goto('https://spotdpoth.web.app/')
   await page.setGeolocation({ latitude: 10.66, longitude: -61.23 });
@@ -52,7 +56,9 @@ function checkElements(a) {
 context('End to End Tests', () => {
   //Test 1: Tests that adding a pothole to the map adds a pothole marker to the map
   it('Test 1: Test the addition of potholes to the map', async function () {
-    this.timeout(config.timeout);
+    this.timeout(config.timeout)
+
+    await page.waitForTimeout(500)
 
     await page.waitForSelector('.list-group > #userContextGroup > li > a')
     await page.click('.list-group > #userContextGroup > li > a > span')
@@ -60,17 +66,17 @@ context('End to End Tests', () => {
     await page.waitForTimeout(500)
 
     await page.focus('#InputEmail')
-    await page.keyboard.type('tester31@yahoo.com')
+    await page.keyboard.type('spotdpothole-tester6@justinbaldeo.com')
 
     await page.focus('#InputPassword')
-    await page.keyboard.type('121233')
+    await page.keyboard.type('spotdpotholeTest123')
 
     await page.waitForSelector('#loginButton')
     await page.click('#loginButton')
 
-    var numMarkers = await page.$$eval('#dashboardContent > #dashboardMap > .leaflet-pane > .leaflet-pane > .leaflet-marker-icon', markers => markers.length)
-
     await page.waitForTimeout(500)
+
+    var numMarkers = await page.$$eval('#dashboardContent > #dashboardMap > .leaflet-pane > .leaflet-pane > .leaflet-marker-icon', markers => markers.length)
 
     await page.waitForSelector('#navbar > .list-group > li:nth-child(2) > a > span')
     await page.click('#navbar > .list-group > li:nth-child(2) > a > span')
@@ -90,9 +96,6 @@ context('End to End Tests', () => {
     await page.click('#navbar > .list-group > li:nth-child(4) > a > span')
 
     await page.waitForTimeout(500)
-
-    await page.waitForSelector('#dashboardContent > #dashboardMap > .leaflet-pane > .leaflet-pane > .leaflet-marker-icon')
-    await page.click('#dashboardContent > #dashboardMap > .leaflet-pane > .leaflet-pane > .leaflet-marker-icon')
 
     var numMarkersAfterAdding = await page.$$eval('#dashboardContent > #dashboardMap > .leaflet-pane > .leaflet-pane > .leaflet-marker-icon', markers => markers.length)
     
@@ -335,9 +338,7 @@ context('End to End Tests', () => {
 
 beforeEach(async function () {
   await page.goto('https://spotdpoth.web.app/')
-  await page.waitForTimeout(1000)
   await page.setViewport({ width: 1920, height: 937 })
-  this.timeout(config.timeout);
 })
 
 afterEach(async function () {
