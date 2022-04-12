@@ -1,6 +1,5 @@
 const puppeteer = require('puppeteer');
 const devices = puppeteer.devices;
-const iPhone = devices['iPad Mini'];
 
 const { expect, asserty, assert } = require('chai');
 const config = require('./config.json');
@@ -15,6 +14,7 @@ before(async function () {
   this.timeout(config.timeout);
   browser = await puppeteer.launch(config);
   const context = browser.defaultBrowserContext();
+
   context.clearPermissionOverrides();
   context.overridePermissions('https://spotdpoth.web.app/', ['geolocation']);
 
@@ -22,6 +22,7 @@ before(async function () {
 
   await page.setRequestInterception(true);
   await page.setCacheEnabled(false);
+  await page.setUserAgent('Mozilla/5.0 (Linux; Android 11; Pixel 5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/99.0.4812.0 Mobile Safari/537.36')
 
   page.on('request', request => {
     requests.push(request.url());
@@ -86,14 +87,7 @@ context('Integration Testing', () => {
 
   //Test 2: Create a driver report and test that it generates the appropriate request
   it('Test 2: Test Driver Report', async function () {
-    await page.emulate(iPhonex);
     this.timeout(config.timeout);
-    page.emulate(iPhone);
-
-    await page.waitForTimeout(1000)
-
-    await page.waitForSelector('.bi')
-    await page.click('.bi')
     
     await page.waitForSelector('#navbar > .list-group > li:nth-child(2) > a > span')
     await page.click('#navbar > .list-group > li:nth-child(2) > a > span')
@@ -348,16 +342,7 @@ context('Integration Testing', () => {
 
   //Test 11: Check that generating a standard report generates the correct request
   it('Test 11: Test Standard Report', async function () {
-    await page.emulate(iPhonex);
-    await page.goto('https://spotdpoth.web.app/')
     this.timeout(config.timeout);
-
-    page.emulate(iPhone);
-
-    await page.waitForTimeout(1000)
-
-    await page.waitForSelector('.bi')
-    await page.click('.bi')
 
     await page.waitForSelector('#navbar > .list-group > li:nth-child(2) > a > span')
     await page.click('#navbar > .list-group > li:nth-child(2) > a > span')
