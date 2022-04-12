@@ -215,24 +215,28 @@ function openDatabase () {
 //Hence, all post requests are intercepted if they have the form_data property.
 self.addEventListener('message', function (event) {
 	//console.log('Form Data Received from Request: ', event.data)
-
 	//Determines if the request was generated from a post request corresponding to a report or vote.
 	if (event.data.hasOwnProperty('form_data')) {
 		//Sets the intercepted form data to the global form_data object.
 		form_data = event.data.form_data
 	}
-
+	
 	if ("downloadMap" in event.data){
 		event.waitUntil(update(mbTilesLink).then(function(){
 			console.log("Map download complete!")
+			event.source.postMessage({"downloadedMap" : true})
 		}))
+	}
+
+	if("syncActions" in event.data){
+		sendPostToServer(event);
 	}
 })
 
 // "Handling POST/PUT Requests in Offline Applications...", referenced from Adeyinka Adegbenro, August 3rd 2018, found at:
 // https://blog.formpl.us/how-to-handle-post-put-requests-in-offline-applications-using-service-workers-indexedb-and-da7d0798a9ab
 // Sends the stored post requests to the backend server.
-function sendPostToServer () {
+function sendPostToServer(mainEvent) {
 	//Sets the saved requests to an empty array.
 	var savedRequests = []
 
@@ -250,16 +254,25 @@ function sendPostToServer () {
 			savedRequests.push(cursor.value)
 			cursor.continue()
 		} else {
+
 		//Once all of the saved requests have been retrieved from the database, attempt to resend them.
 			for (let savedRequest of savedRequests) {
 				//Gets the request URL destination and the actual request.
 				var requestUrl = savedRequest.url
 				var request = savedRequest.request
-
+				
+				//Prevents spamming the server.
 				//Performs a request to the requestURL with the request.
 				fetch(requestUrl, request).then(async function (response) {
 					//Once the request has been submitted, store the response and convert it to Json.
 					responseJson = await response.json()
+
+					if(responseJson != undefined){
+						if("source" in mainEvent)
+							mainEvent.source.postMessage(responseJson)
+						else
+							console.log("Synced from refresh.")
+					}
 
 					//Removes the post request from the IndexedDB.
 					getObjectStore(FOLDER_NAME, 'readwrite').delete(savedRequest.id)
@@ -274,6 +287,10 @@ function sendPostToServer () {
 	}
 }
 
+//Initializes the database by creating it if it does not exist, or opening it if it does.
+//Assigns the created/found instance to a global variable, our_db.
+openDatabase()
+
 //Adds a sync event listener to the service worker that will fire once the web-app has reconnected to the internet.
 self.addEventListener('sync', function (event) {
 	//Prints a message when the service worker is connected to the internet.
@@ -282,11 +299,8 @@ self.addEventListener('sync', function (event) {
 	if (event.tag === 'sendSavedRequests') {
 		event.waitUntil(
 			//Sends the saved requests to the backend.
-			sendPostToServer()
+			sendPostToServer(event)
 		)
 	}
 })
 
-//Initializes the database by creating it if it does not exist, or opening it if it does.
-//Assigns the created/found instance to a global variable, our_db.
-openDatabase()
