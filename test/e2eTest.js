@@ -1,6 +1,5 @@
 const puppeteer = require('puppeteer');
 const devices = puppeteer.devices;
-const iPhone = devices['iPad Mini'];
 
 const { expect, asserty, assert } = require('chai');
 const config = require('./config.json');
@@ -21,13 +20,12 @@ before(async function () {
   [page] = await browser.pages();
 
   await page.setRequestInterception(true);
+  await page.setUserAgent('Mozilla/5.0 (Linux; Android 11; Pixel 5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/99.0.4812.0 Mobile Safari/537.36')
 
   page.on('request', request => {
     requests.push(request.url());
     request.continue();
   });
-
-  await page.emulate(iPhone);
 
   await page.goto('https://spotdpoth.web.app/')
   await page.setGeolocation({ latitude: 10.66, longitude: -61.23 });
@@ -55,7 +53,7 @@ function checkElements(a) {
 
 context('End to End Tests', () => {
   //Test 1: Tests that adding a pothole to the map adds a pothole marker to the map
-  it('Test 1: Test the addition of potholes to the map', async function () {
+  it('Test 1: Test the addition of potholes to the m ap', async function () {
     this.timeout(config.timeout)
 
     await page.waitForTimeout(500)
@@ -147,12 +145,12 @@ context('End to End Tests', () => {
   it('Test 3: Test the deletion of potholes from the map', async function () {
     this.timeout(config.timeout);
 
-    var numMarkersBefore = await page.$$eval('#dashboardContent > #dashboardMap > .leaflet-pane > .leaflet-pane > .leaflet-marker-icon', markers => markers.length)
-
     await page.waitForSelector('#navbar > .list-group > li:nth-child(4) > a > span')
     await page.click('#navbar > .list-group > li:nth-child(4) > a > span')
 
     await page.waitForTimeout(1000)
+
+    var numMarkersBefore = await page.$$eval('#dashboardContent > #dashboardMap > .leaflet-pane > .leaflet-pane > .leaflet-marker-icon', markers => markers.length)
 
     await page.waitForSelector('#dashboardContent > #dashboardMap > .leaflet-pane > .leaflet-pane > .leaflet-marker-icon')
     await page.click('#dashboardContent > #dashboardMap > .leaflet-pane > .leaflet-pane > .leaflet-marker-icon')
@@ -249,11 +247,11 @@ context('End to End Tests', () => {
 
     await page.waitForSelector('#updateProfile-lastName')
     await page.click('#updateProfile-lastName', { clickCount: 3 })
-    await page.keyboard.type('TesterF')
+    await page.keyboard.type('Tester_6')
 
     await page.waitForSelector('#updateProfile-firstName')
     await page.click('#updateProfile-firstName', { clickCount: 3 })
-    await page.keyboard.type('TesterL')
+    await page.keyboard.type('SpotDPothole')
 
     await page.waitForSelector('#updateProfileButton')
     await page.click('#updateProfileButton')
@@ -275,7 +273,7 @@ context('End to End Tests', () => {
 
     await page.waitForSelector('#updatePassword-original')
     await page.click('#updatePassword-original', { clickCount: 3 })
-    await page.keyboard.type('121233')
+    await page.keyboard.type('spotdpotholeTest123')
 
     await page.waitForSelector('#updatePassword-password')
     await page.click('#updatePassword-password', { clickCount: 3 })
@@ -299,7 +297,7 @@ context('End to End Tests', () => {
 
     await page.waitForSelector('#InputEmail')
     await page.click('#InputEmail', { clickCount: 3 })
-    await page.keyboard.type('tester31@yahoo.com')
+    await page.keyboard.type('spotdpothole-tester6@justinbaldeo.com')
 
     await page.waitForSelector('#InputPassword')
     await page.click('#InputPassword', { clickCount: 3 })
@@ -323,11 +321,11 @@ context('End to End Tests', () => {
 
     await page.waitForSelector('#updatePassword-password')
     await page.click('#updatePassword-password', { clickCount: 3 })
-    await page.keyboard.type('121233')
+    await page.keyboard.type('spotdpotholeTest123')
 
     await page.waitForSelector('#updatePassword-confirmPassword')
     await page.click('#updatePassword-confirmPassword', { clickCount: 3 })
-    await page.keyboard.type('121233')
+    await page.keyboard.type('spotdpotholeTest123')
 
     await page.waitForSelector('#updatePasswordButton')
     await page.click('#updatePasswordButton')
@@ -338,7 +336,6 @@ context('End to End Tests', () => {
 
 beforeEach(async function () {
   await page.goto('https://spotdpoth.web.app/')
-  await page.setViewport({ width: 1920, height: 937 })
 })
 
 afterEach(async function () {
