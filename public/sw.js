@@ -216,31 +216,39 @@ function openDatabase () {
 self.addEventListener('message', function (event) {
 	//console.log('Form Data Received from Request: ', event.data)
 
+	console.log(event.data)
+
 	//Determines if the request was generated from a post request corresponding to a report or vote.
 	if (event.data.hasOwnProperty('form_data')) {
 		//Sets the intercepted form data to the global form_data object.
 		form_data = event.data.form_data
 	}
-
+	
 	if ("downloadMap" in event.data){
 		event.waitUntil(update(mbTilesLink).then(function(){
 			console.log("Map download complete!")
+			event.source.postMessage({"downloadedMap" : true})
 		}))
+	}
+
+	if("syncActions" in event.data){
+		sendPostToServer(event);
 	}
 })
 
 // "Handling POST/PUT Requests in Offline Applications...", referenced from Adeyinka Adegbenro, August 3rd 2018, found at:
 // https://blog.formpl.us/how-to-handle-post-put-requests-in-offline-applications-using-service-workers-indexedb-and-da7d0798a9ab
 // Sends the stored post requests to the backend server.
-function sendPostToServer () {
+async function sendPostToServer(mainEvent) {
 	//Sets the saved requests to an empty array.
 	var savedRequests = []
+	console.log(mainEvent)
 
 	//Gets the indexedDB object reference used in storing the POST requests.
 	var req = getObjectStore(FOLDER_NAME).openCursor()
 
 	//Upon successfully accessing the 
-	req.onsuccess = async function (event) {
+	req.onsuccess = await async function (event) {
 		//Gets the current cursor position.
 		var cursor = event.target.result;
 		
@@ -250,16 +258,18 @@ function sendPostToServer () {
 			savedRequests.push(cursor.value)
 			cursor.continue()
 		} else {
+			var numRequests = 0;
 		//Once all of the saved requests have been retrieved from the database, attempt to resend them.
 			for (let savedRequest of savedRequests) {
 				//Gets the request URL destination and the actual request.
 				var requestUrl = savedRequest.url
 				var request = savedRequest.request
-
+				
+				//Prevents spamming the server.
 				//Performs a request to the requestURL with the request.
-				fetch(requestUrl, request).then(async function (response) {
+				 fetch(requestUrl, request).then(async function (response) {
 					//Once the request has been submitted, store the response and convert it to Json.
-					responseJson = await response.json()
+					//responseJson = await response.json()
 
 					//Removes the post request from the IndexedDB.
 					getObjectStore(FOLDER_NAME, 'readwrite').delete(savedRequest.id)
@@ -269,6 +279,11 @@ function sendPostToServer () {
 					console.error('Send to Server failed: ', error)
 					throw error
 				})
+				numRequests++;
+			}
+			console.log(numRequests)
+			if(numRequests > 0){
+				mainEvent.source.postMessage({"syncComplete" : true})
 			}
 		}
 	}
@@ -280,10 +295,10 @@ self.addEventListener('sync', function (event) {
 	console.log('Connected to Internet')
 	//Determines if the sync event matches for sending saved requests.
 	if (event.tag === 'sendSavedRequests') {
-		event.waitUntil(
+		event.waitUntil(async function(){
 			//Sends the saved requests to the backend.
-			sendPostToServer()
-		)
+			sendPostToServer(event)
+		})
 	}
 })
 

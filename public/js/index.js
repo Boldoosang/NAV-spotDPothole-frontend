@@ -972,42 +972,6 @@ function disableBackButton(){
     };
 }
 
-
-//Used to display a toast with a message.
-function displayToast(type, message, customDuration=2.5) {
-    //Creates the id for the notification using the date.
-	var id = Date.now() + ' - ' + "notification_" + (Math.random() + 1).toString(36).substring(5);
-    //Creates a new div and sets the meassge content.
-	var div = document.createElement('div');
-	div.innerHTML = `<p class="m-0 p-0 text-white">${message}</p>`;
-
-    //Sets the attributes of the toast div.
-	div.setAttribute('id', id)
-	div.setAttribute('class', '');
-
-    
-  
-    //Sets the color of the div based on the message type.
-	if(type=='success'){
-		div.setAttribute('class', "message success show");    
-	} else if (type=='sync'){
-        div.setAttribute('class', "message sync show");  
-    } else if (type=='install'){
-        div.setAttribute('class', "message refresh install");  
-    } else {
-		div.setAttribute('class', "message failed show");
-	}
-
-    //Adds the toast to the DOM.
-  	document.getElementById('mainTabContent').appendChild(div);
-
-	// After 4 seconds, remove the show class from DIV
-	setTimeout(() => { 
-		let element = document.getElementById(id);
-		element.className = element.className.replace("show", "hide"); 
-	}, customDuration*1000 + 500);
-}
-
 //Facilitates the submission of a driver report for processing at the backend.
 async function postDriverReport() {
     //Updates the local coordinates.
@@ -1168,7 +1132,7 @@ function dateConvert(date){
 }
 
 async function downloadMapTiles(){
-    navigator.serviceWorker.ready.then(worker => {
+    await navigator.serviceWorker.ready.then(worker => {
         worker.active.postMessage({"downloadMap" : true})
     });
 }
@@ -1201,8 +1165,10 @@ async function main(){
     //Adds a listener to detect when the user has gone online, and displays a corresponding message.
     //Also requests background syncing.
     window.addEventListener("online", (event)=>{
-        displayToast("success", "Network connection established!")
-        requestBackgroundSync();
+        displayToast("success", "Network connection established!!")
+        navigator.serviceWorker.ready.then(worker => {
+            worker.active.postMessage({"syncActions": true})
+        });
     })
 
     let downloadButton = document.querySelector("#mapDownloadButton");
@@ -1210,6 +1176,7 @@ async function main(){
     downloadButton.addEventListener("click", function(){
         displayToast("sync", "Downloading Map...")
         downloadButton.classList.replace("d-flex", "d-none")
+        downloadMapTiles()
     })
 
     //Gets the current user.
@@ -1236,6 +1203,18 @@ async function main(){
         }
     }, 3000)
     
+
+    navigator.serviceWorker.addEventListener('message', function(event) {
+        if("downloadedMap" in event.data){
+            displayToast("sync", "Map download complete!")
+            setTimeout(function(){
+                window.location.reload(true);
+            }, 3000);
+        } else if("syncComplete" in event.data){
+            displayToast("sync", "Sync completed!")
+            displayPotholes();
+        }
+    });
 
 }
 
