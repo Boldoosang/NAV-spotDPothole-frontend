@@ -236,7 +236,7 @@ self.addEventListener('message', function (event) {
 // "Handling POST/PUT Requests in Offline Applications...", referenced from Adeyinka Adegbenro, August 3rd 2018, found at:
 // https://blog.formpl.us/how-to-handle-post-put-requests-in-offline-applications-using-service-workers-indexedb-and-da7d0798a9ab
 // Sends the stored post requests to the backend server.
-async function sendPostToServer(mainEvent) {
+function sendPostToServer(mainEvent) {
 	//Sets the saved requests to an empty array.
 	var savedRequests = []
 
@@ -244,7 +244,7 @@ async function sendPostToServer(mainEvent) {
 	var req = getObjectStore(FOLDER_NAME).openCursor()
 
 	//Upon successfully accessing the 
-	req.onsuccess = await async function (event) {
+	req.onsuccess = async function (event) {
 		//Gets the current cursor position.
 		var cursor = event.target.result;
 		
@@ -257,34 +257,39 @@ async function sendPostToServer(mainEvent) {
 
 		//Once all of the saved requests have been retrieved from the database, attempt to resend them.
 			for (let savedRequest of savedRequests) {
-				setTimeout(async function(){
-					//Gets the request URL destination and the actual request.
-					var requestUrl = savedRequest.url
-					var request = savedRequest.request
-					
-					//Prevents spamming the server.
-					//Performs a request to the requestURL with the request.
-					fetch(requestUrl, request).then(async function (response) {
-						//Once the request has been submitted, store the response and convert it to Json.
-						responseJson = await response.json()
+				//Gets the request URL destination and the actual request.
+				var requestUrl = savedRequest.url
+				var request = savedRequest.request
+				
+				//Prevents spamming the server.
+				//Performs a request to the requestURL with the request.
+				fetch(requestUrl, request).then(async function (response) {
+					//Once the request has been submitted, store the response and convert it to Json.
+					responseJson = await response.json()
 
-						if(responseJson != undefined){
+					if(responseJson != undefined){
+						if("source" in mainEvent)
 							mainEvent.source.postMessage(responseJson)
-						}
+						else
+							console.log("Synced from refresh.")
+					}
 
-						//Removes the post request from the IndexedDB.
-						getObjectStore(FOLDER_NAME, 'readwrite').delete(savedRequest.id)
-					}).catch(function (error) {
-						//Upon error, display an error to the console.
-						//An exception is thrown so that background sync may reattempt it when network conditions become favorable.
-						console.error('Send to Server failed: ', error)
-						throw error
-					})
-				}, 5000)
+					//Removes the post request from the IndexedDB.
+					getObjectStore(FOLDER_NAME, 'readwrite').delete(savedRequest.id)
+				}).catch(function (error) {
+					//Upon error, display an error to the console.
+					//An exception is thrown so that background sync may reattempt it when network conditions become favorable.
+					console.error('Send to Server failed: ', error)
+					throw error
+				})
 			}
 		}
 	}
 }
+
+//Initializes the database by creating it if it does not exist, or opening it if it does.
+//Assigns the created/found instance to a global variable, our_db.
+openDatabase()
 
 //Adds a sync event listener to the service worker that will fire once the web-app has reconnected to the internet.
 self.addEventListener('sync', function (event) {
@@ -292,13 +297,10 @@ self.addEventListener('sync', function (event) {
 	console.log('Connected to Internet')
 	//Determines if the sync event matches for sending saved requests.
 	if (event.tag === 'sendSavedRequests') {
-		event.waitUntil(async function(){
+		event.waitUntil(
 			//Sends the saved requests to the backend.
 			sendPostToServer(event)
-		})
+		)
 	}
 })
 
-//Initializes the database by creating it if it does not exist, or opening it if it does.
-//Assigns the created/found instance to a global variable, our_db.
-openDatabase()

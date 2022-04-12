@@ -1215,6 +1215,7 @@ async function main(){
             displayPotholes();
         } else if ("message" in event.data){
             displayToast("sync", event.data.message)
+            displayPotholes()
         } else if("error" in event.data){
             displayToast("sync", event.data.error)
         }

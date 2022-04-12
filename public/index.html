@@ -108,16 +108,6 @@
               };
             });
 
-            //When the service worker is ready, print a ready message and register a sync event.
-            navigator.serviceWorker.ready.then(function(registration) {
-                console.log('Service Worker Ready!')
-                return registration.sync.register('sendSavedRequests')
-            }).then(function () {
-                console.log('Sync event registered!')
-            }).catch(function() {
-                console.log('Sync registration failed!')
-            });
-
             navigator.serviceWorker.getRegistration().then(function(reg) {
               // If there is a service worker but no controller, soft reset the page.
               try {
@@ -130,6 +120,16 @@
                 //Otherwise, there is no active registration and the service worker listeners must be initialized. Print the message.
                 console.log("First use of application; service worker listeners must be initialized.")
               }
+            });
+
+            //When the service worker is ready, print a ready message and register a sync event.
+            navigator.serviceWorker.ready.then(function(registration) {
+                console.log('Service Worker Ready!')
+                return registration.sync.register('sendSavedRequests')
+            }).then(function () {
+                console.log('Sync event registered!')
+            }).catch(function() {
+                console.log('Sync registration failed!')
             });
         }); 
 
