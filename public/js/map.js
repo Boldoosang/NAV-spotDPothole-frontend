@@ -17,7 +17,7 @@ let popupLocation
 let lControl
 let startCircle
 let endCircle
-let clearRoutes
+let errCount = 0
 
 //check if a point is on a line 
 function isPointOnLine(point, path) {
@@ -87,6 +87,7 @@ async function initMap() {
 function clearRouting(){
     if(watchid != null){
         navigator.geolocation.clearWatch(watchid)
+        errCount = 0 
     }
     if(debuglines) map.removeLayer(debuglines)
     if (startCircle) map.removeLayer(startCircle)
@@ -102,6 +103,7 @@ function setStart(e){
     //clears the watchposition if it exists
     if(watchid != null){
         navigator.geolocation.clearWatch(watchid)
+        errCount = 0 
     }
     
     let pos = popupLocation
@@ -136,11 +138,7 @@ function setStart(e){
     }
 
     if(sp != '{"lat":0,"lng":0}' && ep != '{"lat":0,"lng":0}'){
-        routingConcept()
-        if(!clearRoutes){
-            displayToast("error", "No pothole free route exists!")
-            clearRoutes = true
-        }   
+        routingConcept() 
     }
 }
 
@@ -149,6 +147,7 @@ function setEnd(e){
     //clears the watchposition if it exists
     if(watchid != null){
         navigator.geolocation.clearWatch(watchid)
+        errCount = 0 
     }
     let pos = popupLocation
     waypoints.endPoint = pos
@@ -183,21 +182,15 @@ function setEnd(e){
 
     if(sp != '{"lat":0,"lng":0}' && ep != '{"lat":0,"lng":0}'){
         routingConcept()
-        if(!clearRoutes){
-            console.log()
-            displayToast("error", "No pothole free route exists!")
-            clearRoutes = true
-        }
     }
 }
 
 //function used to handle live routing
 function liveRouting(e){
-    var errorDisplayed = false;
-
     //clears the watchposition if it exists
     if(watchid != null){
         navigator.geolocation.clearWatch(watchid)
+        errCount = 0 
     }
     let pos = popupLocation
     waypoints.endPoint = pos
@@ -255,11 +248,6 @@ function liveRouting(e){
         }
 
         routingConcept()
-        if(!clearRoutes && !errorDisplayed){
-            displayToast("error", "No pothole free route exists!")
-            errorDisplayed = true
-            clearRoutes = true
-        }
     }, function () {
         displayToast("error", "Please ensure that you have location turned on!");
         console.log("err")
@@ -474,9 +462,13 @@ async function routingConcept() {
             }
 
             if(numClear == 0){
-                //displayToast("error", "No pothole free route exists!")
-                clearRoutes = false
-
+                if(errCount == 0 && watchid == null){
+                    displayToast("error", "No pothole free route exists!")
+                } else if(errCount == 0 && watchid != null){
+                    displayToast("error", "No pothole free route exists!")
+                    errCount++
+                }
+                    
                 let lowestNumPotholes = routes[0].numPotholes
                 let lowestRoute = routes[0]
                 for(let route of routes){
