@@ -90,6 +90,8 @@ context('End to End Tests', () => {
     await page.waitForSelector('#submit-passenger-report')
     await page.click('#submit-passenger-report')
 
+    await page.waitForTimeout(500)
+
     await page.waitForSelector('#navbar > .list-group > li:nth-child(4) > a > span')
     await page.click('#navbar > .list-group > li:nth-child(4) > a > span')
 
@@ -102,23 +104,30 @@ context('End to End Tests', () => {
 
   //Test 2: Tests that editing a pothole description modifies the description that is displayed the potohle offcanvas
   it('Test 2: Test the editing of a pothole description using the dashboard', async function () {
+    await page.goto('https://spotdpoth.web.app/')
     this.timeout(config.timeout);
 
     await page.waitForSelector('#navbar > .list-group > li:nth-child(4) > a > span')
     await page.click('#navbar > .list-group > li:nth-child(4) > a > span')
 
-    await page.waitForTimeout(500)
-
     await page.waitForSelector('#dashboardContent > #dashboardMap > .leaflet-pane > .leaflet-pane > .leaflet-marker-icon')
     await page.click('#dashboardContent > #dashboardMap > .leaflet-pane > .leaflet-pane > .leaflet-marker-icon')
+
+    await page.waitForTimeout(1000)
 
     await page.waitForSelector('#pills-description-tab')
     await page.click('#pills-description-tab')
 
+    await page.waitForTimeout(500)
+
     var descriptionTextBefore= await getInnerText('#dashboard-body > #pills-dashboardContent > #pills-descriptionTab > .form-group > .ms-3')
+
+    await page.waitForTimeout(500)
 
     await page.waitForSelector('#dashboard-body > #pills-dashboardContent > #pills-descriptionTab > .d-flex > .btn')
     await page.click('#dashboard-body > #pills-dashboardContent > #pills-descriptionTab > .d-flex > .btn')
+
+    await page.waitForTimeout(500)
 
     await page.click('.text-muted', { clickCount: 3 })
     await page.keyboard.type('Test Change Description')
@@ -126,22 +135,29 @@ context('End to End Tests', () => {
     await page.waitForSelector('.collapse > .text-white > .form-group > .d-flex > .btn')
     await page.click('.collapse > .text-white > .form-group > .d-flex > .btn')
 
+    await page.waitForTimeout(1000)
+
     await page.waitForSelector('#dashboardModal > .modal-dialog > .modal-content > .modal-header > .btn-close')
     await page.click('#dashboardModal > .modal-dialog > .modal-content > .modal-header > .btn-close')
+    
+    await page.waitForTimeout(1000)
 
     await page.waitForSelector('#dashboardContent > #dashboardMap > .leaflet-pane > .leaflet-pane > .leaflet-marker-icon')
     await page.click('#dashboardContent > #dashboardMap > .leaflet-pane > .leaflet-pane > .leaflet-marker-icon')
 
+    await page.waitForTimeout(1000)
+
     await page.waitForSelector('#pills-description-tab')
     await page.click('#pills-description-tab')
 
-    await page.waitForSelector('#dashboard-body > #pills-dashboardContent > #pills-descriptionTab > .form-group > .ms-3')
+    await page.waitForTimeout(500)
+
     var descriptionTextAfter= await getInnerText('#dashboard-body > #pills-dashboardContent > #pills-descriptionTab > .form-group > .ms-3')
 
     assert(descriptionTextBefore != descriptionTextAfter)
   })
 
-  //Test 3: Tests that deleting a pothole removes the pothole pin from the map
+  // Test 3: Tests that deleting a pothole removes the pothole pin from the map
   it('Test 3: Test the deletion of potholes from the map', async function () {
     this.timeout(config.timeout);
 
