@@ -224,7 +224,6 @@ self.addEventListener('message', function (event) {
 
 	if ("downloadMap" in event.data){
 		event.waitUntil(update(mbTilesLink).then(function(){
-			channel.postMessage({"mapDownloadComplete" : true})
 			console.log("Map download complete!")
 		}))
 	}
