@@ -215,9 +215,6 @@ function openDatabase () {
 //Hence, all post requests are intercepted if they have the form_data property.
 self.addEventListener('message', function (event) {
 	//console.log('Form Data Received from Request: ', event.data)
-
-	console.log(event.data)
-
 	//Determines if the request was generated from a post request corresponding to a report or vote.
 	if (event.data.hasOwnProperty('form_data')) {
 		//Sets the intercepted form data to the global form_data object.
@@ -242,7 +239,6 @@ self.addEventListener('message', function (event) {
 async function sendPostToServer(mainEvent) {
 	//Sets the saved requests to an empty array.
 	var savedRequests = []
-	console.log(mainEvent)
 
 	//Gets the indexedDB object reference used in storing the POST requests.
 	var req = getObjectStore(FOLDER_NAME).openCursor()
@@ -258,32 +254,33 @@ async function sendPostToServer(mainEvent) {
 			savedRequests.push(cursor.value)
 			cursor.continue()
 		} else {
-			var numRequests = 0;
+
 		//Once all of the saved requests have been retrieved from the database, attempt to resend them.
 			for (let savedRequest of savedRequests) {
-				//Gets the request URL destination and the actual request.
-				var requestUrl = savedRequest.url
-				var request = savedRequest.request
-				
-				//Prevents spamming the server.
-				//Performs a request to the requestURL with the request.
-				 fetch(requestUrl, request).then(async function (response) {
-					//Once the request has been submitted, store the response and convert it to Json.
-					//responseJson = await response.json()
+				setTimeout(async function(){
+					//Gets the request URL destination and the actual request.
+					var requestUrl = savedRequest.url
+					var request = savedRequest.request
+					
+					//Prevents spamming the server.
+					//Performs a request to the requestURL with the request.
+					fetch(requestUrl, request).then(async function (response) {
+						//Once the request has been submitted, store the response and convert it to Json.
+						responseJson = await response.json()
 
-					//Removes the post request from the IndexedDB.
-					getObjectStore(FOLDER_NAME, 'readwrite').delete(savedRequest.id)
-				}).catch(function (error) {
-					//Upon error, display an error to the console.
-					//An exception is thrown so that background sync may reattempt it when network conditions become favorable.
-					console.error('Send to Server failed: ', error)
-					throw error
-				})
-				numRequests++;
-			}
-			console.log(numRequests)
-			if(numRequests > 0){
-				mainEvent.source.postMessage({"syncComplete" : true})
+						if(responseJson != undefined){
+							mainEvent.source.postMessage(responseJson)
+						}
+
+						//Removes the post request from the IndexedDB.
+						getObjectStore(FOLDER_NAME, 'readwrite').delete(savedRequest.id)
+					}).catch(function (error) {
+						//Upon error, display an error to the console.
+						//An exception is thrown so that background sync may reattempt it when network conditions become favorable.
+						console.error('Send to Server failed: ', error)
+						throw error
+					})
+				}, 5000)
 			}
 		}
 	}

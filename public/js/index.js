@@ -1213,6 +1213,10 @@ async function main(){
         } else if("syncComplete" in event.data){
             displayToast("sync", "Sync completed!")
             displayPotholes();
+        } else if ("message" in event.data){
+            displayToast("sync", event.data.message)
+        } else if("error" in event.data){
+            displayToast("sync", event.data.error)
         }
     });
 
