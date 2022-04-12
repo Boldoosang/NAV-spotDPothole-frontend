@@ -1,5 +1,5 @@
 {
-    "slowMo": 50,
+    "slowMo": 40,
     "timeout": 30000,
     "args": [
         "--no-sandbox",
@@ -7,9 +7,9 @@
         "--disable-dev-shm-usage"
     ],
     "ignoreDefaultArgs": ["--disable-extensions"],
-    "headless": true,
+    "headless": false,
     "devtools": false,
     "ignoreHTTPSErrors": true,
     "dumpio": false,
     "defaultViewport": { "width": 1920, "height": 937}
-}
+}   

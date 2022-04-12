@@ -1,4 +1,5 @@
 const puppeteer = require('puppeteer');
+const devices = puppeteer.devices;
 
 const { expect, asserty, assert } = require('chai');
 const config = require('./config.json');
@@ -13,6 +14,7 @@ before(async function () {
   this.timeout(config.timeout);
   browser = await puppeteer.launch(config);
   const context = browser.defaultBrowserContext();
+
   context.clearPermissionOverrides();
   context.overridePermissions('https://spotdpoth.web.app/', ['geolocation']);
 
@@ -20,6 +22,7 @@ before(async function () {
 
   await page.setRequestInterception(true);
   await page.setCacheEnabled(false);
+  await page.setUserAgent('Mozilla/5.0 (Linux; Android 11; Pixel 5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/99.0.4812.0 Mobile Safari/537.36')
 
   page.on('request', request => {
     requests.push(request.url());
@@ -69,10 +72,10 @@ context('Integration Testing', () => {
     await page.waitForTimeout(500)
 
     await page.focus('#InputEmail')
-    await page.keyboard.type('tester31@yahoo.com')
+    await page.keyboard.type('spotdpothole-tester6@justinbaldeo.com')
 
     await page.focus('#InputPassword')
-    await page.keyboard.type('121233')
+    await page.keyboard.type('spotdpotholeTest123')
 
     await page.waitForSelector('#loginButton')
     await page.click('#loginButton')
@@ -85,15 +88,21 @@ context('Integration Testing', () => {
   //Test 2: Create a driver report and test that it generates the appropriate request
   it('Test 2: Test Driver Report', async function () {
     this.timeout(config.timeout);
-
+    
     await page.waitForSelector('#navbar > .list-group > li:nth-child(2) > a > span')
     await page.click('#navbar > .list-group > li:nth-child(2) > a > span')
+
+    await page.waitForTimeout(200)
 
     await page.waitForSelector('#driver-button')
     await page.click('#driver-button')
 
+    await page.waitForTimeout(200)
+
     await page.waitForSelector('#submit-driver-prereport')
     await page.click('#submit-driver-prereport')
+
+    await page.waitForTimeout(200)
 
     await page.waitForSelector('#submit-driver-report')
     await page.click('#submit-driver-report')
@@ -109,6 +118,8 @@ context('Integration Testing', () => {
   
       await page.waitForSelector('#mapContent > #map > .leaflet-pane > .leaflet-pane > .leaflet-marker-icon:nth-child(1)')
       await page.click('#mapContent > #map > .leaflet-pane > .leaflet-pane > .leaflet-marker-icon:nth-child(1)')
+
+      await page.waitForTimeout(200)
   
       let offcanvas = await getHTML('#offcanvasReport')
       assert(offcanvas.includes('offcanvas offcanvas-end show'), "Offcanvas should be open")
@@ -119,6 +130,8 @@ context('Integration Testing', () => {
       await page.click('#offcanvasReport > .offcanvas-header > .btn-close')
   
       offcanvas = await getHTML('#offcanvasReport')
+
+      await page.waitForTimeout(500)
   
       assert(!offcanvas.includes('offcanvas offcanvas-end show'), "Offcanvas should be closed")
     })
@@ -136,13 +149,19 @@ context('Integration Testing', () => {
   
       const response = await fetch(url);
       const body = await response.json();
+
+      await page.waitForTimeout(200)
   
       let offcanvas = await getHTML('#councillorInformation')
+
+      await page.waitForTimeout(200)
   
       assert(offcanvas.includes(body[0].name), "Offcanvas should contain the name of the councillor")
       assert(offcanvas.includes(body[0].address), "Offcanvas should contain the address of the councillor")
       assert(offcanvas.includes(body[0].email), "Offcanvas should contain the email address of the councillor")
       assert(offcanvas.includes(body[0].phone), "Offcanvas should contain the phone number of the councillor")
+
+      await page.waitForTimeout(200)
   
       await page.waitForSelector('#offcanvasReport > .offcanvas-header > .btn-close')
       await page.click('#offcanvasReport > .offcanvas-header > .btn-close')
@@ -151,9 +170,13 @@ context('Integration Testing', () => {
     //Assertion Test 5: Checks that the constituency leaderboard displays
     it('Test 5: Check that the constituency leaderboard displays', async function () {
       this.timeout(config.timeout);
+
+      await page.waitForTimeout(200)
   
       await page.waitForSelector('#navbar > .list-group > li:nth-child(5) > a > span')
       await page.click('#navbar > .list-group > li:nth-child(5) > a > span')
+
+      await page.waitForTimeout(200)
   
       await page.waitForSelector('#pills-constLeaderboard-tab')
       await page.click('#pills-constLeaderboard-tab')
@@ -168,12 +191,18 @@ context('Integration Testing', () => {
     // //Assertion Test 6: Checks that the report leaderboard displays
     it('Test 6: Check that the report leaderboard displays', async function () {
       this.timeout(config.timeout);
+
+      await page.waitForTimeout(200)
   
       await page.waitForSelector('#navbar > .list-group > li:nth-child(5) > a > span')
       await page.click('#navbar > .list-group > li:nth-child(5) > a > span')
+
+      await page.waitForTimeout(200)
   
       await page.waitForSelector('.d-flex > #navbar > .list-group > li:nth-child(5) > a')
       await page.click('.d-flex > #navbar > .list-group > li:nth-child(5) > a')
+
+      await page.waitForTimeout(200)
   
       await page.waitForSelector('#pills-reportLeaderboard-tab')
       await page.click('#pills-reportLeaderboard-tab')
@@ -192,9 +221,13 @@ context('Integration Testing', () => {
   
       await page.waitForSelector('#navbar > .list-group > li:nth-child(5) > a > span')
       await page.click('#navbar > .list-group > li:nth-child(5) > a > span')
+
+      await page.waitForTimeout(200)
   
       await page.waitForSelector('#pills-constLeaderboard-tab')
       await page.click('#pills-constLeaderboard-tab')
+
+      await page.waitForTimeout(200)
   
       await page.waitForSelector('#constLeaderboard > tbody > #fstPlaceRow > td > .btn')
       await page.click('#constLeaderboard > tbody > #fstPlaceRow > td > .btn')
@@ -208,6 +241,8 @@ context('Integration Testing', () => {
       const body = await response.json();
   
       let infoModal = await getHTML('#councillorInfoModal > .modal-dialog > .modal-content > .modal-body')
+
+      await page.waitForTimeout(200)
   
       assert(infoModal.includes(body[0].name), "Modal should contain the name of the councillor")
       assert(infoModal.includes(body[0].address), "Modal should contain the address of the councillor")
@@ -221,9 +256,13 @@ context('Integration Testing', () => {
   
       await page.waitForSelector('#navbar > .list-group > li:nth-child(5) > a > span')
       await page.click('#navbar > .list-group > li:nth-child(5) > a > span')
+
+      await page.waitForTimeout(200)
   
       await page.waitForSelector('#pills-reportLeaderboard-tab')
       await page.click('#pills-reportLeaderboard-tab')
+
+      await page.waitForTimeout(200)
   
       await page.waitForSelector('.card > #reportLeaderboard > tbody > #fstPlaceRow > .text-dark')
       await page.click('.card > #reportLeaderboard > tbody > #fstPlaceRow > .text-dark')
@@ -248,6 +287,8 @@ context('Integration Testing', () => {
   it('Test 9: Test that the dashboard modal displays correctly', async function () {
     this.timeout(config.timeout);
 
+    await page.waitForTimeout(200)
+
     await page.waitForSelector('#navbar > .list-group > li:nth-child(4) > a > span')
     await page.click('#navbar > .list-group > li:nth-child(4) > a > span')
 
@@ -256,7 +297,7 @@ context('Integration Testing', () => {
     await page.waitForSelector('#dashboardContent > #dashboardMap > .leaflet-pane > .leaflet-pane > .leaflet-marker-icon')
     await page.click('#dashboardContent > #dashboardMap > .leaflet-pane > .leaflet-pane > .leaflet-marker-icon')
 
-    await page.waitForTimeout(500)
+    await page.waitForTimeout(2000)
 
     let potholeModal = await getHTML('.d-flex > #dashboardModal > .modal-dialog > .modal-content')
 
@@ -279,24 +320,29 @@ context('Integration Testing', () => {
     await page.waitForSelector('#dashboardContent > #dashboardMap > .leaflet-pane > .leaflet-pane > .leaflet-marker-icon')
     await page.click('#dashboardContent > #dashboardMap > .leaflet-pane > .leaflet-pane > .leaflet-marker-icon')
 
+    await page.waitForTimeout(200)
+
     await page.waitForSelector('#pills-delete-tab')
     await page.click('#pills-delete-tab')
+
+    await page.waitForTimeout(200)
 
     await page.waitForSelector('#dashboard-body > #pills-dashboardContent > #pills-deleteTab > .d-flex > .btn')
     await page.click('#dashboard-body > #pills-dashboardContent > #pills-deleteTab > .d-flex > .btn')
 
+    await page.waitForTimeout(200)
+
     await page.waitForSelector('#pills-deleteTab > .mt-4 > .text-white >.mt-4 > .btn-danger')
     await page.click('#pills-deleteTab > .mt-4 > .text-white >.mt-4 > .btn-danger')
+
+    await page.waitForTimeout(500)
     
     assert(requests.includes("https://spotdpothole.herokuapp.com/api/potholes"), "A request to the pothole endpoint should have been made")
   })
 
   //Test 11: Check that generating a standard report generates the correct request
   it('Test 11: Test Standard Report', async function () {
-    await page.goto('https://spotdpoth.web.app/')
     this.timeout(config.timeout);
-
-    await page.waitForTimeout(1000)
 
     await page.waitForSelector('#navbar > .list-group > li:nth-child(2) > a > span')
     await page.click('#navbar > .list-group > li:nth-child(2) > a > span')
@@ -336,6 +382,8 @@ context('Integration Testing', () => {
 
     await page.waitForSelector('#pills-deleteTab > .mt-4 > .text-white >.mt-4 > .btn-danger')
     await page.click('#pills-deleteTab > .mt-4 > .text-white >.mt-4 > .btn-danger')
+
+    await page.waitForTimeout(500)
 
     assert(requests.includes("https://spotdpothole.herokuapp.com/api/potholes"), "A request to the pothole endpoint should have been made")
   })
