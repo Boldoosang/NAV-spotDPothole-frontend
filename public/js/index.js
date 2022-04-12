@@ -18,9 +18,6 @@ let userState = null;
 // Initialize Firebase
 const app = firebase.initializeApp(firebaseConfig);
 
-// Creates a channel to be used in sending messages between the service worker and the web-app.
-const channel = new BroadcastChannel('sw-messages');
-
 // Creates a function to convert a file to base64.
 // Referenced from: Dmitri Pavlutin, March 29th 2016, https://stackoverflow.com/questions/36280818/how-to-convert-file-to-base64-in-javascript
 const toBase64 = file => new Promise((resolve, reject) => {
@@ -1209,50 +1206,11 @@ async function main(){
     })
 
     let downloadButton = document.querySelector("#mapDownloadButton");
-    
 
-    let mapSelectorArea = document.getElementsByClassName("leaflet-control-layers-selector");
-    if(mapSelectorArea.length == 1){
-        await revealDownloadButton(downloadButton);
-    }
-    
-    //Adds a listener to detect whenever a message has been sent via the channel; ie from the service worker.
-    channel.addEventListener('message', event => {
-        
-        //Displays the contents of the data in the channel via a toast if it contains a message or error.
-        if("message" in event.data){
-            displayToast("sync", event.data["message"])
-            //Refreshes the potholes on the map; this assumes that the message pertains to syncing.
-            displayPotholes();
-        } else if("refresh" in event.data) {
-            displayToast("install", '<a class="text-decoration-underline text-white" href="index.html">Application Initialized. Tap here to refresh or wait 10 seconds.</a>', 9)
-            setTimeout(()=>{
-                window.location.reload();
-            }, 10000)
-            
-        } else if("install" in event.data){
-            displayToast("sync", "First Application Initialization...")
-        } else if ("mapDownloaded" in event.data){
-            downloadButton.classList.remove("d-flex")
-            downloadButton.classList.add("d-none")
-        } else if ("mapDownloading" in event.data){
-            downloadButton.classList.remove("d-flex")
-            downloadButton.classList.add("d-none")
-            displayToast("sync", "Downloading Map...")
-        } else if("mapDownloadComplete" in event.data){
-            if(window.navigator.onLine){
-                downloadButton.classList.remove("d-flex")
-                downloadButton.classList.add("d-none")
-                window.location.reload()
-            } else {
-                displayToast("failed", 'You must be online to download the map.')
-            }
-        } else {
-            displayToast("failed", event.data["error"])
-        }
-        
-    });
-
+    downloadButton.addEventListener("click", function(){
+        displayToast("sync", "Downloading Map...")
+        downloadButton.classList.replace("d-flex", "d-none")
+    })
 
     //Gets the current user.
     let user = window.userState;
@@ -1267,6 +1225,17 @@ async function main(){
     var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
         return new bootstrap.Tooltip(tooltipTriggerEl)
     })
+
+
+    setTimeout(async function(){
+        let mapSelectorArea = document.getElementsByClassName("leaflet-control-layers-selector");
+        if(mapSelectorArea.length == 1){
+            await revealDownloadButton(downloadButton);
+        } else {
+            downloadButton.classList.replace("d-flex", "d-none")
+        }
+    }, 3000)
+    
 
 }
 
@@ -1761,7 +1730,7 @@ async function getIndividualReport(potholeID){
 //Manually requests a background sync event.
 async function requestBackgroundSync() {
     const registration = await navigator.serviceWorker.ready;
-    await registration.sync.register('sendSavedRequests');
+    return await registration.sync.register('sendSavedRequests');
 }
 
 //Loads the dashboard modal.

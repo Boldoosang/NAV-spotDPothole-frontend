@@ -10,7 +10,8 @@ var our_db
 
 //Creates a message channel for communicating between the service worker and the web-app.
 //Approach inspiration taken from pipes in Operating Systems.
-const channel = new BroadcastChannel('sw-messages');
+//Removed due to it being newly implemented for iOS devices on March 14th 2022.
+//const channel = new BroadcastChannel('sw-messages');
 
 const mbTilesLink = 'https://dl.dropboxusercontent.com/s/87jkx7txs1uazqw/tandtS.mbtiles?dl=1';
 
@@ -58,16 +59,12 @@ self.addEventListener('activate', evt => {
 			);
 		})
 	)
-	//Uses the pipe technique to notify the web-app to refresh once the new service worker has been activated and previous cache has been cleared.
-	channel.postMessage({"refresh" : true})
 });
 
 // Service Worker, "service-worker.js", installation referenced from JMPerez, September 28th 2020, found at:
 // https://gist.github.com/JMPerez/8ca8d5ffcc0cc45a8b4e1c279efd8a94
 // Caches the listed resources of cacheFiles once the service worker is installed.
 self.addEventListener('install', evt =>{
-	//Notifies the web-app that the web-app is initializing.
-	channel.postMessage({"install" : true})
 	evt.waitUntil(
 		caches.open(CURRENT_CACHE).then(cache => {
 		return cache.addAll(cacheFiles);
@@ -138,7 +135,6 @@ self.addEventListener('fetch', function(event) {
 			caches.match(mbTilesLink).then(function(response) {
 				if(response){
 					console.log("Offline Map Available!")
-					channel.postMessage({"mapDownloaded" : true});
 				}
 			})
 		} else {
@@ -161,7 +157,7 @@ self.addEventListener('fetch', function(event) {
 //Literally does nothing. I needed an error handler for a cache miss but it does not matter to us if there is a cache miss.
 function doNothing(e){
 	() => {}
-  }
+}
 
 // "Handling POST/PUT Requests in Offline Applications...", referenced from Adeyinka Adegbenro, August 3rd 2018, found at:
 // https://blog.formpl.us/how-to-handle-post-put-requests-in-offline-applications-using-service-workers-indexedb-and-da7d0798a9ab
@@ -227,9 +223,9 @@ self.addEventListener('message', function (event) {
 	}
 
 	if ("downloadMap" in event.data){
-		channel.postMessage({"mapDownloading" : true})
 		event.waitUntil(update(mbTilesLink).then(function(){
 			channel.postMessage({"mapDownloadComplete" : true})
+			console.log("Map download complete!")
 		}))
 	}
 })
@@ -265,10 +261,6 @@ function sendPostToServer () {
 				fetch(requestUrl, request).then(async function (response) {
 					//Once the request has been submitted, store the response and convert it to Json.
 					responseJson = await response.json()
-
-					//Displays the response as a toast on the web-app.
-					if(responseJson != undefined)
-						channel.postMessage(responseJson);
 
 					//Removes the post request from the IndexedDB.
 					getObjectStore(FOLDER_NAME, 'readwrite').delete(savedRequest.id)
