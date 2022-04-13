@@ -30,6 +30,7 @@ const toBase64 = file => new Promise((resolve, reject) => {
 
 // Handles the submission of a standard pothole report for both image and non-image cases.
 async function handleStandardReport() {
+    await updateLocalCoords()
 	//Get the single file input
 	const file = document.querySelector('#photo').files[0];
     //Initializes the base64 image string.
@@ -1161,7 +1162,6 @@ async function main(){
     //Gets the download button
     let downloadButton = document.querySelector("#mapDownloadButton");
 
-
     //Adds a click listener to the standard report button.
     document.getElementById('submit-passenger-report').addEventListener('click', handleStandardReport);
     //Adds a listener to detect when the user has gone offline, and displays a corresponding message.
@@ -1178,7 +1178,19 @@ async function main(){
         });
     })
 
-    
+    //Attempts to perform a sync if the app was retrieved from the app draw.
+    window.addEventListener("visibilitychange", (event)=>{
+        navigator.serviceWorker.ready.then(worker => {
+            if(window.navigator.onLine)
+                worker.active.postMessage({"syncActions": true})
+        });
+    })
+
+    //Performs a sync on page load.
+    navigator.serviceWorker.ready.then(worker => {
+        if(window.navigator.onLine)
+            worker.active.postMessage({"syncActions": true})
+    });
 
     downloadButton.addEventListener("click", function(){
         displayToast("sync", "Downloading Map...")
@@ -1227,7 +1239,6 @@ async function main(){
             displayToast("sync", event.data.error)
         }
     });
-
 }
 
 

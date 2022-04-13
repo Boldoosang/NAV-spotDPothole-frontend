@@ -283,7 +283,14 @@ async function sendPostToServer(mainEvent) {
 					
 					//Prevents spamming the server.
 					//Performs a request to the requestURL with the request.
-					fetch(requestUrl, request).then(async function (response) {
+					try {
+						let response = await fetch(requestUrl, request)
+
+						if(response.status == 405){
+							console.log("Sync data corrupted.")
+							getObjectStore(FOLDER_NAME, 'readwrite').delete(savedRequest.id)
+						}
+
 						//Once the request has been submitted, store the response and convert it to Json.
 						responseJson = await response.json()
 
@@ -298,12 +305,11 @@ async function sendPostToServer(mainEvent) {
 
 						//Removes the post request from the IndexedDB.
 						getObjectStore(FOLDER_NAME, 'readwrite').delete(savedRequest.id)
-					}).catch(function (error) {
-						//Upon error, display an error to the console.
-						//An exception is thrown so that background sync may reattempt it when network conditions become favorable.
-						console.error('Send to Server failed: ', error)
-						throw error
-					})
+
+					} catch(e){
+						console.log("Sync attempt failed! Will reattempt.")
+					}
+
 					//Delay each sync by 1 seconds to avoid spamming the server.
 					await sleep(1000)
 				}
@@ -320,6 +326,7 @@ async function sendPostToServer(mainEvent) {
 //Assigns the created/found instance to a global variable, our_db.
 openDatabase()
 
+/*
 //Adds a sync event listener to the service worker that will fire once the web-app has reconnected to the internet.
 self.addEventListener('sync', function (event) {
 	//Prints a message when the service worker is connected to the internet.
@@ -332,4 +339,5 @@ self.addEventListener('sync', function (event) {
 		)
 	}
 })
+*/
 
