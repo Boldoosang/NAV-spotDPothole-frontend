@@ -854,7 +854,7 @@ async function voteOnReport(event, potholeID, reportID, isUpvote){
                                             
             } catch(e){
                 //If any errors occur, print the errors.
-                console.log(e)
+                console.log("Deleting pothole with no reports...")
             }
         }
     }
