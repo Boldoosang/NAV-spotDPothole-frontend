@@ -1157,11 +1157,17 @@ async function main(){
             toggle: true
         })
     });
+
+    //Gets the download button
+    let downloadButton = document.querySelector("#mapDownloadButton");
+
+
     //Adds a click listener to the standard report button.
     document.getElementById('submit-passenger-report').addEventListener('click', handleStandardReport);
     //Adds a listener to detect when the user has gone offline, and displays a corresponding message.
     window.addEventListener("offline", (event)=>{
-        displayToast("failed", "Your network connection has been lost!")
+        displayToast("failed", "Your network connection has been lost!!")
+        downloadButton.classList.replace("d-flex", "d-none")
     })
     //Adds a listener to detect when the user has gone online, and displays a corresponding message.
     //Also requests background syncing.
@@ -1172,7 +1178,7 @@ async function main(){
         });
     })
 
-    let downloadButton = document.querySelector("#mapDownloadButton");
+    
 
     downloadButton.addEventListener("click", function(){
         displayToast("sync", "Downloading Map...")
