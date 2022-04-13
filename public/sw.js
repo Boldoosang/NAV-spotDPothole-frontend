@@ -9,6 +9,8 @@ var form_data
 var our_db
 var isSyncing = false;
 
+
+
 //Creates a message channel for communicating between the service worker and the web-app.
 //Approach inspiration taken from pipes in Operating Systems.
 //Removed due to it being newly implemented for iOS devices on March 14th 2022.
@@ -162,6 +164,33 @@ function doNothing(e){
 
 // "Handling POST/PUT Requests in Offline Applications...", referenced from Adeyinka Adegbenro, August 3rd 2018, found at:
 // https://blog.formpl.us/how-to-handle-post-put-requests-in-offline-applications-using-service-workers-indexedb-and-da7d0798a9ab
+//Creates the database for storage of the offline requests.
+function openDatabase () {
+	//Attempts to create/open the indexedDB database used for storage of the report/vote data.
+	var indexedDBOpenRequest = indexedDB.open('queued-requests')
+
+	//If an error occurs when creating/opening the indexedDB, print the corresponding error.
+	indexedDBOpenRequest.onerror = function (error) {
+		console.error('IndexedDB error:', error)
+	}
+
+	//If the indexedDB is outdated or needs to be created, create the updated database with the schema.
+	indexedDBOpenRequest.onupgradeneeded = function () {
+		this.result.createObjectStore(FOLDER_NAME, { autoIncrement: true, keyPath: 'id' })
+	}
+
+	// Whenever the database is opened, set the global our_db object to the current instance holding the indexedDB.
+	indexedDBOpenRequest.onsuccess = function () {
+		our_db = this.result
+	}
+}
+
+//Initializes the database by creating it if it does not exist, or opening it if it does.
+//Assigns the created/found instance to a global variable, our_db.
+openDatabase()
+
+// "Handling POST/PUT Requests in Offline Applications...", referenced from Adeyinka Adegbenro, August 3rd 2018, found at:
+// https://blog.formpl.us/how-to-handle-post-put-requests-in-offline-applications-using-service-workers-indexedb-and-da7d0798a9ab
 // Retrieves the object storage use for storing the requests.
 function getObjectStore (storeName, mode) {
   	return our_db.transaction(storeName, mode).objectStore(storeName)
@@ -188,28 +217,7 @@ function savePostRequests(url, request) {
 	}
 }
 
-// "Handling POST/PUT Requests in Offline Applications...", referenced from Adeyinka Adegbenro, August 3rd 2018, found at:
-// https://blog.formpl.us/how-to-handle-post-put-requests-in-offline-applications-using-service-workers-indexedb-and-da7d0798a9ab
-//Creates the database for storage of the offline requests.
-function openDatabase () {
-	//Attempts to create/open the indexedDB database used for storage of the report/vote data.
-	var indexedDBOpenRequest = indexedDB.open('queued-requests')
 
-	//If an error occurs when creating/opening the indexedDB, print the corresponding error.
-	indexedDBOpenRequest.onerror = function (error) {
-		console.error('IndexedDB error:', error)
-	}
-
-	//If the indexedDB is outdated or needs to be created, create the updated database with the schema.
-	indexedDBOpenRequest.onupgradeneeded = function () {
-		this.result.createObjectStore(FOLDER_NAME, { autoIncrement: true, keyPath: 'id' })
-	}
-
-	// Whenever the database is opened, set the global our_db object to the current instance holding the indexedDB.
-	indexedDBOpenRequest.onsuccess = function () {
-		our_db = this.result
-	}
-}
 
 
 //If postMessage was used within the web-app, the contents are intercepted here.
@@ -232,7 +240,9 @@ self.addEventListener('message', function (event) {
 
 	//Web-app requests a manual sync of data.
 	if("syncActions" in event.data){
-		sendPostToServer(event);
+		event.waitUntil(
+			sendPostToServer(event)
+		)
 	}
 })
 
@@ -322,9 +332,7 @@ async function sendPostToServer(mainEvent) {
 	}
 }
 
-//Initializes the database by creating it if it does not exist, or opening it if it does.
-//Assigns the created/found instance to a global variable, our_db.
-openDatabase()
+
 
 /*
 //Adds a sync event listener to the service worker that will fire once the web-app has reconnected to the internet.

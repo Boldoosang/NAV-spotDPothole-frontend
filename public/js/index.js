@@ -53,7 +53,7 @@ async function handleStandardReport() {
 
     //Gets the description text from the form, and builds and send the report using the base64 image and description.
     let description = document.getElementById("descriptionText").value;
-	await buildReport(photoB64, description, STANDARD_REPORT_URL)
+	buildReport(photoB64, description, STANDARD_REPORT_URL)
 }
 
 // Handles the submission of a standard pothole report for both image and non-image cases.
@@ -976,7 +976,7 @@ function disableBackButton(){
 //Facilitates the submission of a driver report for processing at the backend.
 async function postDriverReport() {
 	//Builds the driver report; without images and description.
-  	await buildReport(null, null, DRIVER_REPORT_URL);
+  	buildReport(null, null, DRIVER_REPORT_URL);
 }
 
 //Gets and updates the coordinates of the user in the standard report screen.
@@ -1031,11 +1031,15 @@ async function buildReport(photoB64, description, url) {
                     displayToast("failed", "You must be logged in to report a pothole!")
                 } else if("error" in results && !window.navigator.onLine){
                     displayToast("failed", "Your report will sync once you reconnect to the internet!")
+                    document.getElementById("descriptionText").value = "";
+                    removeImage();
                 } else if("error" in results){
                     displayToast("failed", results["error"])
                 } else if("message" in results){
                     displayToast("success", results["message"])
                     displayPotholes();
+                    document.getElementById("descriptionText").value = "";
+                    removeImage();
                 }
             } catch (e) {
                 displayToast("failed", e.message)
@@ -1046,12 +1050,12 @@ async function buildReport(photoB64, description, url) {
 			//If the latitude and longitude could not be obtained, display an error message.
 			if(longitude == null || latitude == null){
 				//Displays error message as a toast.
-				displayToast("failed", "Unfortunately we couldn't find your coordinates!")
+				displayToast("failed", "Unfortunately, we couldn't find your coordinates!")
 			}
 		}, options)
     } else {
         //If the device does not support geolocation, display an error message.
-		displayToast("failed", "unfortunately we couldn't find your coordinates!")
+		displayToast("failed", "Unfortunately, we couldn't find your coordinates!")
     }
 }
 
