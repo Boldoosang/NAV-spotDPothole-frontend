@@ -7,6 +7,7 @@ var FOLDER_NAME = 'post_requests'
 var IDB_VERSION = 1
 var form_data
 var our_db
+var isSyncing = false;
 
 //Creates a message channel for communicating between the service worker and the web-app.
 //Approach inspiration taken from pipes in Operating Systems.
@@ -221,6 +222,7 @@ self.addEventListener('message', function (event) {
 		form_data = event.data.form_data
 	}
 	
+	//Web-app requests for the map to be downloaded and cached.
 	if ("downloadMap" in event.data){
 		event.waitUntil(update(mbTilesLink).then(function(){
 			console.log("Map download complete!")
@@ -228,6 +230,7 @@ self.addEventListener('message', function (event) {
 		}))
 	}
 
+	//Web-app requests a manual sync of data.
 	if("syncActions" in event.data){
 		sendPostToServer(event);
 	}
@@ -241,9 +244,20 @@ const sleep = (milliseconds) => {
 // "Handling POST/PUT Requests in Offline Applications...", referenced from Adeyinka Adegbenro, August 3rd 2018, found at:
 // https://blog.formpl.us/how-to-handle-post-put-requests-in-offline-applications-using-service-workers-indexedb-and-da7d0798a9ab
 // Sends the stored post requests to the backend server.
-function sendPostToServer(mainEvent) {
+async function sendPostToServer(mainEvent) {
+	//Prioritize inhouse syncing over bg-syncing by delaying regular bg syncing.
+	if(!("source" in mainEvent)){
+		await sleep(3000)
+	}
+
+	//If there is a scheduled sync event, do not execute another sync.
+	if(isSyncing){
+		return;
+	}
+
 	//Sets the saved requests to an empty array.
 	var savedRequests = []
+	isSyncing = true;
 
 	//Gets the indexedDB object reference used in storing the POST requests.
 	var req = getObjectStore(FOLDER_NAME).openCursor()
@@ -274,10 +288,12 @@ function sendPostToServer(mainEvent) {
 						responseJson = await response.json()
 
 						if(responseJson != undefined){
-							if("source" in mainEvent)
+							if("source" in mainEvent){
 								mainEvent.source.postMessage(responseJson)
-							else
+								console.log("Synced from in-house refresh.")
+							} else{
 								console.log("Synced from refresh.")
+							}
 						}
 
 						//Removes the post request from the IndexedDB.
@@ -288,11 +304,14 @@ function sendPostToServer(mainEvent) {
 						console.error('Send to Server failed: ', error)
 						throw error
 					})
-					//Delay each sync by 5 seconds to avoid spamming the server.
-					await sleep(5000)
+					//Delay each sync by 1 seconds to avoid spamming the server.
+					await sleep(1000)
 				}
 			}
-			syncPosts()
+			//Prevents multiple syncs from happening at once.
+			syncPosts().then(()=>{
+				isSyncing = false;
+			})
 		}
 	}
 }
