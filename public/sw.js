@@ -233,6 +233,11 @@ self.addEventListener('message', function (event) {
 	}
 })
 
+//Creates a sleep function for delaying the sending of reports.
+const sleep = (milliseconds) => {
+	return new Promise(resolve => setTimeout(resolve, milliseconds))
+}
+
 // "Handling POST/PUT Requests in Offline Applications...", referenced from Adeyinka Adegbenro, August 3rd 2018, found at:
 // https://blog.formpl.us/how-to-handle-post-put-requests-in-offline-applications-using-service-workers-indexedb-and-da7d0798a9ab
 // Sends the stored post requests to the backend server.
@@ -255,34 +260,39 @@ function sendPostToServer(mainEvent) {
 			cursor.continue()
 		} else {
 
-		//Once all of the saved requests have been retrieved from the database, attempt to resend them.
-			for (let savedRequest of savedRequests) {
-				//Gets the request URL destination and the actual request.
-				var requestUrl = savedRequest.url
-				var request = savedRequest.request
-				
-				//Prevents spamming the server.
-				//Performs a request to the requestURL with the request.
-				fetch(requestUrl, request).then(async function (response) {
-					//Once the request has been submitted, store the response and convert it to Json.
-					responseJson = await response.json()
+			//Once all of the saved requests have been retrieved from the database, attempt to resend them.
+			const syncPosts = async () => {
+				for (let savedRequest of savedRequests) {
+					//Gets the request URL destination and the actual request.
+					var requestUrl = savedRequest.url
+					var request = savedRequest.request
+					
+					//Prevents spamming the server.
+					//Performs a request to the requestURL with the request.
+					fetch(requestUrl, request).then(async function (response) {
+						//Once the request has been submitted, store the response and convert it to Json.
+						responseJson = await response.json()
 
-					if(responseJson != undefined){
-						if("source" in mainEvent)
-							mainEvent.source.postMessage(responseJson)
-						else
-							console.log("Synced from refresh.")
-					}
+						if(responseJson != undefined){
+							if("source" in mainEvent)
+								mainEvent.source.postMessage(responseJson)
+							else
+								console.log("Synced from refresh.")
+						}
 
-					//Removes the post request from the IndexedDB.
-					getObjectStore(FOLDER_NAME, 'readwrite').delete(savedRequest.id)
-				}).catch(function (error) {
-					//Upon error, display an error to the console.
-					//An exception is thrown so that background sync may reattempt it when network conditions become favorable.
-					console.error('Send to Server failed: ', error)
-					throw error
-				})
+						//Removes the post request from the IndexedDB.
+						getObjectStore(FOLDER_NAME, 'readwrite').delete(savedRequest.id)
+					}).catch(function (error) {
+						//Upon error, display an error to the console.
+						//An exception is thrown so that background sync may reattempt it when network conditions become favorable.
+						console.error('Send to Server failed: ', error)
+						throw error
+					})
+					//Delay each sync by 5 seconds to avoid spamming the server.
+					await sleep(5000)
+				}
 			}
+			syncPosts()
 		}
 	}
 }
