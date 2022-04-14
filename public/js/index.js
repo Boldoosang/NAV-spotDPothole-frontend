@@ -13,6 +13,7 @@ var dashboardMap;
 let dashboardMarkersLayer;
 let dashboardMarkers = [];
 let userState = null;
+var reportInProgress = false;
 
 
 // Initialize Firebase
@@ -1011,29 +1012,70 @@ async function updateLocalCoords(){
 
 //Generates the report using the photoURL, description, and endpoint URL.
 async function buildReport(photoB64, description, url) {
-    var alreadySent = false;
-	var latitude, longitude;
+    if(reportInProgress){
+        displayToast("sync", "Current report in progress. Please wait.")
+        return;
+    }
+
+    reportInProgress = true;
+    
+	var latitude = null, longitude = null;
+    //Resets coords in localStorage
+    window.localStorage.setItem("latitude", latitude)
+    window.localStorage.setItem("longitude", longitude)
 
     //Sets the options for the geolocation function.
-    var options = { enableHighAccuracy: true, maximumAge: 100, timeout: 60000 };
+    var options = { enableHighAccuracy: true, maximumAge: 200, timeout: 20000 };
     //Checks to see if the device supports geolocation.
 	if (navigator.geolocation) {
-        //Gets the current geoposition of the device live.
-        //getCurrentLocation does not return an accurate position.
-		var watchID = navigator.geolocation.watchPosition(async (position) =>{
-			//If the coordinates are successfully obtained, store them.
-			latitude = position.coords.latitude;
-			longitude = position.coords.longitude;
-            //If the report was already sent, terminate the loop.
-            if(alreadySent){
+        //Spends 5 seconds attempting to get the most accurate GPS coords; even with no data or internet.
+        const getLatestLocation = async () => {
+            displayToast("sync", "Obtaining accurate coordinates...")
+            //Gets the current geoposition of the device.
+            //getCurrentLocation does not return an accurate position.
+            //Dear Mr. Mendez, forgive me for my sins. - Boldoosang
+            return new Promise(resolve => {
+                var watchID = navigator.geolocation.watchPosition(async (position) =>{
+                    //If the coordinates are successfully obtained, store them.
+                    latitude = position.coords.latitude;
+                    longitude = position.coords.longitude;
+    
+                    //As the watch position accuracy increases, overwrite each coordinate with the most accurate reading.
+                    window.localStorage.setItem("latitude", latitude)
+                    window.localStorage.setItem("longitude", longitude)
+                }, function(){
+                //If the coordinates were not succesfully obtained, display an error.
+                    //If the latitude and longitude could not be obtained, display an error message.
+                    if(longitude == null || latitude == null){
+                        //Displays error message as a log.
+                        console.log("Unfortunately, we couldn't find your coordinates!")
+                    }
+                }, options)
+    
+                //Clears the watchPosition after 5 seconds, sets the report in progress to false as the GPS should now be unlocked, and resolve the promise.
+                setTimeout( function() {
+                    navigator.geolocation.clearWatch( watchID );
+                    reportInProgress = false;
+                    resolve()
+                }, 5000);
+            })
+        }
+
+        //Gets the current location, and then creates and submits a report from the location and other information.
+        getLatestLocation().then(async function(){
+            //Gets the stored coordinates from the localStorage.
+            latitude = window.localStorage.getItem("latitude")
+            longitude = window.localStorage.getItem("longitude")
+
+            //Sends the report to the server.
+            if(latitude == "null" || longitude == "null"){
+                //If the geolocation coordinates could not be found, display an error message.
+		        displayToast("failed", "Unfortunately, we couldn't find your coordinates! Ensure GPS is enabled.")
                 return;
             }
 
-            alreadySent = true;
-
-			//Sends the report to the endpoint and stores the results.
-			let results = await sendReport(latitude, longitude, photoB64, description, url)
-            
+            let results = await sendReport(latitude, longitude, photoB64, description, url)
+            //results = {"message" : `Debug ${latitude}, ${longitude}`}
 
 			//Prints the results of sending the report.
 			try {
@@ -1054,17 +1096,7 @@ async function buildReport(photoB64, description, url) {
             } catch (e) {
                 displayToast("failed", e.message)
             }
-
-		}, function(){
-		//If the coordinates were not succesfully obtained, display an error.
-			//If the latitude and longitude could not be obtained, display an error message.
-			if(longitude == null || latitude == null){
-				//Displays error message as a toast.
-				displayToast("failed", "Unfortunately, we couldn't find your coordinates!")
-			}
-		}, options)
-        //Clears the watchPosition after 5 seconds.
-        setTimeout( function() { navigator.geolocation.clearWatch( watchID ); }, 5000 );
+        });
     } else {
         //If the device does not support geolocation, display an error message.
 		displayToast("failed", "Unfortunately, we couldn't find your coordinates!")
@@ -1073,6 +1105,14 @@ async function buildReport(photoB64, description, url) {
 
 //Sends a generated report to the endpoint URL.
 async function sendReport(latitude, longitude, photoB64, description = null, url){
+    //Parses coordaintes to float values.
+    latitude = parseFloat(latitude)
+    longitude = parseFloat(longitude)
+
+    //If the values cannot be parsed, they are invalid.
+    if(latitude == NaN || longitude == NaN)
+        return {"error": "Pothole coordinates are not valid!"}
+
     //Determines if the latitude and longitude resites within the map bounds.
     var inMap = leafletPip.pointInLayer([longitude, latitude], map);
 
