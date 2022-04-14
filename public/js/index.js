@@ -53,7 +53,7 @@ async function handleStandardReport() {
 
     //Gets the description text from the form, and builds and send the report using the base64 image and description.
     let description = document.getElementById("descriptionText").value;
-	await buildReport(photoB64, description, STANDARD_REPORT_URL)
+	buildReport(photoB64, description, STANDARD_REPORT_URL)
 }
 
 // Handles the submission of a standard pothole report for both image and non-image cases.
@@ -664,7 +664,7 @@ async function loadReportPage(){
         } else {
             reportArea.innerHTML = 
             `<div class="list-group p-3 d-flex flex-column justify-content-evenly align-items-middle" style="min-height: 75vh">
-                <button data-bs-target="#standardReportModal" data-bs-toggle="modal" onclick='updateLocalCoords()' id="standard-button" type="button" class="btn btn-primary py-5">Standard Report</button>                       
+                <button data-bs-target="#standardReportModal" onclick="updateLocalCoords()" data-bs-toggle="modal" id="standard-button" type="button" class="btn btn-primary py-5">Standard Report</button>                       
                 <button data-bs-target="#driverReportModal" data-bs-toggle="modal" id="driver-button" type="button" class="btn btn-dark py-5">Driver Report</button>
             </div>`
         }
@@ -975,10 +975,8 @@ function disableBackButton(){
 
 //Facilitates the submission of a driver report for processing at the backend.
 async function postDriverReport() {
-    //Updates the local coordinates.
-    await updateLocalCoords();
 	//Builds the driver report; without images and description.
-  	await buildReport(null, null, DRIVER_REPORT_URL);
+  	buildReport(null, null, DRIVER_REPORT_URL);
 }
 
 //Gets and updates the coordinates of the user in the standard report screen.
@@ -988,6 +986,7 @@ async function updateLocalCoords(){
     let coordTextArea = document.querySelector("#coordinatesText");
 
 	var options = { enableHighAccuracy: true, maximumAge: 0};
+
 	//Checks to see if the device supports geolocation.
 	if (navigator.geolocation) {
 		//Gets the current geoposition of the device.
@@ -996,71 +995,68 @@ async function updateLocalCoords(){
 			latitude = position.coords.latitude;
 			longitude = position.coords.longitude;
 
-            //Sets the latitude and longitude in the localstorage.
-            localStorage.setItem("latitude", latitude)
-            localStorage.setItem("longitude", longitude)
-
+            coordTextArea.placeholder = `Latitude: ${latitude}, Longitude: ${longitude}`
 		}, function(){
 		//If the coordinates were not succesfully obtained, display an error.
 			//If the latitude and longitude could not be obtained, display an error message.
 			if(longitude == undefined || latitude == undefined){
 				//Displays error message as a toast.
-                localStorage.setItem("latitude", latitude)
-                localStorage.setItem("longitude", longitude)
-				displayToast("failed", "Unfortunately we couldn't find your coordinates!")
+                coordTextArea.placeholder = `Unfortunately we couldn't find your coordinates!`
 			}
 		}, options)
  	} else {
-        localStorage.setItem("latitude", latitude)
-        localStorage.setItem("longitude", longitude)
-	    //If the device does not support geolocation, display an error message.
-		displayToast("failed", "Unfortunately we couldn't find your coordinates!")
+        coordTextArea.placeholder = `Geolocation is not supported or enabled on your device!`
 	}
-
-    //Gets the coordiantes stored in localStorage of the browser, and writes them to the DOM field.
-    latitude = localStorage.getItem("latitude")
-    longitude = localStorage.getItem("longitude")
-    coordTextArea.placeholder = `Latitude: ${latitude}, Longitude: ${longitude}`
 }
 
 //Generates the report using the photoURL, description, and endpoint URL.
 async function buildReport(photoB64, description, url) {
 	var latitude, longitude;
+    var options = { enableHighAccuracy: true, maximumAge: 0};
 
-    //Attempts to parse the latitude and longitude from the localStorage.
-    try {
-        latitude = parseFloat(localStorage.getItem("latitude"))
-        longitude = parseFloat(localStorage.getItem("longitude"))
-    } catch(e){
-        console.log("Unable to retrieve latitude and longitude coordaintes.")
-        latitude = undefined;
-        longitude = undefined;
-    }
+    //Checks to see if the device supports geolocation.
+	if (navigator.geolocation) {
+        //Gets the current geoposition of the device.
+		navigator.geolocation.getCurrentPosition(async (position) => {
+			//If the coordinates are successfully obtained, store them.
+			latitude = position.coords.latitude;
+			longitude = position.coords.longitude;
+			
+			//Sends the report to the endpoint and stores the results.
+			let results = await sendReport(latitude, longitude, photoB64, description, url)
 
-	//Checks to see if the device supports geolocation.
-	if (longitude != undefined && latitude != undefined) {
-        //Sends the report to the endpoint and stores the results.
-        let results = await sendReport(latitude, longitude, photoB64, description, url)
-        //console.log(results)
-        //Prints the results of sending the report.
-        try {
-            if("msg" in results){
-                displayToast("failed", "You must be logged in to report a pothole!")
-            } else if("error" in results && !window.navigator.onLine){
-                displayToast("failed", "Your report will sync once you reconnect to the internet!")
-            } else if("error" in results){
-                displayToast("failed", results["error"])
-            } else if("message" in results){
-                displayToast("success", results["message"])
-                displayPotholes();
+			//Prints the results of sending the report.
+			try {
+                if("msg" in results){
+                    displayToast("failed", "You must be logged in to report a pothole!")
+                } else if("error" in results && !window.navigator.onLine){
+                    displayToast("failed", "Your report will sync once you reconnect to the internet!")
+                    document.getElementById("descriptionText").value = "";
+                    removeImage();
+                } else if("error" in results){
+                    displayToast("failed", results["error"])
+                } else if("message" in results){
+                    displayToast("success", results["message"])
+                    displayPotholes();
+                    document.getElementById("descriptionText").value = "";
+                    removeImage();
+                }
+            } catch (e) {
+                displayToast("failed", e.message)
             }
-        } catch (e) {
-            displayToast("failed", e.message)
-        }
- 	} else {
-	    //If the device does not support geolocation, display an error message.
-		displayToast("failed", "Unfortunately we couldn't find your coordinates!")
-	}
+
+		}, function(){
+		//If the coordinates were not succesfully obtained, display an error.
+			//If the latitude and longitude could not be obtained, display an error message.
+			if(longitude == null || latitude == null){
+				//Displays error message as a toast.
+				displayToast("failed", "Unfortunately, we couldn't find your coordinates!")
+			}
+		}, options)
+    } else {
+        //If the device does not support geolocation, display an error message.
+		displayToast("failed", "Unfortunately, we couldn't find your coordinates!")
+    }
 }
 
 //Sends a generated report to the endpoint URL.
@@ -1161,7 +1157,6 @@ async function main(){
     //Gets the download button
     let downloadButton = document.querySelector("#mapDownloadButton");
 
-
     //Adds a click listener to the standard report button.
     document.getElementById('submit-passenger-report').addEventListener('click', handleStandardReport);
     //Adds a listener to detect when the user has gone offline, and displays a corresponding message.
@@ -1178,7 +1173,19 @@ async function main(){
         });
     })
 
-    
+    //Attempts to perform a sync if the app was retrieved from the app draw.
+    window.addEventListener("visibilitychange", (event)=>{
+        navigator.serviceWorker.ready.then(worker => {
+            if(window.navigator.onLine)
+                worker.active.postMessage({"syncActions": true})
+        });
+    })
+
+    //Performs a sync on page load.
+    navigator.serviceWorker.ready.then(worker => {
+        if(window.navigator.onLine)
+            worker.active.postMessage({"syncActions": true})
+    });
 
     downloadButton.addEventListener("click", function(){
         displayToast("sync", "Downloading Map...")
@@ -1227,7 +1234,6 @@ async function main(){
             displayToast("sync", event.data.error)
         }
     });
-
 }
 
 

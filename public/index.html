@@ -122,14 +122,11 @@
               }
             });
 
-            //When the service worker is ready, print a ready message and register a sync event.
+            //When the service worker is ready, print a ready message.
             navigator.serviceWorker.ready.then(function(registration) {
                 console.log('Service Worker Ready!')
-                return registration.sync.register('sendSavedRequests')
-            }).then(function () {
-                console.log('Sync event registered!')
             }).catch(function() {
-                console.log('Sync registration failed!')
+                console.log('Service worker registration failed!')
             });
         }); 
 
@@ -343,7 +340,7 @@
                       <!-- Description Text Area-->
                       <div class="d-flex flex-column " id="description">
                           <label class="fw-bold mb-3">Pothole Description</label>
-                          <textarea class="form-control" rows="3" id="descriptionText" placeholder="Enter description of pothole" required></textarea>
+                          <textarea class="form-control" rows="3" id="descriptionText" placeholder="Enter description of pothole. (min 5 characters)" required></textarea>
                       </div>
 
                       <!-- Coordinates Preview Area -->
