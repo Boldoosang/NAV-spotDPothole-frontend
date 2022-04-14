@@ -37,7 +37,6 @@ async function handleStandardReport() {
 	//If a valid file was uploaded, upload it to firebase.
 	if (file != null) {
 		//Determines if the file is not an image.
-		console.log(file.type)
         //If the file is not a particular format, alert the user and do not upload the file.
 		if(!(['image/png', 'image/jpeg', 'image/gif', 'image/jpg'].includes(file.type))){
 			alert("This file is not an image!")
@@ -985,12 +984,12 @@ async function updateLocalCoords(){
 
     //Gets the coordinate text area and sets the options for the geolocation function.
     let coordTextArea = document.querySelector("#coordinatesText");
-	var options = { enableHighAccuracy: true, maximumAge: 100, timeout: 60000 };
+	var options = { enableHighAccuracy: true, maximumAge: 0};
 
 	//Checks to see if the device supports geolocation.
 	if (navigator.geolocation) {
         //Creates an observer for the user's position and updates the standard report location box
-        var watchID = navigator.geolocation.watchPosition(async (position) =>{
+        navigator.geolocation.getCurrentPosition(async (position) =>{
             //If the coordinates are successfully obtained, store them.
 			latitude = position.coords.latitude;
 			longitude = position.coords.longitude;
@@ -1001,10 +1000,6 @@ async function updateLocalCoords(){
             coordTextArea.placeholder = `Unfortunately we couldn't find your coordinates!`
         }, options );
         
-        //Clears the observer after 5 seconds since an accurate position would have been obtained.
-        setTimeout(function() { 
-            navigator.geolocation.clearWatch( watchID ); 
-        }, 5000);
 
         //The use of getCurrentPosition would return a cached location from the operating system.
         //This is returned despite the maximum age of 0; requesting for the most up to date location.
@@ -1016,21 +1011,29 @@ async function updateLocalCoords(){
 
 //Generates the report using the photoURL, description, and endpoint URL.
 async function buildReport(photoB64, description, url) {
+    var alreadySent = false;
 	var latitude, longitude;
 
     //Sets the options for the geolocation function.
     var options = { enableHighAccuracy: true, maximumAge: 100, timeout: 60000 };
-
     //Checks to see if the device supports geolocation.
 	if (navigator.geolocation) {
-        //Gets the current geoposition of the device.
+        //Gets the current geoposition of the device live.
+        //getCurrentLocation does not return an accurate position.
 		var watchID = navigator.geolocation.watchPosition(async (position) =>{
 			//If the coordinates are successfully obtained, store them.
 			latitude = position.coords.latitude;
 			longitude = position.coords.longitude;
-			
+            //If the report was already sent, terminate the loop.
+            if(alreadySent){
+                return;
+            }
+
+            alreadySent = true;
+
 			//Sends the report to the endpoint and stores the results.
 			let results = await sendReport(latitude, longitude, photoB64, description, url)
+            
 
 			//Prints the results of sending the report.
 			try {
