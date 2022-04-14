@@ -557,7 +557,7 @@ async function loadReports(potholeID){
                             tag = ""
                         allReportImages +=
                         `<div class="carousel-item ${tag}">
-                            <img src="${reportImage.imageURL}" style="height: 200px; background-position: center center; object-fit: cover; background-repeat: no-repeat;" class="d-block w-100">
+                            <img src="${reportImage.imageURL}" style="height: 400px; background-position: center center; object-fit: cover; background-repeat: no-repeat;" class="d-block w-100">
                         </div>`
                         i++;
                     }
@@ -983,27 +983,32 @@ async function postDriverReport() {
 async function updateLocalCoords(){
     var latitude, longitude;
 
+    //Gets the coordinate text area and sets the options for the geolocation function.
     let coordTextArea = document.querySelector("#coordinatesText");
-
-	var options = { enableHighAccuracy: true, maximumAge: 0};
+	var options = { enableHighAccuracy: true, maximumAge: 100, timeout: 60000 };
 
 	//Checks to see if the device supports geolocation.
 	if (navigator.geolocation) {
-		//Gets the current geoposition of the device.
-		navigator.geolocation.getCurrentPosition(async (position) => {
-			//If the coordinates are successfully obtained, store them.
+        //Creates an observer for the user's position and updates the standard report location box
+        var watchID = navigator.geolocation.watchPosition(async (position) =>{
+            //If the coordinates are successfully obtained, store them.
 			latitude = position.coords.latitude;
 			longitude = position.coords.longitude;
 
             coordTextArea.placeholder = `Latitude: ${latitude}, Longitude: ${longitude}`
-		}, function(){
-		//If the coordinates were not succesfully obtained, display an error.
-			//If the latitude and longitude could not be obtained, display an error message.
-			if(longitude == undefined || latitude == undefined){
-				//Displays error message as a toast.
-                coordTextArea.placeholder = `Unfortunately we couldn't find your coordinates!`
-			}
-		}, options)
+        }, function(){
+            //Otherwise, if no location can be found, display an error message as a toast.
+            coordTextArea.placeholder = `Unfortunately we couldn't find your coordinates!`
+        }, options );
+        
+        //Clears the observer after 5 seconds since an accurate position would have been obtained.
+        setTimeout(function() { 
+            navigator.geolocation.clearWatch( watchID ); 
+        }, 5000);
+
+        //The use of getCurrentPosition would return a cached location from the operating system.
+        //This is returned despite the maximum age of 0; requesting for the most up to date location.
+
  	} else {
         coordTextArea.placeholder = `Geolocation is not supported or enabled on your device!`
 	}
@@ -1012,12 +1017,14 @@ async function updateLocalCoords(){
 //Generates the report using the photoURL, description, and endpoint URL.
 async function buildReport(photoB64, description, url) {
 	var latitude, longitude;
-    var options = { enableHighAccuracy: true, maximumAge: 0};
+
+    //Sets the options for the geolocation function.
+    var options = { enableHighAccuracy: true, maximumAge: 100, timeout: 60000 };
 
     //Checks to see if the device supports geolocation.
 	if (navigator.geolocation) {
         //Gets the current geoposition of the device.
-		navigator.geolocation.getCurrentPosition(async (position) => {
+		var watchID = navigator.geolocation.watchPosition(async (position) =>{
 			//If the coordinates are successfully obtained, store them.
 			latitude = position.coords.latitude;
 			longitude = position.coords.longitude;
@@ -1053,6 +1060,8 @@ async function buildReport(photoB64, description, url) {
 				displayToast("failed", "Unfortunately, we couldn't find your coordinates!")
 			}
 		}, options)
+        //Clears the watchPosition after 5 seconds.
+        setTimeout( function() { navigator.geolocation.clearWatch( watchID ); }, 5000 );
     } else {
         //If the device does not support geolocation, display an error message.
 		displayToast("failed", "Unfortunately, we couldn't find your coordinates!")
@@ -1208,6 +1217,7 @@ async function main(){
     })
 
 
+    //Determines if to display or hide the button after 3 seconds of the page loading.
     setTimeout(async function(){
         let mapSelectorArea = document.getElementsByClassName("leaflet-control-layers-selector");
         if(mapSelectorArea.length == 1){
@@ -1217,20 +1227,24 @@ async function main(){
         }
     }, 3000)
     
-
+    //Listens for messages from the service worker.
     navigator.serviceWorker.addEventListener('message', function(event) {
+        //Displays the downloaded map message and reloads the page after 3 seconds.
         if("downloadedMap" in event.data){
             displayToast("sync", "Map download complete!")
             setTimeout(function(){
                 window.location.reload(true);
             }, 3000);
         } else if("syncComplete" in event.data){
+        //Displays the sync message and refreshes the potholes.
             displayToast("sync", "Sync completed!")
             displayPotholes();
         } else if ("message" in event.data){
+        //Displays any incoming synced messages and refreshes the potholes.
             displayToast("sync", event.data.message)
             displayPotholes()
         } else if("error" in event.data){
+        //Displays any errors from syncing.
             displayToast("sync", event.data.error)
         }
     });
@@ -1362,7 +1376,7 @@ async function loadUserReport(potholeID){
                     tag = ""
                 allReportImages +=
                 `<div class="carousel-item ${tag}">
-                    <img src="${reportImage.imageURL}" style="height: 300px; background-position: center center; object-fit: cover; background-repeat: no-repeat; z-index: 9995" class="d-block w-100">
+                    <img src="${reportImage.imageURL}" style="height: 400px; background-position: center center; object-fit: cover; background-repeat: no-repeat; z-index: 9995" class="d-block w-100">
                     <div class="carousel-caption d-none d-md-block mt-5 pt-5">
                         <button type="button" id="deleteImageButton" dashDeleteReportImage()" data-bs-toggle="collapse" data-bs-target="#dashDeleteImage-${potholeReport.reportID}-${reportImage.imageID}" aria-expanded="false" aria-controls="collapseExample" class="btn btn-danger"><i class="bi bi-trash"></i> Delete Image</button>
                         <div class="collapse" id="dashDeleteImage-${potholeReport.reportID}-${reportImage.imageID}">
