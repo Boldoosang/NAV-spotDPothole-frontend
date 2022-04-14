@@ -31,7 +31,6 @@ jobs:
         run: npm run itest
 
       - name: Trigger next workflow
-        if: success()
         uses: peter-evans/repository-dispatch@v1
         with:
           token: ${{ secrets.REPO_GHA_PAT }}
