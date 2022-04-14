@@ -107,7 +107,7 @@ context('Integration Testing', () => {
     await page.waitForSelector('#submit-driver-report')
     await page.click('#submit-driver-report')
 
-    await page.waitForTimeout(500)
+    await page.waitForTimeout(5500)
 
     assert(requests.includes("https://spotdpothole.herokuapp.com/api/reports/driver"), "A request to the driver report endpoint should have been made")
   })
@@ -357,6 +357,8 @@ context('Integration Testing', () => {
 
     await page.waitForSelector('#submit-passenger-report')
     await page.click('#submit-passenger-report')
+
+    await page.waitForTimeout(5500)
 
     assert(requests.includes("https://spotdpothole.herokuapp.com/api/reports/standard"), "A request to the standard report endpoint should have been made")
   })

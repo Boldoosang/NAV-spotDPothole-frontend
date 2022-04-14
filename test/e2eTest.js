@@ -53,7 +53,7 @@ function checkElements(a) {
 
 context('End to End Tests', () => {
   //Test 1: Tests that adding a pothole to the map adds a pothole marker to the map
-  it('Test 1: Test the addition of potholes to the m ap', async function () {
+  it('Test 1: Test the addition of potholes to the map', async function () {
     this.timeout(config.timeout)
 
     await page.waitForTimeout(500)
@@ -90,7 +90,7 @@ context('End to End Tests', () => {
     await page.waitForSelector('#submit-passenger-report')
     await page.click('#submit-passenger-report')
 
-    await page.waitForTimeout(500)
+    await page.waitForTimeout(5500)
 
     await page.waitForSelector('#navbar > .list-group > li:nth-child(4) > a > span')
     await page.click('#navbar > .list-group > li:nth-child(4) > a > span')
