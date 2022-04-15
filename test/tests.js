@@ -38,7 +38,7 @@ before(async function () {
   })
 
   await page.goto('https://spotdpoth.web.app/')
-  await page.setGeolocation({ latitude: 10.69, longitude: -61.23 });
+  await page.setGeolocation({ latitude: 10.69, longitude: -61.23, accuracy: 10 });
 });
 
 function getHTML(selector) {
@@ -107,7 +107,7 @@ context('Integration Testing', () => {
     await page.waitForSelector('#submit-driver-report')
     await page.click('#submit-driver-report')
 
-    await page.waitForTimeout(5500)
+    await page.waitForTimeout(6000)
 
     assert(requests.includes("https://spotdpothole.herokuapp.com/api/reports/driver"), "A request to the driver report endpoint should have been made")
   })
@@ -358,7 +358,7 @@ context('Integration Testing', () => {
     await page.waitForSelector('#submit-passenger-report')
     await page.click('#submit-passenger-report')
 
-    await page.waitForTimeout(5500)
+    await page.waitForTimeout(6000)
 
     assert(requests.includes("https://spotdpothole.herokuapp.com/api/reports/standard"), "A request to the standard report endpoint should have been made")
   })

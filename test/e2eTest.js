@@ -28,7 +28,7 @@ before(async function () {
   });
 
   await page.goto('https://spotdpoth.web.app/')
-  await page.setGeolocation({ latitude: 10.66, longitude: -61.23 });
+  await page.setGeolocation({ latitude: 10.66, longitude: -61.23, accuracy: 10 });
 });
 
 function getHTML(selector) {
@@ -90,7 +90,7 @@ context('End to End Tests', () => {
     await page.waitForSelector('#submit-passenger-report')
     await page.click('#submit-passenger-report')
 
-    await page.waitForTimeout(5500)
+    await page.waitForTimeout(6000)
 
     await page.waitForSelector('#navbar > .list-group > li:nth-child(4) > a > span')
     await page.click('#navbar > .list-group > li:nth-child(4) > a > span')
