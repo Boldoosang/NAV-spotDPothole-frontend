@@ -171,11 +171,17 @@ context('End to End Tests', () => {
     await page.waitForSelector('#dashboardContent > #dashboardMap > .leaflet-pane > .leaflet-pane > .leaflet-marker-icon')
     await page.click('#dashboardContent > #dashboardMap > .leaflet-pane > .leaflet-pane > .leaflet-marker-icon')
 
+    await page.waitForTimeout(500)
+
     await page.waitForSelector('#pills-delete-tab')
     await page.click('#pills-delete-tab')
 
+    await page.waitForTimeout(500)
+
     await page.waitForSelector('#dashboard-body > #pills-dashboardContent > #pills-deleteTab > .d-flex > .btn')
     await page.click('#dashboard-body > #pills-dashboardContent > #pills-deleteTab > .d-flex > .btn')
+
+    await page.waitForTimeout(500)
 
     await page.waitForSelector('#pills-deleteTab > [id^=deletePotholeReport-] > .text-white > .mt-4 > .btn-danger')
     await page.click('#pills-deleteTab > [id^=deletePotholeReport-] > .text-white > .mt-4 > .btn-danger')

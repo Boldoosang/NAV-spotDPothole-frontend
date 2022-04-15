@@ -379,8 +379,12 @@ context('Integration Testing', () => {
     await page.waitForSelector('#pills-delete-tab')
     await page.click('#pills-delete-tab')
 
+    await page.waitForTimeout(500)
+
     await page.waitForSelector('#dashboard-body > #pills-dashboardContent > #pills-deleteTab > .d-flex > .btn')
     await page.click('#dashboard-body > #pills-dashboardContent > #pills-deleteTab > .d-flex > .btn')
+
+    await page.waitForTimeout(500)
 
     await page.waitForSelector('#pills-deleteTab > .mt-4 > .text-white >.mt-4 > .btn-danger')
     await page.click('#pills-deleteTab > .mt-4 > .text-white >.mt-4 > .btn-danger')

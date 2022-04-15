@@ -1,5 +1,5 @@
 {
-    "slowMo": 40,
+    "slowMo": 50,
     "timeout": 35000,
     "args": [
         "--no-sandbox",
