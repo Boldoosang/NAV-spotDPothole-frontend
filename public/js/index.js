@@ -1039,6 +1039,8 @@ async function buildReport(photoB64, description, url) {
                     //If the coordinates are successfully obtained, store them.
                     latitude = position.coords.latitude;
                     longitude = position.coords.longitude;
+
+                    console.log(position.coords.accuracy)
     
                     //As the watch position accuracy increases, overwrite each coordinate with the most accurate reading.
                     window.localStorage.setItem("latitude", latitude)
