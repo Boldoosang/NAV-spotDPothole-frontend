@@ -522,21 +522,25 @@ async function main() {
     })
     */
 
-    //gets the map from cache, creates a tile layer for it and adds it to the selector
-    caches.open(`main-1`).then(function(cache){
-        cache.keys().then(function(cacheKeys){
-            cacheKeys.find((o,i) => {
-                if(o.url.includes('https://dl.dropboxusercontent.com/s/87jkx7txs1uazqw/tandtS.mbtiles?dl=1')){
-                    offline = L.tileLayer.mbTiles('https://dl.dropboxusercontent.com/s/87jkx7txs1uazqw/tandtS.mbtiles?dl=1', {
-                        attribution: 'Offline Map'
-                    });
-                    
-                    //switch between online and offline map
-                    lControl.addBaseLayer(offline, "Offline"); 
-                }
+    navigator.serviceWorker.ready.then(() => {
+        //gets the map from cache, creates a tile layer for it and adds it to the selector
+        caches.open(`main-1`).then(function(cache){
+            cache.keys().then(function(cacheKeys){
+                cacheKeys.find((o,i) => {
+                    if(o.url.includes('https://dl.dropboxusercontent.com/s/87jkx7txs1uazqw/tandtS.mbtiles?dl=1')){
+                        offline = L.tileLayer.mbTiles('https://dl.dropboxusercontent.com/s/87jkx7txs1uazqw/tandtS.mbtiles?dl=1', {
+                            attribution: 'Offline Map'
+                        });
+                        
+                        //switch between online and offline map
+                        lControl.addBaseLayer(offline, "Offline"); 
+                    }
+                })
             })
         })
-    })
+    });
+
+    
 }   
 
 window.addEventListener('DOMContentLoaded', main);

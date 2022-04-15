@@ -985,6 +985,12 @@ async function updateLocalCoords(){
 
     //Gets the coordinate text area and sets the options for the geolocation function.
     let coordTextArea = document.querySelector("#coordinatesText");
+    if (navigator.geolocation) {
+        coordTextArea.placeholder = `Geolocation is supported on your device!`
+    } else {
+        coordTextArea.placeholder = `Geolocation is not supported or enabled on your device!`
+    }
+    /*
 	var options = { enableHighAccuracy: true, maximumAge: 0};
 
 	//Checks to see if the device supports geolocation.
@@ -1008,6 +1014,7 @@ async function updateLocalCoords(){
  	} else {
         coordTextArea.placeholder = `Geolocation is not supported or enabled on your device!`
 	}
+    */
 }
 
 //Generates the report using the photoURL, description, and endpoint URL.
@@ -1019,10 +1026,13 @@ async function buildReport(photoB64, description, url) {
 
     reportInProgress = true;
     
-	var latitude = null, longitude = null;
+	var latitude = null, longitude = null, accuracy = null;
+    bestAccuracy = 3000;
+
     //Resets coords in localStorage
     window.localStorage.setItem("latitude", latitude)
     window.localStorage.setItem("longitude", longitude)
+    window.localStorage.setItem("accuracy", accuracy)
 
     //Sets the options for the geolocation function.
     var options = { enableHighAccuracy: true, maximumAge: 200, timeout: 20000 };
@@ -1039,27 +1049,35 @@ async function buildReport(photoB64, description, url) {
                     //If the coordinates are successfully obtained, store them.
                     latitude = position.coords.latitude;
                     longitude = position.coords.longitude;
-
-                    console.log(position.coords.accuracy)
+                    accuracy = position.coords.accuracy;
     
                     //As the watch position accuracy increases, overwrite each coordinate with the most accurate reading.
                     window.localStorage.setItem("latitude", latitude)
                     window.localStorage.setItem("longitude", longitude)
+                    
+                    if(accuracy < bestAccuracy){
+                        bestAccuracy = accuracy
+                        window.localStorage.setItem("accuracy", bestAccuracy)
+                    }
+
+                    console.log(`Latitude: ${latitude}, Longitude: ${longitude}, Accuracy: ${accuracy}`)
+                        
                 }, function(){
                 //If the coordinates were not succesfully obtained, display an error.
                     //If the latitude and longitude could not be obtained, display an error message.
                     if(longitude == null || latitude == null){
                         //Displays error message as a log.
                         console.log("Unfortunately, we couldn't find your coordinates!")
+                        navigator.geolocation.clearWatch( watchID );
                     }
                 }, options)
     
-                //Clears the watchPosition after 5 seconds, sets the report in progress to false as the GPS should now be unlocked, and resolve the promise.
-                setTimeout( function() {
+                //Clears the watchPosition after 8 seconds, sets the report in progress to false as the GPS should now be unlocked, and resolve the promise.
+                setTimeout(function() {
                     navigator.geolocation.clearWatch( watchID );
                     reportInProgress = false;
                     resolve()
-                }, 5000);
+                }, 6000);
             })
         }
 
@@ -1068,16 +1086,26 @@ async function buildReport(photoB64, description, url) {
             //Gets the stored coordinates from the localStorage.
             latitude = window.localStorage.getItem("latitude")
             longitude = window.localStorage.getItem("longitude")
+            accuracy = window.localStorage.getItem("accuracy")
 
             //Sends the report to the server.
             if(latitude == "null" || longitude == "null"){
                 //If the geolocation coordinates could not be found, display an error message.
-		        displayToast("failed", "Unfortunately, we couldn't find your coordinates! Ensure GPS is enabled.")
+		        displayToast("failed", "Unfortunately, we couldn't find your coordinates! Ensure GPS is enabled and not in use by another service.")
+                return;
+            }
+
+            if(parseFloat(accuracy) > 35){
+                displayToast("failed", "Your GPS is unable to provide an accurate enough location. Please try again.")
+                window.localStorage.removeItem("latitude")
+                window.localStorage.removeItem("longitude")
+                window.localStorage.removeItem("accuracy")
                 return;
             }
 
             let results = await sendReport(latitude, longitude, photoB64, description, url)
-            //results = {"message" : `Debug ${latitude}, ${longitude}`}
+            //results = {"message" : `Debug ${latitude}, ${longitude}. Accuracy ${accuracy}!`}
+
 
 			//Prints the results of sending the report.
 			try {
@@ -1143,6 +1171,7 @@ async function sendReport(latitude, longitude, photoB64, description = null, url
 	try {
         window.localStorage.removeItem("latitude")
         window.localStorage.removeItem("longitude")
+        window.localStorage.removeItem("accuracy")
 		return await sendRequest(url, "POST", data)
 	} catch (error) {
 		return error;
@@ -1215,7 +1244,7 @@ async function main(){
     document.getElementById('submit-passenger-report').addEventListener('click', handleStandardReport);
     //Adds a listener to detect when the user has gone offline, and displays a corresponding message.
     window.addEventListener("offline", (event)=>{
-        displayToast("failed", "Your network connection has been lost!!")
+        displayToast("failed", "Your network connection has been lost!")
         downloadButton.classList.replace("d-flex", "d-none")
     })
     //Adds a listener to detect when the user has gone online, and displays a corresponding message.

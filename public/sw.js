@@ -96,33 +96,35 @@ function openDatabase () {
 	// Whenever the database is opened, set the global our_db object to the current instance holding the indexedDB.
 	indexedDBOpenRequest.onsuccess = function () {
 		our_db = this.result
+
+		//If postMessage was used within the web-app, the contents are intercepted here.
+		//Hence, all post requests are intercepted if they have the form_data property.
+		self.addEventListener('message', function (event) {
+			//console.log('Form Data Received from Request: ', event.data)
+			//Determines if the request was generated from a post request corresponding to a report or vote.
+			if (event.data.hasOwnProperty('form_data')) {
+				//Sets the intercepted form data to the global form_data object.
+				form_data = event.data.form_data
+			}
+			
+			//Web-app requests for the map to be downloaded and cached.
+			if ("downloadMap" in event.data){
+				event.waitUntil(update(mbTilesLink).then(function(){
+					console.log("Map download complete!")
+					event.source.postMessage({"downloadedMap" : true})
+				}))
+			}
+
+			//Web-app requests a manual sync of data.
+			if("syncActions" in event.data){
+				event.waitUntil(
+					sendPostToServer(event)
+				)
+			}
+		})
 	}
 
-	//If postMessage was used within the web-app, the contents are intercepted here.
-	//Hence, all post requests are intercepted if they have the form_data property.
-	self.addEventListener('message', function (event) {
-		//console.log('Form Data Received from Request: ', event.data)
-		//Determines if the request was generated from a post request corresponding to a report or vote.
-		if (event.data.hasOwnProperty('form_data')) {
-			//Sets the intercepted form data to the global form_data object.
-			form_data = event.data.form_data
-		}
-		
-		//Web-app requests for the map to be downloaded and cached.
-		if ("downloadMap" in event.data){
-			event.waitUntil(update(mbTilesLink).then(function(){
-				console.log("Map download complete!")
-				event.source.postMessage({"downloadedMap" : true})
-			}))
-		}
-
-		//Web-app requests a manual sync of data.
-		if("syncActions" in event.data){
-			event.waitUntil(
-				sendPostToServer(event)
-			)
-		}
-	})
+	
 }
 
 //Initializes the database by creating it if it does not exist, or opening it if it does.
