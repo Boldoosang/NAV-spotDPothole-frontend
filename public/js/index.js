@@ -1096,7 +1096,7 @@ async function buildReport(photoB64, description, url) {
             }
 
             if(parseFloat(accuracy) > 35){
-                displayToast("failed", "Your GPS is unable to provide an accurate enough location. Please try again.")
+                displayToast("failed", `Your GPS is unable to provide an accurate enough location. Please try again. Accuracy: ${parseFloat(accuracy).toFixed(2)}m`)
                 window.localStorage.removeItem("latitude")
                 window.localStorage.removeItem("longitude")
                 window.localStorage.removeItem("accuracy")
