@@ -424,6 +424,7 @@
     <!-- Help Management Modal -->
     <div class="modal fade" id="helpModal" tabindex="-1">
       <div class="modal-dialog">
+          
           <div id="helpSection" class="modal-content">
               <!-- Sets the header of the modal and a close button. -->
               <div class="modal-header">
@@ -433,84 +434,158 @@
 
               <!-- Holds the help information. -->
               <div class="modal-body">
+                <p class="text-white">Please click on one of the following features for a guide.</p>
+                
+                
+
+
+
+                <!-- PWA help information. -->
                 <div>
-                  <strong>Progressive Web App</strong>
-                  <div class="mt-2">
-                    <p>To download the application to your mobile device, simply touch the pop-up at the bottom of your screen that says "Add SpotDPothole to your Home Screen".
-                      If this pop-up has stopped showing, you may download the app by going into your browser settings and tapping "Install App" or "Install SpotDPothole".
-                    </p>
+                  <p>
+                    <a class="text-decoration-underline" data-bs-toggle="collapse" href="#pwaHelp" role="button" aria-expanded="false" aria-controls="pwaHelp">
+                      1. Progressive Web App
+                    </a>
+                  </p>
+  
+                  <div class="collapse mb-4" id="pwaHelp">
+                    <div class="card card-body bg-dark text-white">
+                      <p class="mb-0">To download the application to your mobile device, simply touch the pop-up at the bottom of your screen that says "Add SpotDPothole to your Home Screen".
+                        If this pop-up has stopped showing, you may download the app by going into your browser settings and tapping "Install App", "Install SpotDPothole", or "Add to Home Screen" (iOS).
+                      </p>
+                    </div>
                   </div>
                 </div>
-                <div class="mt-4">
-                  <strong>Downloadable Map</strong>
-                  <div class="mt-2">
-                    <p>The white download button in the bottom right of the screen can be used to download the offline map. This map can be used while you have no internet connection to display 
-                      all the pothole reports at the time of downloading. Just press the button and wait a few seconds for the download to complete. To access the offline map, use the layer button in 
-                      top left corner of the screen, under the magnification buttons, to switch between the offline and online maps.
-                    </p>
+
+                <!-- Downloadable map help information. -->
+                <div>
+                  <p>
+                    <a class="text-decoration-underline" data-bs-toggle="collapse" href="#downloadMapHelp" role="button" aria-expanded="false" aria-controls="downloadMapHelp">
+                      2. Downloadable Map
+                    </a>
+                  </p>
+  
+                  <div class="collapse mb-4" id="downloadMapHelp">
+                    <div class="card card-body bg-dark text-white">
+                      <p class="mb-0">The white download button in the bottom right of the screen can be used to download the offline map. This map can be used while you have no internet connection to display 
+                        all the pothole reports at the time of downloading. Just press the button and wait a few seconds for the download to complete. To access the offline map, use the layer button in 
+                        top left corner of the screen, under the magnification buttons, to switch between the offline and online maps.
+                      </p>
+                    </div>
                   </div>
                 </div>
-                <div class="mt-4">
-                  <strong>Dashboard</strong>
-                  <div class="mt-2">
-                    <p>After pressing the Dashboard button on the menu, you should be shown a map of Trinidad and Tobago, showing all the pothole reports that you have made. Here you can manage
-                      your pothole reports in many ways. After clicking on a pothole report, you may use the tabs at the top of the pop-up screen to see different information about your report. It is in 
-                      this menu that you may add or remove images from the report, edit the description about a pothole, or delete the entire pothole report itself.
-                    </p>
+
+
+                <!-- Dashboard help information. -->
+                <div>
+                  <p>
+                    <a class="text-decoration-underline" data-bs-toggle="collapse" href="#dashboardHelp" role="button" aria-expanded="false" aria-controls="dashboardHelp">
+                      3. Dashboard
+                    </a>
+                  </p>
+  
+                  <div class="collapse mb-4" id="dashboardHelp">
+                    <div class="card card-body bg-dark text-white">
+                      <p class="mb-0">After pressing the Dashboard button on the menu, you should be shown a map of Trinidad and Tobago, showing all the pothole reports that you have made. Here you can manage
+                        your pothole reports in many ways. After clicking on a pothole report, you may use the tabs at the top of the pop-up screen to see different information about your report. It is in 
+                        this menu that you may add or remove images from the report, edit the description about a pothole, or delete the entire pothole report itself.
+                      </p>
+                    </div>
                   </div>
                 </div>
-                <div class="mt-4">
-                  <strong>Routing</strong>
-                  <div class="mt-2">
-                    <p>To use the routing feature, simply press and hold on any of the nation's roadways while in the map. The routing menu will be displayed for you.</p>
-                    <p>Pressing "Start Route Here" drops a marker on the map that represents your starting location.</p>
-                    <p>Pressing "End Route Here" drops a marker on the map that represents your ending location. After having a start and end point placed, the application will display a pothole-free route for you, highlighted in red.</p>
-                    <p>Pressing "My Location To Here" drops a marker on the map that represents your destination. The application will select a pothole free route from your current location to the marker that has been 
-                      placed on the map. This route will be highlighted in red. Additionally, while you move, the marker representing your location will automatically move with you, to display how much of the route is left.
-                    </p>
+
+
+                <!-- Routing help information. -->
+                <div>
+                  <p>
+                    <a class="text-decoration-underline" data-bs-toggle="collapse" href="#routingHelp" role="button" aria-expanded="false" aria-controls="routingHelp">
+                      4. Routing
+                    </a>
+                  </p>
+  
+                  <div class="collapse mb-4" id="routingHelp">
+                    <div class="card card-body bg-dark text-white">
+                      <p>To use the routing feature, simply press and hold (on mobile) or right click (on desktop) on any of the nation's roadways while in the map. The routing menu will be displayed for you.</p>
+                      <p>Pressing "Start Route Here" drops a marker on the map that represents your starting location.</p>
+                      <p>Pressing "End Route Here" drops a marker on the map that represents your ending location. After having a start and end point placed, the application will display a pothole-free route for you, highlighted in red.</p>
+                      <p class="mb-0">Pressing "My Location To Here" drops a marker on the map that represents your destination. The application will select a pothole free route from your current location to the marker that has been 
+                        placed on the map. This route will be highlighted in red. Additionally, while you move, the marker representing your location will automatically move with you, to display how much of the route is left.
+                      </p>
+                    </div>
                   </div>
                 </div>
-                <div class="mt-4">
-                  <strong>Leaderboard</strong>
-                  <div class="mt-2">
-                    <p>Pressing the Leaderboard button will display the Leaderboard section of the app. There are two leaderboards that SpotDPothole manages, the Report Leaderboard and the Constituency Leaderboard. These two leaderboards can 
-                      be cycled through using the tabs at the top of the screen.
-                    </p>
-                    <p>The Report Leaderboard displays all the potholes in the country ranked by the number of reports each one has. Tapping on the pothole ID that is underlined will display the pothole
-                      report in the offcanvas.
-                    </p>
-                    <p>The Constituency Leaderboard displays all of the constituencies in Trinidad and Tobago ranked by the number of pothole reports each constituency has. Tapping on the
-                      "Councillor Info" button to the right of each constituency will bring up and pop-up, showing the contact information about the councillor for the respective constituency.
-                    </p>
+
+                <!-- Leaderboard help information. -->
+                <div>
+                  <p>
+                    <a class="text-decoration-underline" data-bs-toggle="collapse" href="#leaderboardHelp" role="button" aria-expanded="false" aria-controls="leaderboardHelp">
+                      5. Leaderboard
+                    </a>
+                  </p>
+  
+                  <div class="collapse mb-4" id="leaderboardHelp">
+                    <div class="card card-body bg-dark text-white">
+                      <p>Pressing the Leaderboard button will display the Leaderboard section of the app. There are two leaderboards that SpotDPothole manages, the Report Leaderboard and the Constituency Leaderboard. These two leaderboards can 
+                        be cycled through using the tabs at the top of the screen.
+                      </p>
+                      <p>The Report Leaderboard displays all the potholes in the country ranked by the number of reports each one has. Tapping on the pothole ID that is underlined will display the pothole
+                        report in the offcanvas.
+                      </p>
+                      <p class="mb-0">The Constituency Leaderboard displays all of the constituencies in Trinidad and Tobago ranked by the number of pothole reports each constituency has. Tapping on the
+                        "Councillor Info" button to the right of each constituency will bring up and pop-up, showing the contact information about the councillor for the respective constituency.
+                      </p>
+                    </div>
                   </div>
                 </div>
-                <div class="mt-4">
-                  <strong>Reporting/Offline Reporting</strong>
-                  <div class="mt-2">
-                    <p>To make a report while you don't have internet or data connection, simply follow the normal proceedure of reporting a pothole. Whether it is a Driver or Standard report, enter the 
-                      pothole information you desire and press submit. A message shows up stating that your report will be submitted when you regain internet connection. When you regain internet
-                      connection and you open the app, the reports that were made while you were offline will be automatically sent and synched to the application.
-                    </p>
+
+                 <!-- Reporting help information. -->
+                 <div>
+                  <p>
+                    <a class="text-decoration-underline" data-bs-toggle="collapse" href="#reportingHelp" role="button" aria-expanded="false" aria-controls="reportingHelp">
+                      6. Reporting/Offline Reporting
+                    </a>
+                  </p>
+  
+                  <div class="collapse mb-4" id="reportingHelp">
+                    <div class="card card-body bg-dark text-white">
+                      <p>Reporting is a feature that is limited to only mobile devices. </p>
+                      <p>To make a report while you don't have internet or data connection, simply follow navigate to the "Make Report" menu page and choose the appropriate report on your mobile device. </p>
+                      <p>Whether it is a Driver or Standard report, enter the pothole information you desire and press submit. A message shows up stating that your report will be submitted when you regain internet connection. When you regain internet
+                        connection and you open the app, the reports that were made while you were offline will be automatically sent and synced to the application. </p>
+                      <p class="mb-0">Please note that reports made offline depend on an accurate GPS sensor with a report accuracy of less than 35 metres.
+                        This means that in some cases, offline reporting may reject the report if the mobile device is not capable of reporting an accurate offline GPS location. Online reporting optimizes the accuracy and will allow for accurate reporting.
+                      </p>
+                    </div>
                   </div>
                 </div>
-                <div class="mt-4">
-                  <strong>Voting/Offline Voting</strong>
-                  <div class="mt-2">
-                    <p>Voting is an important feature of the application, as it helps us moderate the information that is submitted to the application. When you view a pothole report in the right-side menu, at
-                      the bottom of the report information is a section for voting. You may either upvote or downvote a pothole report by tapping on the up or down arrows respectively.
-                    </p>
-                    <p>Upvoting a pothole report helps the pothole gain recognition, which is good as we hope it will get the attention of the relevant authorities that should be responsible for 
-                      fixing it. 
-                    </p>
-                    <p>Downvoting a pothole is important to the application as this is how we find bad reports such as spam or advertisements. These malicious and annoying reports have no
-                      place in our application, and we need your help to sift through the reports to find them.When a pothole report has a vote count of -5, the report is automatically
-                      deleted. Therefore we are asking that you please help us find these reports and remove them by downvoting on them!
-                    </p>
+
+
+                <!-- Reporting help information. -->
+                <div>
+                  <p>
+                    <a class="text-decoration-underline" data-bs-toggle="collapse" href="#votingHelp" role="button" aria-expanded="false" aria-controls="votingHelp">
+                      7. Voting/Offline Voting
+                    </a>
+                  </p>
+  
+                  <div class="collapse mb-4" id="votingHelp">
+                    <div class="card card-body bg-dark text-white">
+                      <p>Voting is an important feature of the application, as it helps us moderate the information that is submitted to the application. When you view a pothole report in the right-side menu, at
+                        the bottom of the report information is a section for voting. You may either upvote or downvote a pothole report by tapping on the up or down arrows respectively.
+                      </p>
+                      <p>Upvoting a pothole report helps the pothole gain recognition, which is good as we hope it will get the attention of the relevant authorities that should be responsible for 
+                        fixing it. 
+                      </p>
+                      <p class="mb-0">Downvoting a pothole is important to the application as this is how we find bad reports such as spam or advertisements. These malicious and annoying reports have no
+                        place in our application, and we need your help to sift through the reports to find them.When a pothole report has a vote count of -5, the report is automatically
+                        deleted. Therefore we are asking that you please help us find these reports and remove them by downvoting on them!
+                      </p>
+                    </div>
                   </div>
                 </div>
               </div>
               <div class="modal-footer">
-                
+                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
               </div>
           </div>
       </div>
