@@ -170,6 +170,7 @@
             <ul id="profileArea"></ul>
           <li><a href="#dashboard" onclick="loadDashboard()" data-bs-toggle="pill" data-bs-target="#mainTab-dashboard"><i class="bi bi-clipboard"></i> <span>Dashboard</span></a></li>
           <li><a href="#leaderboard" onclick="loadLeaderboardData()" data-bs-toggle="pill" data-bs-target="#mainTab-leaderboard"><i class="bi bi-bar-chart-fill"></i> <span>Leaderboard</span></a></li>
+          <li><a href="#help" data-bs-toggle="modal" data-bs-target="#helpModal"><i class="bi bi-info-circle-fill"></i> <span>Help</span></a></li>
           <li><a href="#about" data-bs-toggle="pill" data-bs-target="#mainTab-about"><i class='bi bi-patch-question'></i> <span>About</span></a></li>
           <!-- ======= Loads options for Login/Logout based on the user context ======= -->
           <ul id="userContextGroup" class="list-group list-group-flush">
@@ -417,6 +418,55 @@
                 </div>
             </div>
         </div>
+    </div>
+
+
+    <!-- Help Management Modal -->
+    <div class="modal fade" id="helpModal" tabindex="-1">
+      <div class="modal-dialog">
+          <div id="helpSection" class="modal-content">
+              <!-- Sets the header of the modal and a close button. -->
+              <div class="modal-header">
+                  <h5 class="modal-title" id="helpModalTitle">How to use the application?</h5>
+                  <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+
+              <!-- Holds the help information. -->
+              <div class="modal-body">
+                <div>
+                  <strong>Progressive Web App</strong>
+                  <p>Write stuff here</p>
+                </div>
+                <div class="mt-4">
+                  <strong>Downloadable Map</strong>
+                  <p>Write stuff here</p>
+                </div>
+                <div class="mt-4">
+                  <strong>Dashboard</strong>
+                  <p>Write stuff here</p>
+                </div>
+                <div class="mt-4">
+                  <strong>Routing</strong>
+                  <p>Write stuff here</p>
+                </div>
+                <div class="mt-4">
+                  <strong>Leaderboard</strong>
+                  <p>Write stuff here</p>
+                </div>
+                <div class="mt-4">
+                  <strong>Reporting/Offline Reporting</strong>
+                  <p>Write stuff here</p>
+                </div>
+                <div class="mt-4">
+                  <strong>Voting/Offline Voting</strong>
+                  <p>Write stuff here</p>
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+              </div>
+          </div>
+      </div>
     </div>
 
     <!-- Profile Management Modal -->

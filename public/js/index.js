@@ -1305,7 +1305,7 @@ async function main(){
     navigator.serviceWorker.addEventListener('message', function(event) {
         //Displays the downloaded map message and reloads the page after 3 seconds.
         if("downloadedMap" in event.data){
-            displayToast("sync", "Map download complete!")
+            displayToast("sync", "Map download complete! Please switch using the layers menu.")
             setTimeout(function(){
                 window.location.reload(true);
             }, 3000);
