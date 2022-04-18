@@ -626,8 +626,6 @@ td > .btn-dark{
   z-index: 9999;
 }
 
-
-
 .nav-pills >.nav-link.active{
   background-color : #149ddd;
 }
@@ -635,7 +633,6 @@ td > .btn-dark{
 .nav-pills >.nav-link{
   color : #149ddd;
 }
-
 
 .accordion-body{
   background : #050d18;
@@ -652,6 +649,13 @@ td > .btn-dark{
 
 #sendResetButton{
   background : #050d18;
+}
+
+/*--------------------------------------------------------------
+# Help Modal
+--------------------------------------------------------------*/
+#helpModal{
+  z-index: 9999
 }
 
 
