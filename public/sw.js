@@ -10,7 +10,6 @@ var our_db
 var isSyncing = false;
 
 
-
 //Creates a message channel for communicating between the service worker and the web-app.
 //Approach inspiration taken from pipes in Operating Systems.
 //Removed due to it being newly implemented for iOS devices on March 14th 2022.
@@ -47,6 +46,34 @@ const cacheFiles = [
 	'https://www.gstatic.com/firebasejs/7.15.5/firebase-storage.js'
 ];
 
+
+// "Handling POST/PUT Requests in Offline Applications...", referenced from Adeyinka Adegbenro, August 3rd 2018, found at:
+// https://blog.formpl.us/how-to-handle-post-put-requests-in-offline-applications-using-service-workers-indexedb-and-da7d0798a9ab
+//Creates the database for storage of the offline requests.
+function openDatabase () {
+	//Attempts to create/open the indexedDB database used for storage of the report/vote data.
+	var indexedDBOpenRequest = indexedDB.open('queued-requests')
+
+	//If an error occurs when creating/opening the indexedDB, print the corresponding error.
+	indexedDBOpenRequest.onerror = function (error) {
+		console.error('IndexedDB error:', error)
+	}
+
+	//If the indexedDB is outdated or needs to be created, create the updated database with the schema.
+	indexedDBOpenRequest.onupgradeneeded = function () {
+		this.result.createObjectStore(FOLDER_NAME, { autoIncrement: true, keyPath: 'id' })
+	}
+
+	// Whenever the database is opened, set the global our_db object to the current instance holding the indexedDB.
+	indexedDBOpenRequest.onsuccess = function () {
+		our_db = this.result
+	}
+}
+
+//Initializes the database by creating it if it does not exist, or opening it if it does.
+//Assigns the created/found instance to a global variable, our_db.
+openDatabase()
+
 // Service Worker, "service-worker.js", service worker activation referenced from JMPerez, September 28th 2020, found at:
 // https://gist.github.com/JMPerez/8ca8d5ffcc0cc45a8b4e1c279efd8a94
 // Removes cache associated with previous service worker.
@@ -75,61 +102,34 @@ self.addEventListener('install', evt =>{
 	)
 });
 
-
-// "Handling POST/PUT Requests in Offline Applications...", referenced from Adeyinka Adegbenro, August 3rd 2018, found at:
-// https://blog.formpl.us/how-to-handle-post-put-requests-in-offline-applications-using-service-workers-indexedb-and-da7d0798a9ab
-//Creates the database for storage of the offline requests.
-function openDatabase () {
-	//Attempts to create/open the indexedDB database used for storage of the report/vote data.
-	var indexedDBOpenRequest = indexedDB.open('queued-requests')
-
-	//If an error occurs when creating/opening the indexedDB, print the corresponding error.
-	indexedDBOpenRequest.onerror = function (error) {
-		console.error('IndexedDB error:', error)
+//If postMessage was used within the web-app, the contents are intercepted here.
+//Hence, all post requests are intercepted if they have the form_data property.
+self.addEventListener('message', function (event) {
+	//console.log('Form Data Received from Request: ', event.data)
+	//Determines if the request was generated from a post request corresponding to a report or vote.
+	if (event.data.hasOwnProperty('form_data')) {
+		//Sets the intercepted form data to the global form_data object.
+		form_data = event.data.form_data
 	}
-
-	//If the indexedDB is outdated or needs to be created, create the updated database with the schema.
-	indexedDBOpenRequest.onupgradeneeded = function () {
-		this.result.createObjectStore(FOLDER_NAME, { autoIncrement: true, keyPath: 'id' })
-	}
-
-	// Whenever the database is opened, set the global our_db object to the current instance holding the indexedDB.
-	indexedDBOpenRequest.onsuccess = function () {
-		our_db = this.result
-
-		//If postMessage was used within the web-app, the contents are intercepted here.
-		//Hence, all post requests are intercepted if they have the form_data property.
-		self.addEventListener('message', function (event) {
-			//console.log('Form Data Received from Request: ', event.data)
-			//Determines if the request was generated from a post request corresponding to a report or vote.
-			if (event.data.hasOwnProperty('form_data')) {
-				//Sets the intercepted form data to the global form_data object.
-				form_data = event.data.form_data
-			}
-			
-			//Web-app requests for the map to be downloaded and cached.
-			if ("downloadMap" in event.data){
-				event.waitUntil(update(mbTilesLink).then(function(){
-					console.log("Map download complete!")
-					event.source.postMessage({"downloadedMap" : true})
-				}))
-			}
-
-			//Web-app requests a manual sync of data.
-			if("syncActions" in event.data){
-				event.waitUntil(
-					sendPostToServer(event)
-				)
-			}
-		})
-	}
-
 	
-}
+	//Web-app requests for the map to be downloaded and cached.
+	if ("downloadMap" in event.data){
+		event.waitUntil(update(mbTilesLink).then(function(){
+			console.log("Map download complete!")
+			event.source.postMessage({"downloadedMap" : true})
+		}))
+	}
 
-//Initializes the database by creating it if it does not exist, or opening it if it does.
-//Assigns the created/found instance to a global variable, our_db.
-openDatabase()
+	//Web-app requests a manual sync of data.
+	if("syncActions" in event.data){
+		event.waitUntil(
+			sendPostToServer(event)
+		)
+	}
+})
+
+
+
 
 // Service Worker, "service-worker.js", network strategy referenced from JMPerez, September 28th 2020, found at:
 // https://gist.github.com/JMPerez/8ca8d5ffcc0cc45a8b4e1c279efd8a94

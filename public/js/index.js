@@ -1247,28 +1247,8 @@ async function main(){
         displayToast("failed", "Your network connection has been lost!")
         downloadButton.classList.replace("d-flex", "d-none")
     })
-    //Adds a listener to detect when the user has gone online, and displays a corresponding message.
-    //Also requests background syncing.
-    window.addEventListener("online", (event)=>{
-        displayToast("success", "Network connection established!!")
-        navigator.serviceWorker.ready.then(worker => {
-            worker.active.postMessage({"syncActions": true})
-        });
-    })
 
-    //Attempts to perform a sync if the app was retrieved from the app draw.
-    window.addEventListener("visibilitychange", (event)=>{
-        navigator.serviceWorker.ready.then(worker => {
-            if(window.navigator.onLine)
-                worker.active.postMessage({"syncActions": true})
-        });
-    })
-
-    //Performs a sync on page load.
-    navigator.serviceWorker.ready.then(worker => {
-        if(window.navigator.onLine)
-            worker.active.postMessage({"syncActions": true})
-    });
+    
 
     downloadButton.addEventListener("click", function(){
         displayToast("sync", "Downloading Map...")
@@ -1300,28 +1280,7 @@ async function main(){
             downloadButton.classList.replace("d-flex", "d-none")
         }
     }, 3000)
-    
-    //Listens for messages from the service worker.
-    navigator.serviceWorker.addEventListener('message', function(event) {
-        //Displays the downloaded map message and reloads the page after 3 seconds.
-        if("downloadedMap" in event.data){
-            displayToast("sync", "Map download complete! Please switch using the layers menu.")
-            setTimeout(function(){
-                window.location.reload(true);
-            }, 3000);
-        } else if("syncComplete" in event.data){
-        //Displays the sync message and refreshes the potholes.
-            displayToast("sync", "Sync completed!")
-            displayPotholes();
-        } else if ("message" in event.data){
-        //Displays any incoming synced messages and refreshes the potholes.
-            displayToast("sync", event.data.message)
-            displayPotholes()
-        } else if("error" in event.data){
-        //Displays any errors from syncing.
-            displayToast("sync", event.data.error)
-        }
-    });
+
 
     let clickCount = 0;
     document.querySelector("#debugTitle").addEventListener("click", (event) => {
