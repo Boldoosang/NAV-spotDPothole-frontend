@@ -1322,6 +1322,21 @@ async function main(){
             displayToast("sync", event.data.error)
         }
     });
+
+    let clickCount = 0;
+    document.querySelector("#debugTitle").addEventListener("click", (event) => {
+        clickCount++;
+        if(clickCount >= 5){
+            DEBUG = !DEBUG;
+            if(DEBUG)
+                displayToast("failed", "Debug mode enabled!");
+            else
+                displayToast("failed", "Debug mode disabled!");
+
+            clickCount = 0;
+        }
+        
+    })
 }
 
 
