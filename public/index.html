@@ -123,13 +123,52 @@
             });
 
             //When the service worker is ready, print a ready message.
-            navigator.serviceWorker.ready.then(function(registration) {
+            navigator.serviceWorker.ready.then(function(worker) {
                 console.log('Service Worker Ready!')
+
+                //Adds a listener to detect when the user has gone online, and displays a corresponding message.
+                //Also requests background syncing.
+                window.addEventListener("online", (event)=>{
+                    displayToast("success", "Network connection established!!")
+                    worker.active.postMessage({"syncActions": true})
+                })
+
+                //Attempts to perform a sync if the app was retrieved from the app draw.
+                window.addEventListener("visibilitychange", (event)=>{
+                      if(window.navigator.onLine)
+                          worker.active.postMessage({"syncActions": true})
+                })
+
+                //Performs a sync on page load.
+                if(window.navigator.onLine)
+                    worker.active.postMessage({"syncActions": true})
+                
+                //Listens for messages from the service worker.
+                navigator.serviceWorker.addEventListener('message', function(event) {
+                    //Displays the downloaded map message and reloads the page after 3 seconds.
+                    if("downloadedMap" in event.data){
+                        displayToast("sync", "Map download complete! Please switch using the layers menu.")
+                        setTimeout(function(){
+                            window.location.reload(true);
+                        }, 3000);
+                    } else if("syncComplete" in event.data){
+                    //Displays the sync message and refreshes the potholes.
+                        displayToast("sync", "Sync completed!")
+                        displayPotholes();
+                    } else if ("message" in event.data){
+                    //Displays any incoming synced messages and refreshes the potholes.
+                        displayToast("sync", event.data.message)
+                        displayPotholes()
+                    } else if("error" in event.data){
+                    //Displays any errors from syncing.
+                        displayToast("sync", event.data.error)
+                    }
+                });
+
             }).catch(function() {
                 console.log('Service worker registration failed!')
             });
-        }); 
-
+        });
         
       } else {
         console.log("Service workers not supported!")
@@ -582,6 +621,8 @@
                       </p>
                     </div>
                   </div>
+
+                  Version [19-APR-2022 | 1:40AM]
                 </div>
               </div>
               <div class="modal-footer">
