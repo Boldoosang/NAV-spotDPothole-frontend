@@ -279,6 +279,7 @@ async function displayPotholes() {
                 //create a new marker object with the constituency name, pothole id and constituency id
                 let marker = L.marker([pothole.latitude, pothole.longitude], {
                     constituency: constituency[0].feature.properties.Constituency,
+                    official: constituency[0].feature.properties.official,
                     potholeID: pothole.potholeID,
                     constituencyID: constituency[0].feature.properties.ID
                 }).on('click', async function () {
@@ -288,7 +289,7 @@ async function displayPotholes() {
 
                     //load reports and constituency data when the marker is clicked
                     loadReports(this.options.potholeID);
-                    loadConstituencyData(this.options.constituencyID)
+                    loadConstituencyData(this.options.official)
 
                     //toggle the offcanvas
                     var offCanvasReport = getOffCanvas();
@@ -334,24 +335,21 @@ async function getPotholesByConstituency() {
     for (const pothole of markers) {
         let constituency = pothole.options.constituency;
         let constituencyCode = pothole.options.constituencyID;
+        let official = pothole.options.official;
 
         let found = false;
-        for (const c of constituencies) {
+        for (let c of constituencies) {
             if (c.name === constituency) {
                 c.count++;
                 found = true;
             }
         }
         if (!found) {
-            //  let url = `${PICONG_SERVER}?year=${ELECTION_YEAR}&district=${pothole.options.constituencyID}`
-            //  leader = await sendRequest(url, "GET")
-
             constituencies.push({
                 name: constituency,
                 count: 1,
-                //constituencyLeader: leader[0].name
                 constitID: constituencyCode,
-                constituencyLeader: "Filler data till we get more info from Picong Party"
+                official: official
             })
         }
     }
@@ -382,7 +380,7 @@ async function getReportLeaderboardData() {
                 numReports: pothole.numReports,
                 lat: pothole.latitude,
                 long: pothole.longitude,
-
+                official: constituency[0].feature.properties.official
             })
         } catch (e) {
             console.log("PotholeID: " + pothole.potholeID + " may not lie on map!")
@@ -391,7 +389,7 @@ async function getReportLeaderboardData() {
     return leaderboardData;
 }
 
-//trigger the offcanvas the councilor data is requested
+//trigger the offcanvas the councillor data is requested
 function reportLeaderboardModal(lat, long, potholeID) {
     var constituency = leafletPip.pointInLayer([long, lat], map);
     var constituencyName = document.getElementById('constituencyName')
@@ -399,11 +397,10 @@ function reportLeaderboardModal(lat, long, potholeID) {
     constituencyName.innerText = constituency[0].feature.properties.Constituency;
 
     loadReports(potholeID);
-    loadConstituencyData(constituency[0].feature.properties.ID)
+    loadConstituencyData(constituency[0].feature.properties.official)
 
     var offCanvasReport = getOffCanvas();
     offCanvasReport.toggle();
-    console.log(offCanvasReport)
 }
 
 //function to get routes from the database and choose the best route

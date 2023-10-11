@@ -722,7 +722,7 @@ async function loadLeaderboardData(){
         <th scope="col">RANK</th>
         <th scope="col">CONSTITUENCY</th>
         <th scope="col">NUMBER OF POTHOLES</th>
-        <th scope="col">CONSTITUENCY LEADER</th>
+        <th scope="col">CONSTITUENCY MP</th>
     </tr>
     `
     //Gets the constituency pothole leaderboard and stores it.
@@ -736,7 +736,7 @@ async function loadLeaderboardData(){
             <td><b>${i}</b></td>
             <td>${constituency.name}</td>
             <td>${constituency.count}</td>
-            <td><button class="btn btn-dark w-100" data-bs-toggle="modal" data-bs-target="#councillorInfoModal" onclick="displayCouncillorInfo(event, '${constituency.constitID}')">Councillor Info</button></td>
+            <td><button class="btn btn-dark w-100" data-bs-toggle="modal" data-bs-target="#councillorInfoModal" onclick="displayCouncillorInfo(event, '${constituency.official.name}', '${constituency.official.address}', '${constituency.official.email}', '${constituency.official.number}')">Member of Parliament</button></td>
         </tr>
         `
         i++;
@@ -744,10 +744,7 @@ async function loadLeaderboardData(){
 }
 
 //Displays a modal containing the councillor information whenver the button is clicked.
-async function displayCouncillorInfo(event, constituencyID){
-    //Gets the councillor data for the constituency.
-    let councillorData = await getCouncillorData(ELECTION_YEAR, constituencyID)
-
+async function displayCouncillorInfo(event, name, address, email, number){
     constituencyModalInfoBox = document.querySelector("#councillorInfoModal");
 
     //Attempts to add the councillor information to the modal.
@@ -759,19 +756,19 @@ async function displayCouncillorInfo(event, constituencyID){
             <tbody>
                 <tr>
                     <th scope="row">Name</th>
-                    <td>${councillorData[0].name}</td>
+                    <td>${name}</td>
                 </tr>
                 <tr>
                     <th scope="row">Address</th>
-                    <td>${councillorData[0].address}</td>
+                    <td>${address}</td>
                 </tr>
                 <tr>
                     <th scope="row">Email</th>
-                    <td scope="row">${councillorData[0].email}</td>
+                    <td scope="row">${email}</td>
                 </tr>
                 <tr>
                     <th scope="row">Phone</th>
-                    <td scope="row">${councillorData[0].phone}</td>
+                    <td scope="row">${number}</td>
                 </tr>
             </tbody>
         </table>
@@ -861,15 +858,8 @@ async function voteOnReport(event, potholeID, reportID, isUpvote){
     }
 }
 
-//Gets the councillor data for the election year and constituency ID and returns it.
-async function getCouncillorData(electionYear, constituencyID){
-    let url = `${PICONG_SERVER}?year=${electionYear}&district=${constituencyID}`
-    let councillorData = await sendRequest(url, "GET")
-    return councillorData;
-}
-
 //Loads the councillor data for the constituency into the pothole information pane.
-async function loadConstituencyData(constituencyID){
+async function loadConstituencyData(official){
     //Gets a handle on the councillor information area.
     let councillorInformationArea = document.querySelector("#councillorInformation")
     //Sets initial councillor information
@@ -878,31 +868,28 @@ async function loadConstituencyData(constituencyID){
                                                 <b class="align-middle text-white text-center mt-2">Loading Information...</b>
                                             </div>`;
 
-    //Gets the councillor data for the constituencyID and election year.
-    let councillorData = await getCouncillorData(ELECTION_YEAR, constituencyID)
-
     //Attempts to populate the councillor information area with the formatted information.
     try {
         councillorInformationArea.innerHTML = 
         `
-        <div class="text-center text-white"><strong>COUNCILLOR INFORMATION</strong></div>
+        <div class="text-center text-white"><strong>MP INFORMATION</strong></div>
         <table class="table my-2 table-borderless text-white">
             <tbody>
                 <tr>
                     <th scope="row">Name</th>
-                    <td>${councillorData[0].name}</td>
+                    <td>${official.name}</td>
                 </tr>
                 <tr>
                     <th scope="row">Address</th>
-                    <td>${councillorData[0].address}</td>
+                    <td>${official.address}</td>
                 </tr>
                 <tr>
                     <th scope="row">Email</th>
-                    <td scope="row">${councillorData[0].email}</td>
+                    <td scope="row">${official.email}</td>
                 </tr>
                 <tr>
                     <th scope="row">Phone</th>
-                    <td scope="row">${councillorData[0].phone}</td>
+                    <td scope="row">${official.number}</td>
                 </tr>
             </tbody>
         </table>

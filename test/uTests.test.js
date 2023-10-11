@@ -1,8 +1,6 @@
 // Use "npm run utest" to run this test file with jest
 
-const SERVER = "https://spotdpothole.herokuapp.com/"
-const PICONG_SERVER = "https://project-caigual.herokuapp.com/publicAPI/info/electoraldistrict"
-const ELECTION_YEAR = "10"
+const SERVER = "https://spotdpothole-rmd8je2r.b4a.run"
 const DRIVER_REPORT_URL = SERVER + "/api/reports/driver"
 const STANDARD_REPORT_URL = SERVER + "/api/reports/standard"
 
@@ -74,14 +72,6 @@ async function identifyUser(){
         return {"error" : "User is not logged in or session has expired!"}
     }
 }
-
-// returns data pertaining to a councillor that is referenced by their constituencyID and their electionYear, through a sendRequest
-async function getCouncillorData(electionYear, constituencyID){
-    let url = `${PICONG_SERVER}?year=${electionYear}&district=${constituencyID}`
-    let councillorData = await sendRequest(url, "GET")
-    return councillorData;
-}
-
 
 // gets all of the current user's potholes and returns it.
 async function getUserPotholes(){
