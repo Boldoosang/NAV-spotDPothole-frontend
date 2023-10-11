@@ -281,7 +281,7 @@ async function displayPotholes() {
                     constituency: constituency[0].feature.properties.Constituency,
                     official: constituency[0].feature.properties.official,
                     potholeID: pothole.potholeID,
-                    constituencyID: constituency[0].feature.properties.ID
+                    constituencyID: constituency[0].feature.properties.PD
                 }).on('click', async function () {
                     var constituency = leafletPip.pointInLayer([pothole.longitude, pothole.latitude], map);
                     var constituencyName = document.getElementById('constituencyName')
@@ -334,7 +334,7 @@ async function getPotholesByConstituency() {
 
     for (const pothole of markers) {
         let constituency = pothole.options.constituency;
-        let constituencyCode = pothole.options.constituencyID;
+        let constituencyID = pothole.options.constituencyID;
         let official = pothole.options.official;
 
         let found = false;
@@ -348,7 +348,7 @@ async function getPotholesByConstituency() {
             constituencies.push({
                 name: constituency,
                 count: 1,
-                constitID: constituencyCode,
+                constitID: constituencyID,
                 official: official
             })
         }
